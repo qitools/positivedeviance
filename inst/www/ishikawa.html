@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>QI Tools: Ishikawa diagram</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<!-- ocpu library -->
+<script src="jquery/jquery-1.9.1.js"> </script>
+<script src="opencpu/opencpu.js"> </script>
+
+<!-- some optional styling stuff -->
+
+<script src="bootstrap/js/bootstrap.js"> </script>
+<script src="jqueryui/jquery-ui-1.10.3.custom.js"> </script>
+
+<!-- Ajax.org Cloud9 Editor -->
+<script src="src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+
+<script> 
+$(document).ready(function(){
+
+  //optional, requires jquery-ui.
+  $("#plotdiv").resizable()
+
+  //For Ajax.org Cloud9 Editor
+  var editor = ace.edit("editor");
+  editor.setTheme("ace/theme/github");
+  editor.getSession().setMode("ace/mode/r");
+  editor.setFontSize("14px");
+  editor.getSession().setUseWrapMode(true);
+  
+  // drawplot
+  function drawplot(){
+    $("#plotbutton").attr("disabled", "disabled")
+	temp = editor.getSession().getValue()
+	//Three replacements below are not required on a local server, but are at https://public.opencpu.org/ocpu/github/
+	temp = temp.replace(/\r?\n/g, '')
+	temp = temp.replace(/\s+$/g, '')
+	temp = temp.replace(/,$/g, '')
+	var req = $('#target').contents().find('#plotdiv').r_fun_plot("ishikawa", {
+	  content: temp,
+	  theme : $("#theme").val()
+    }).always(function(){
+      $("#plotbutton").removeAttr("disabled");
+    }).fail(function(){
+      alert("HTTP error " + req.status + ": " + req.responseText);
+    });
+  }
+
+  //button handler
+  $("#plotbutton").on("click", function(e){
+    e.preventDefault();
+    drawplot();
+  });
+
+  //init on start
+  //drawplot();
+  
+});
+</script>
+<style>
+
+#editor { 
+  position: relative;
+  width: 950px;
+  height: 250px;
+}
+    
+#plotdiv {
+  width: 1000px;
+  height: 400px;
+  border: 1px solid #e3e3e3;
+  border-radius: 4px;
+}
+
+#plotbutton{
+  width: 120px;
+  margin-left: 20px;
+}
+
+.twocolumns
+{
+columns:100px 2;
+-webkit-columns:100px 2; /* Safari and Chrome */
+-moz-columns:100px 2; /* Firefox */
+}
+
+</style>
+</head>
+
+<body>
+
+  <div class="container" style="width:1000px;">
+
+    <div class="page-header">
+      <div  style="float:left;color:#0022B4">
+	  <h1>QI Tools</h1>
+		<h2>Ishikawa Diagram</h2>
+	  </div>
+      <span style="float:right"><a href="mailto:rbadgett@kumc.edu">rbadgett@kumc.edu</a></span>
+    </div>
+    <div style="clear:both"></div>
+	
+    <div class="row">
+      <div class="span3">
+
+        <form class="well" id="paramform" target="target">
+          <fieldset style="border: 3px solid #6DC6E7; background-color: #FFFFFF;">
+            <legend style="font-weight:bold">Enter inputs</legend>
+            <div>Replace the causes in this example <a href="http://en.wikipedia.org/wiki/Ishikawa_diagram">Ishikawa diagram</a> with your observations. The branches ('Provider', 'Patient', etc) can be removed, replaced, or added to. See Wikipedia for explanations of:</div>
+			<ul class="twocolumns">
+			<li><a href="https://en.wikipedia.org/wiki/Health_belief_model#Constructs">HBM</a> (Health belief model)</li>
+			<li><a href="https://en.wikipedia.org/wiki/Transtheoretical_model#Stages_of_change">TTM</a> (Transtheoretical model)</li>
+			</ul>
+<div id="editor">Provider=c('Distracted','Unaware','Inaccessible knowledge','Nonparsable documentation','Not motivated','Not done: reason unknown'),
+
+Patient=c('No visit during time period','Multiple complaints','TTM: early stage','HBM: ____', 'No resource: _____'),
+
+System=c('Acute vs continuity visit', 'Specialty vs primary care', 'Personnel absent','Supplies unavailable','Bean counting error'),
+
+Personnel=c('Distracted','Inaccessible knowledge','Nonparsable documentation','Not done: reason unknown','Not motivated','Not empowered')
+</div>	
+            <br />
+
+            <label>Plot logo</label> 
+            <select id="theme">
+              <option value="white" selected>None</option>
+              <option value="KU">KU</option>
+            </select> 
+
+            <br />
+            <button class="btn btn-small btn-primary" id="plotbutton"><i class="icon-ok icon-white"></i> Update Plot</button>
+          </fieldset>
+        </form>
+      </div>
+	<div id="">&nbsp;</div>
+	<iframe id="target" style="width:1000px;height:600px;border: 3px solid #6DC6E7;" name="target" width="700px" height="600px" src="output.html">
+	</iframe>
+	</div>
+	 
+    <div class="row">
+      <div class="span12">
+        <h3>About</h3>
+        <h4>Technical details</h4>
+        <p>This is an OpenCPU application.</p>
+        <table class="table table-striped">
+          <tr><th>Resource</th> <th>link</th></tr>
+          <tr><td>Package Info</td> <td><a href=".." target="blank">link</a></td></tr>       
+          <tr><td>Function Source</td><td><a href="../R/ishikawa/print" target="blank">link</a></td><td></tr>
+          <tr><td>Source Code</td><td><a href="https://github.com/badgettrg/qitools" target="blank">link</a></td><td></tr>
+          <tr><td>Help Page (html)</td><td><a href="../man/qitools/html" target="blank">link</a></td><td></tr>
+        </table>
+               
+      </div>
+    </div>
+  </div>
+</body>
+</html>

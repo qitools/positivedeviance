@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>QI Tools</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<!-- ocpu library -->
+<script src="jquery/jquery-1.9.1.js"> </script>
+<script src="opencpu/opencpu.js"> </script>
+
+<!-- some optional styling stuff -->
+
+<script src="bootstrap/js/bootstrap.js"> </script>
+<script src="jqueryui/jquery-ui-1.10.3.custom.js"> </script>
+
+<style>
+#menu
+{
+list-style-type:none;
+margin:0;
+padding:0;
+overflow:hidden;
+} 
+
+.listitem
+{
+display:inline;
+float:left;
+}
+
+a.menuitem:link,a.menuitem:visited
+{
+display:block;
+width:150px;
+height:40px;
+font-weight:bold;
+text-align:center;
+padding:4px;
+text-decoration:none;background-color:#6DC6E7;
+color:#FFFFFF;
+}
+
+a.menuitem:hover,a.menuitem:active
+{
+background-color:#0022B4;
+color:#FFFFFF;
+}
+
+</style>
+
+</head>
+
+<body>
+  <div class="container" style="width:1000px;">
+
+    <div class="page-header" style="color:#0022B4">
+      <h1>QI Tools</h1>
+    </div>
+ 
+<ul id="menu">
+<li class="listitem"><a href="index.html" class="menuitem">Home</a></li>
+<li class="listitem"><a href="ishikawa.html" class="menuitem">Ishikawa diagram</a></li>
+<li class="listitem"><a href="pareto.html" class="menuitem">Pareto diagram and bar charts</a></li>
+<li class="listitem"><a href="charts.html" class="menuitem">Run charts and process control charts</a></li>
+</ul> 
+<div id="">&nbsp;</div>
+ 
+    <div class="row">
+      <div class="span12">
+
+	  <p>This application provides interactive interface with example scenarios for common <a href="https://en.wikipedia.org/wiki/Seven_Basic_Tools_of_Quality">quality tools</a>. Further information is at <a href="http://sumsearch.org/quality">sumsearch.org/quality</a></p>
+        <ul>
+			<li><a href="https://github.com/badgettrg/qitools">Source code at GitHub</a></li>
+			<li>This application uses the <a href="http://cran.r-project.org/web/packages/qcc/">QCC</a> package for <a href="http://www.r-project.org/">R</a>:     
+			  <ul>
+				<li>Scrucca, L. (2004). qcc: an R package for quality control charting and statistical process control. R News 4/1, 11-17. Available at <a href="http://cran.r-project.org/web/packages/qcc/">http://cran.r-project.org/web/packages/qcc/</a>.</li>
+			  </ul>
+			</li>
+			<li><a href="../man/qitools/html">Help</a></li>
+			<li>These pages may not function on some versions of Internet Explorer.</li>
+		</ul>
+		<div id=""><a href="mailto:rbadgett@kumc.edu">rbadgett@kumc.edu</a></div>
+		</div>
+		</div>
+  </div>
+</body>
+</html>
