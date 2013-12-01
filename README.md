@@ -12,7 +12,7 @@ To install in R on your computer:
     install_github("pareto", "qitools")
 
     library(opencpu)
-    opencpu$browse("library/qitools/www")
+    opencpu$browse("library/pareto/www")
 
 Use the same function using a local webserver on your computer:
 
