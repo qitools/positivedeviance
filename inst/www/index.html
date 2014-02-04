@@ -55,6 +55,12 @@ $(document).ready(function(){
     drawplot();
   });
 
+    $(".example").click(function(){
+	if($(this).val()=="ex_1") {$("#type").val("p");editor.setValue("'Non-parsable', 7,\n'Refused (cost)', 4,\n'Refused (other)', 4,\n'No documentation', 8,\n'Not PCP encounter', 1",1);}
+	if($(this).val()=="ex_2") {$("#type").val("p");editor.setValue("'Non-parsable', 7,\n'Refused (cost)', 4,\n'Refused (other)', 4,\n'No documentation', 8,\n'Not PCP encounter', 9",1);}
+	if($(this).val()=="ex_3") {$("#type").val("b");editor.setValue("'Non-parsable', 7,\n'Refused (cost)', 4,\n'Refused (other)', 4,\n'No documentation', 8,\n'Not PCP encounter', 9",1);}
+  });
+  
   //init on start
   //drawplot();
   
@@ -65,7 +71,7 @@ $(document).ready(function(){
 #editor { 
   position: relative;
   width: 450px;
-  height: 125px;
+  height: 250px;
 }
     
 #plotdiv {
@@ -124,7 +130,7 @@ color:#FFFFFF;
 
 <body>
 
-  <div class="container" style="width:1000px;">
+  <div class="container" style="width:1000px">
 
 	<div class="page-header">
 		<div  style="float:left;color:#0022B4">
@@ -148,20 +154,19 @@ color:#FFFFFF;
 		<!-- Left column -->
 		<div style="width:500px;float:left">
 			<form class="well" id="paramform" target="target" style="width:500px;">
-			<fieldset style="border: 3px solid #6DC6E7; background-color: #FFFFFF; width:500px;">
+			<fieldset style="border: 3px solid #6DC6E7; background-color: #FFFFFF; width:500px;height:385px;">
 			<legend style="font-weight:bold">Enter inputs</legend>
 			<div>Replace the reasons and their counts in this example <a href="https://en.wikipedia.org/wiki/Pareto_chart">Pareto chart</a> with your observations.</div>
-			<div id="editor">"Non-parsable", 7,
-"Refused (cost)", 4,
-"Refused (other)", 4,
-"No documentation", 8,
-"Not PCP visit", 1
-</div>	
+			<div id="editor">'Non-parsable', 7,
+'Refused (cost)', 4,
+'Refused (other)', 4,
+'No documentation', 8,
+'Not PCP encounter', 1</div>	
             <br />
             <label>Chart type</label> 
             <select id="type">
-              <option value="b" selected>Bar chart</option>
-              <option value="p">Pareto chart</option>
+              <option value="b">Bar chart</option>
+              <option value="p" selected>Pareto chart</option>
             </select> 
             <div style="display:none"><label>Plot logo:</label> 
             <select id="theme">
@@ -178,11 +183,17 @@ color:#FFFFFF;
 	<!-- Right column-->
     <div style="width:450px;float:right;background-color: #FFFFFF;">
 	<fieldset style="border: 3px solid #6DC6E7; background-color: #FFFFFF; width:450px;">
-		<legend style="font-weight:bold">Pareto vs sorted bar chart?</legend>
-		<ul>
-			<li>The most common barrier will always be the same for both charts and in the left-most bar</li>
-			<li>The two charts conflict when more than one barrier occurs for a given patient</li>
-			<li>Sorted bar charts are much easier to make</li>
+		<legend style="font-weight:bold">Example scenarios</legend>
+		<h3 style="margin-bottom:0px">Scenario 1</h3>
+		<div><input type="radio" name="example" class="example" value="ex_1" id="ex_1" checked /><label for="ex_1">A review of 24 encounters in order to identify the principle reason for not be in conformity with the desired outcome.</label></div>
+		<h3 style="margin-bottom:0px">Scenario 2</h3>
+		<div><input type="radio" name="example" class="example" value="ex_2" id="ex_2"/><label for="ex_2">The same 24 encounters, but now more than one reason was allowed and counted for each encounter.</label> <i>Note that non of the non-PCP visits documented reasons and so the count for 'Not PCP visit' has risen to 9 encounters.</i> Question:</div>
+			<ul>
+				<li>In this Pareto analysis, do the percentages correctly identify the fractions of encounters affect?</li>
+			</ul>
+		<div><input type="radio" name="example" class="example" value="ex_3" id="ex_3"/><label for="ex_3">The same scenario, but now a sorted bar chart is created. Question:</label></div>
+			<ul>
+				<li>When more than one reason was allowed to be counted per encounter, which type of chart is more helpful?</li>
 			</ul>
 		</fieldset>
 	  </div>
