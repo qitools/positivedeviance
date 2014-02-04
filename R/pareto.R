@@ -1,10 +1,12 @@
 pareto <-
-function(content,type,theme) {
+function(content,type, totalencounters, theme) {
 temp <- gsub('\n', '', fixed = TRUE, content, perl = TRUE)
 temp <- gsub("\\s+$", "", temp, perl = TRUE) #Removing trailing whitespace
 temp <- gsub(",+$", "", temp, perl = TRUE) #Remove trailing comma if accidentally added by user online
 temp <- paste('Mymatrix <- matrix(c(',temp,'), ncol=2, byrow=TRUE,dimnames = list(NULL, c("Reason","count")))')
 x<-eval(parse(file = "", n = NULL, text = temp))
+if (totalencounters < 0){totalencounters = 0}
+totalencounters <- as.numeric(totalencounters)
 KUBlue = "#0022B4"
 SkyBlue = "#6DC6E7"
 par(col.axis="black" ,col.lab=KUBlue ,col.main=KUBlue ,col.sub=KUBlue, col=KUBlue,new = TRUE) #bg=SkyBlue)
@@ -21,9 +23,10 @@ else
 	#plot(c(0, dev.size("px")[1]), c(0, dev.size("px")[2]),axes=F,type="b",xlab="", ylab = "", new = TRUE) # needed if rasterimage later adds anything
 	Myframe <- as.data.frame(x)
 	Myframe$count<-as.numeric(as.character(Myframe$count))
+	totalencounters <- max(Myframe$count, totalencounters)
 	ggplot(Myframe, aes(x = reorder(Reason, -count), y = count)) + 
 		geom_bar(fill = SkyBlue,stat="identity") + xlab("Reason")+ ylab("Count") +
-		theme(plot.background = element_rect(fill = "#FFFFFF")) + 
+		theme(plot.background = element_rect(fill = "#FFFFFF")) + ylim(0,totalencounters) +
 		labs(title = "Frequencies of causes of non-conformity")+ theme(plot.title = element_text(size = rel(2))) + theme(plot.title = element_text(colour = KUBlue))  +
 		 theme(axis.text = element_text(colour = KUBlue))+
 		 theme(axis.title = element_text(colour = KUBlue))

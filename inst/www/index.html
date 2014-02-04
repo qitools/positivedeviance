@@ -41,6 +41,7 @@ $(document).ready(function(){
 	var req = $('#target').contents().find('#plotdiv').r_fun_plot("pareto", {
 	  content: temp,
 	  type: $("#type").val(),
+	  total : $("#totalencounters").val(),
 	  theme : $("#theme").val()
     }).always(function(){
       $("#plotbutton").removeAttr("disabled");
@@ -55,10 +56,16 @@ $(document).ready(function(){
     drawplot();
   });
 
+    $("#type").on("change", function(e){
+    e.preventDefault();
+    if ($("#type").val() == "b"){$("#totalencounters").css("display","inline")}
+	else {$("#totalencounters").css("display","none")}
+  });
+
     $(".example").click(function(){
-	if($(this).val()=="ex_1") {$("#type").val("p");editor.setValue("'Non-parsable', 7,\n'Refused (cost)', 4,\n'Refused (other)', 4,\n'No documentation', 8,\n'Not PCP encounter', 1",1);}
-	if($(this).val()=="ex_2") {$("#type").val("p");editor.setValue("'Non-parsable', 7,\n'Refused (cost)', 4,\n'Refused (other)', 4,\n'No documentation', 8,\n'Not PCP encounter', 9",1);}
-	if($(this).val()=="ex_3") {$("#type").val("b");editor.setValue("'Non-parsable', 7,\n'Refused (cost)', 4,\n'Refused (other)', 4,\n'No documentation', 8,\n'Not PCP encounter', 9",1);}
+	if($(this).val()=="ex_1") {$("#type").val("p");$("#totalencounters").css("display","none");;editor.setValue("'Non-parsable', 7,\n'Refused (cost)', 4,\n'Refused (other)', 4,\n'No documentation', 8,\n'Not PCP encounter', 1",1);}
+	if($(this).val()=="ex_2") {$("#type").val("p");$("#totalencounters").css("display","none");;editor.setValue("'Non-parsable', 7,\n'Refused (cost)', 4,\n'Refused (other)', 4,\n'No documentation', 8,\n'Not PCP encounter', 9",1);}
+	if($(this).val()=="ex_3") {$("#type").val("b");$("#totalencounters").css("display","inline");$("#totalencounters").val(24);;editor.setValue("'Non-parsable', 7,\n'Refused (cost)', 4,\n'Refused (other)', 4,\n'No documentation', 8,\n'Not PCP encounter', 9",1);}
   });
   
   //init on start
@@ -154,7 +161,7 @@ color:#FFFFFF;
 		<!-- Left column -->
 		<div style="width:500px;float:left">
 			<form class="well" id="paramform" target="target" style="width:500px;">
-			<fieldset style="border: 3px solid #6DC6E7; background-color: #FFFFFF; width:500px;height:385px;">
+			<fieldset style="border: 3px solid #6DC6E7; background-color: #FFFFFF; width:500px;height:440px;">
 			<legend style="font-weight:bold">Enter inputs</legend>
 			<div>Replace the reasons and their counts in this example <a href="https://en.wikipedia.org/wiki/Pareto_chart">Pareto chart</a> with your observations.</div>
 			<div id="editor">'Non-parsable', 7,
@@ -167,7 +174,10 @@ color:#FFFFFF;
             <select id="type">
               <option value="b">Bar chart</option>
               <option value="p" selected>Pareto chart</option>
-            </select> 
+            </select>
+
+            <input id="totalencounters" style="display:none" placeholder="Total encounters" type="text" id="total" /> 
+
             <div style="display:none"><label>Plot logo:</label> 
             <select id="theme">
               <option value="white" selected>None</option>
@@ -186,12 +196,15 @@ color:#FFFFFF;
 		<legend style="font-weight:bold">Example scenarios</legend>
 		<h3 style="margin-bottom:0px">Scenario 1</h3>
 		<div><input type="radio" name="example" class="example" value="ex_1" id="ex_1" checked /><label for="ex_1">A review of 24 encounters in order to identify the principle reason for not be in conformity with the desired outcome.</label></div>
+			<ul>
+				<li>In a Pareto analysis, what is the 'vital few' versus the 'trivial many'?</li>
+			</ul>
 		<h3 style="margin-bottom:0px">Scenario 2</h3>
-		<div><input type="radio" name="example" class="example" value="ex_2" id="ex_2"/><label for="ex_2">The same 24 encounters, but now more than one reason was allowed and counted for each encounter.</label> <i>Note that non of the non-PCP visits documented reasons and so the count for 'Not PCP visit' has risen to 9 encounters.</i> Question:</div>
+		<div><input type="radio" name="example" class="example" value="ex_2" id="ex_2"/><label for="ex_2">The same 24 encounters, but now more than one reason was allowed and counted for each encounter.</label> <i>Note that non of the non-PCP visits documented reasons and so the count for 'Not PCP visit' has risen to 9 encounters.</i></div>
 			<ul>
 				<li>In this Pareto analysis, do the percentages correctly identify the fractions of encounters affect?</li>
 			</ul>
-		<div><input type="radio" name="example" class="example" value="ex_3" id="ex_3"/><label for="ex_3">The same scenario, but now a sorted bar chart is created. Question:</label></div>
+		<div><input type="radio" name="example" class="example" value="ex_3" id="ex_3"/><label for="ex_3">The same scenario, but now a sorted bar chart is created.</label></div>
 			<ul>
 				<li>When more than one reason was allowed to be counted per encounter, which type of chart is more helpful?</li>
 			</ul>
