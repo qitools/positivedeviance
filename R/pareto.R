@@ -14,7 +14,7 @@ if (type=="p" || type=="P")
 	{
 	count <- as.numeric(x [,2])
 	names(count) <- x [,1]
-	pareto.chart(count , ylab = "Frequency", col=SkyBlue, cumperc = seq(0, 100, by = 10), xlab="", border=KUBlue,main="Pareto chart: frequencies of causes of non-conformity")
+	pareto.chart(count , ylab = "Frequency", col=SkyBlue, cumperc = seq(0, 100, by = 10), xlab="", border=KUBlue,main="Pareto chart: causes of non-conformity sorted by count")
 	mtext("Reasons", side=1, line=3, col=KUBlue , cex=1.5)
 	if(theme=="KU"){display_logo(x=1.2,y=0.05)}
 	}
@@ -29,7 +29,7 @@ else
 		theme(axis.title.x = element_text(size = rel(2), face="bold", angle = 0)) + 
 		theme(axis.title.y = element_text(size = rel(2), face="bold", angle = 90)) + 
 		theme(plot.background = element_rect(fill = "#FFFFFF")) + ylim(0,totalencounters) +
-		labs(title = "Frequencies of causes of non-conformity") + 
+		labs(title = "Causes of non-conformity sorted by count") + 
 		theme(plot.title = element_text(size = rel(3),face="bold",colour = KUBlue))  +
 		theme(axis.text = element_text(colour = KUBlue))+
 		theme(axis.title = element_text(colour = KUBlue))
