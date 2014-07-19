@@ -31,7 +31,8 @@ else
 		theme(axis.title.x = element_text(size = rel(2), face="bold", angle = 0)) + 
 		theme(axis.title.y = element_text(size = rel(2), face="bold", angle = 90)) + 
 		theme(plot.background = element_rect(fill = "#FFFFFF")) + ylim(0,totalencounters) +
-		labs(title = "Causes of non-conformity sorted by count") + 
+		ggtitle(expression(atop(Topic, atop("Causes of non-conformity sorted by frequency", "")))) + #Changed 7/19/2014
+		#labs(title = "Causes of non-conformity sorted by count") + 
 		theme(plot.title = element_text(size = rel(3),face="bold",colour = KUBlue))  +
 		theme(axis.text = element_text(colour = KUBlue))+
 		theme(axis.title = element_text(colour = KUBlue))
