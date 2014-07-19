@@ -1,5 +1,5 @@
 pareto <-
-function(content,type, totalencounters, theme) {
+function(content, topic, type, totalencounters, theme) {
 temp <- gsub('\n', '', fixed = TRUE, content, perl = TRUE)
 temp <- gsub("\\s+$", "", temp, perl = TRUE) #Removing trailing whitespace
 temp <- gsub(",+$", "", temp, perl = TRUE) #Remove trailing comma if accidentally added by user online
@@ -14,7 +14,9 @@ if (type=="p" || type=="P")
 	{
 	count <- as.numeric(x [,2])
 	names(count) <- x [,1]
-	pareto.chart(count , ylab = "Frequency", col=SkyBlue, cumperc = seq(0, 100, by = 10), xlab="", border=KUBlue,main="Pareto chart: causes of non-conformity sorted by count")
+	pareto.chart(count , ylab = "Frequency", col=SkyBlue, cumperc = seq(0, 100, by = 10), xlab="", border=KUBlue,main=NULL)
+	mtext(paste("Pareto analysis: ",topic), side=3, line=2, col=KUBlue , cex=3) #Title moved here 7/19/2014
+	mtext("Causes of non-conformity sorted by frequency", side=3, line=0.5, col=KUBlue , cex=1.5)
 	mtext("Reasons", side=1, line=3, col=KUBlue , cex=1.5)
 	if(theme=="KU"){display_logo(x=1.2,y=0.05)}
 	}

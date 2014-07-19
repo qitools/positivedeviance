@@ -40,6 +40,7 @@ $(document).ready(function(){
 	temp = temp.replace(/,$/g, '')
 	var req = $('#target').contents().find('#plotdiv').r_fun_plot("pareto", {
 	  content: temp,
+	  topic : $("#topic").val(),
 	  type: $("#type").val(),
 	  total : $("#totalencounters").val(),
 	  theme : $("#theme").val()
@@ -165,9 +166,10 @@ color:#FFFFFF;
 			<fieldset style="border: 3px solid #6DC6E7; background-color: #FFFFFF; width:500px;height:440px;">
 			<legend style="font-weight:bold">Enter inputs</legend>
 			<div>Replace the reasons and their counts in this example <a href="https://en.wikipedia.org/wiki/Pareto_chart">Pareto chart</a> with your observations.</div>
+			<div>Note that line breaks in names can be created by inserting '\n' into the line names.</div>
 			<div id="editor">'Non-parsable', 7,
-'Refused (cost)', 4,
-'Refused (other)', 4,
+'Refused \n(cost)', 4,
+'Refused \n(other)', 4,
 'No documentation', 8,
 'Not PCP encounter', 1</div>	
             <br />
@@ -176,6 +178,11 @@ color:#FFFFFF;
               <option value="b">Bar chart</option>
               <option value="p" selected>Pareto chart</option>
             </select>
+
+	
+            <br />
+            <label>Topic (for title - optional):</label> 
+            <input type="text" id="topic" /> 
 
             <input id="totalencounters" style="display:none" placeholder="Total encounters" type="text" id="total" /> 
 
