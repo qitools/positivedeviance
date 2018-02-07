@@ -15,9 +15,10 @@ if (type=="p" || type=="P")
 	count <- as.numeric(x [,2])
 	names(count) <- x [,1]
 	pareto.chart(count , ylab = "Frequency", col=SkyBlue, cumperc = seq(0, 100, by = 10), xlab="", border=KUBlue,main=NULL)
-	mtext(paste("Pareto analysis: ",topic), side=3, line=2, col=KUBlue , cex=3) #Title moved here 7/19/2014
-	mtext("Causes of non-conformity sorted by frequency", side=3, line=0.5, col=KUBlue , cex=1.5)
-	mtext("Reasons", side=1, line=3, col=KUBlue , cex=1.5)
+	if (length(topic)> 0)
+		{mtext(paste("Pareto analysis: ",topic), side=3, line=2, col=KUBlue , cex=3) #Title moved here 7/19/2014}
+	#mtext("Causes of non-conformity sorted by frequency", side=3, line=0.5, col=KUBlue , cex=1.5)
+	mtext("Barriers", side=1, line=3, col=KUBlue , cex=1.5)
 	if(theme=="KU"){display_logo(x=1.2,y=0.05)}
 	}
 else
@@ -27,11 +28,11 @@ else
 	Myframe$count<-as.numeric(as.character(Myframe$count))
 	totalencounters <- max(Myframe$count, totalencounters)
 	ggplot(Myframe, aes(x = reorder(Reason, -count), y = count)) + 
-		geom_bar(fill = SkyBlue,stat="identity") + xlab("Reason")+ ylab("Count") + 
+		geom_bar(fill = SkyBlue,stat="identity") + xlab("")+ ylab("Count") + 
 		theme(axis.title.x = element_text(size = rel(2), face="bold", angle = 0)) + 
 		theme(axis.title.y = element_text(size = rel(2), face="bold", angle = 90)) + 
 		theme(plot.background = element_rect(fill = "#FFFFFF")) + ylim(0,totalencounters) +
-		ggtitle(expression(atop(Topic, atop("Causes of non-conformity sorted by frequency", "")))) + #Changed 7/19/2014
+		ggtitle(expression(atop(topic, atop("Causes of non-conformity sorted by frequency", "")))) + #Changed 7/19/2014
 		#labs(title = "Causes of non-conformity sorted by count") + 
 		theme(plot.title = element_text(size = rel(3),face="bold",colour = KUBlue))  +
 		theme(axis.text = element_text(colour = KUBlue))+
