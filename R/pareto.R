@@ -15,7 +15,7 @@ if (type=="p" || type=="P")
 	count <- as.numeric(x [,2])
 	names(count) <- x [,1]
 	# 2018-04-01 removed col=SkyBlue, 
-	pareto.chart(count , ylab = "Frequency", cumperc = seq(0, 100, by = 10), xlab = "", border = KUBlue,main = NULL)
+	pareto.chart(count , ylab = "Frequency", cumperc = seq(0, 100, by = 10), xlab = "", border = KUBlue,main = "")
 	if (length(topic)> 1)
 		{title(topic, cex.main = 1.5, font.main= 2, col.main = KUBlue)}
 	#	{mtext(paste("Pareto analysis: ",topic), side=3, line=2, col=KUBlue , cex=3)} #Title moved here 7/19/2014}
