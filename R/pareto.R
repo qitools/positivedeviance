@@ -16,7 +16,7 @@ if (type=="p" || type=="P")
 	names(count) <- x [,1]
 	# 2018-04-01 removed col=SkyBlue, 
 	pareto.chart(count , ylab = "Frequency", cumperc = seq(0, 100, by = 10), xlab = "", border = KUBlue,main = "")
-	if (length(topic)> 1)
+	if (nchar(topic)> 1)
 		{title(topic, cex.main = 1.5, font.main= 2, col.main = KUBlue)}
 	#	{mtext(paste("Pareto analysis: ",topic), side=3, line=2, col=KUBlue , cex=3)} #Title moved here 7/19/2014}
 	#mtext("Causes of non-conformity sorted by frequency", side=3, line=0.5, col=KUBlue , cex=1.5)
