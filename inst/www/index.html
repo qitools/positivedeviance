@@ -150,7 +150,8 @@ color:#FFFFFF;
 	<div class="page-header">
 		<div  style="float:left;color:#0022B4">
 			<h1>QI Tools</h1>
-			<h2>Pareto chart</h2>
+			<h2>Positive deviance: identifying deviants with probability distributions</h2>
+			<h3 style="col:red;font-style: italic">Under construction</h3>
 		</div>
 	</div>
 	<div style="clear:both"></div>
@@ -160,6 +161,7 @@ color:#FFFFFF;
 	<li class="listitem"><a href="../../ishikawa/www/" class="menuitem">Ishikawa diagram</a></li>
 	<li class="listitem"><a href="../../pareto/www/" class="menuitem">Pareto &amp; Sorted <br/>bar charts</a></li>
 	<li class="listitem"><a href="../../charts/www/" class="menuitem">Process control &amp; Run charts</a></li>
+	<li class="listitem"><a href="../../positivedeviance/www/" class="menuitem">Positive deviance</a></li>
 	<li class="listitem"><a href="../../processmap/www/" class="menuitem">Process maps</a></li>
 	<li class="listitem"><a href="../../home/www/measures.html" class="menuitem">Specific <br/>quality measures</a></li>
 	</ul> 
@@ -171,26 +173,34 @@ color:#FFFFFF;
 			<form class="well" id="paramform" target="target" style="width:500px;">
 			<fieldset style="border: 3px solid #6DC6E7; background-color: #FFFFFF; width:500px;height:440px;">
 			<legend style="font-weight:bold">Enter inputs</legend>
-			<div>Replace the reasons and their counts in this example <a href="https://en.wikipedia.org/wiki/Pareto_chart">Pareto chart</a> with your observations.</div>
+			<div>Replace the date in this example <a href="https://en.wikipedia.org/wiki/Probability_distribution">probability distribution</a> with your observations.</div>
 			<div>Note that line breaks in names can be created by inserting '\n' into the line names.</div>
 			<div id="editor">'Non-parsable', 7,
-'Refused \n(cost)', 4,
-'Refused \n(other)', 4,
-'No documentation', 8,
-'Not PCP encounter', 1</div>	
+'Site 1', 5, 10,
+'Site 2', 4, 10,
+'Site 3', 9, 10,
+'Site 4', 8, 10,
+'Site 5', 1</div>	
             <br />
-            <label>Chart type</label> 
+            <label>Distribution type</label> 
             <select id="type">
-              <option value="b">Bar chart</option>
-              <option value="p" selected>Pareto chart</option>
+              <option value="b">Binomial</option>
+              <option value="p" selected>Normal</option>
             </select>
 
-	
             <br />
             <label>Topic (for title - optional):</label> 
-            <input type="text" id="topic" value="Pareto analysis:"/> 
+            <input type="text" id="topic" value="Positive deviance:"/> 
 
-            <input id="totalencounters" style="display:none" placeholder="Total encounters" type="text" id="total" /> 
+            <label>Threshold (minimum number of observations per unit of analysis required for plotting):</label> 
+            <input type="text" id="threshold" value="4"/> 
+
+            <label>Outcome:</label> 
+            <input type="text" id="outcome" value="Example bad outcome"/> 
+
+            <label>Benchmark:</label> 
+            <input type="text" id="benchmark_name" value="Best published report"/> 
+            <input type="text" id="benchmark_value" value="0.20"/> 
 
             <div style="display:none"><label>Plot logo:</label> 
             <select id="theme">
@@ -243,8 +253,8 @@ color:#FFFFFF;
         <table class="table table-striped">
           <tr><th>Resource</th> <th>link</th></tr>
           <tr><td>Package Info</td> <td><a href=".." target="blank">link</a></td></tr>       
-          <tr><td>Function Source</td><td><a href="../R/pareto/print" target="blank">link</a></td><td></tr>
-          <tr><td>Source Code</td><td><a href="https://github.com/qitools/pareto" target="blank">link</a></td><td></tr>
+          <tr><td>Function Source</td><td><a href="../R/positivedeviance/print" target="blank">link</a></td><td></tr>
+          <tr><td>Source Code</td><td><a href="https://github.com/qitools/positivedeviance" target="blank">link</a></td><td></tr>
           <tr><td>Help Page (html)</td><td><a href="../man/qitools/html" target="blank">link</a></td><td></tr>
         </table>
                
