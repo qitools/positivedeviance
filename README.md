@@ -1,9 +1,9 @@
-OpenCPU App: pareto
+OpenCPU App: positivedeviance
 ---------------------
 
 Simple OpenCPU Application. 
 
-To access online, R is not needed on your computer, browse to https://public.opencpu.org/ocpu/github/qitools/pareto/www/
+To access online, R is not needed on your computer, browse to https://public.opencpu.org/ocpu/github/qitools/positivedeviance/www/
 
 To install in R on your computer:
 
@@ -16,8 +16,8 @@ To install in R on your computer:
 
 Use the same function using a local webserver on your computer:
 
-    library(pareto)
-    pareto()
-    ?pareto
+    library(positivedeviance)
+    positivedeviance()
+    ?positivedeviance
 
 For more information about OpenCPU apps, see [opencpu.js](https://github.com/jeroenooms/opencpu.js#readme)
