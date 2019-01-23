@@ -12,8 +12,7 @@ Imports:
     httr,
     RJSONIO,
     stringr,
-    reshape2,
-	qcc
+    reshape2
 Collate:
-	'pareto.R'
+	'positivedeviance.R'
 	'display_logo.R'
