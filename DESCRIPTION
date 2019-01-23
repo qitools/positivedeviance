@@ -1,4 +1,4 @@
-Package: pareto
+Package: positivedeviance
 Type: OpenCPU Application
 Title: QItools application for OpenCPU
 Version: 0.1
@@ -12,7 +12,9 @@ Imports:
     httr,
     RJSONIO,
     stringr,
-    reshape2
+    reshape2,
+	qcc,
+	segmented
 Collate:
 	'positivedeviance.R'
 	'display_logo.R'
