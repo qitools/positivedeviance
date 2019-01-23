@@ -1,6 +1,6 @@
 positive.deviance <-
   function(content, subjectlabel, outcome){
-    myframe <- data.frame (mymatrix) # For testing
+    myframe <- data.frame (mymatrix) # For testing  
     myframe <- data.frame (content)
     test <- 0.10
     #test <- test * 100
