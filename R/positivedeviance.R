@@ -1,6 +1,5 @@
-positive.deviance <-
-  function(content, subjectlabel, outcome){
-    myframe <- data.frame (mymatrix) # For testing  
+positivedeviance <- function(content, topic, outcome, counted, timeperiod, goalu, goall, type, theme) {
+    #myframe <- data.frame (mymatrix) # For testing
     myframe <- data.frame (content)
     test <- 0.10
     #test <- test * 100
@@ -12,7 +11,7 @@ positive.deviance <-
     # http://www.stat.yale.edu/Courses/1997-98/101/binom.htm
     (probability <- pnorm(test, mean = proportion.population, sd = std.dev, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
 
-    # Plot
+	    # Plot
     x <- seq(0, 1, by = 0.01)
     densities<-dnorm(x, mean = proportion.population, sd = std.dev, log = FALSE) # *adjust
     #x <- seq(0, 100, by = 1)
@@ -23,11 +22,11 @@ positive.deviance <-
     s <- spline(x, densities, xout=seq(0,1,by=0.01))
     lines(s)
     points(test,probability, col="red", pch=19)
-    
+
     #Indicate local rate
     axis(1,at=proportion.population,labels="Clinic rate", col.ticks="red", col.axis="red", col="red", las = 2)
-    
-    # Display details
+
+	# Display details
     textout1 <- paste("Probability of ",test,"% is ",round(probability,3),"%",sep="")
     textout2 <- paste("Population size: ",sum(myframe$denominator), sep="")
     if (proportion.population > 50){
@@ -38,6 +37,6 @@ positive.deviance <-
       text(par("usr")[2]-1*strwidth("A"),par("usr")[4]-3 * strheight("A"),textout2,adj=c(1,0), cex=0.8)
     }
 
-    text(par("usr")[2]/3,par("usr")[3]+(par("usr")[4]-par("usr")[3])/2,"This example is three doctors, each with 1000 patients, \nwho have outcomes rates of 10%, 15%, 20%.\nWhat population percentile is the doctor with 10%?")
-            
-  }
+    text(par("usr")[2]/3,par("usr")[3]+(par("usr")[4]-par("usr")[3])/2, "This example is three doctors, each with 1000 patients, \nwho have outcomes rates of 10%, 15%, 20%.\nWhat population percentile is the doctor with 10%?")
+	
+}
