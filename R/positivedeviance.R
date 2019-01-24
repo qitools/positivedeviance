@@ -1,6 +1,10 @@
 positivedeviance <- function(content, topic, outcome, outcome_type, threshold, benchmark, benchmark_type, type, theme) {
 	#myframe <- data.frame (mymatrix) # For testing
 	
+	first.row <- substr(content, 1, regexpr("\n",content))
+	num.columns <- str_count(first.row, ",")
+	num.cofactors <- num.columns - 7
+	
 	temp <- content
 	# Uses package meta http://cran.r-project.org/web/packages/meta/
 	# http://stat.ethz.ch/R-manual/R-devel/library/base/html/regex.html
