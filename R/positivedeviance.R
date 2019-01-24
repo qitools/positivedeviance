@@ -32,14 +32,17 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
 
 	myframe$numerator<-as.numeric(myframe$numerator)
 	myframe$denominator<-as.numeric(myframe$denominator)
+	
+	stop(paste("myframe$denominator: ",myframe$denominator, sep=""))
+
 	subjectlabel <- topic
-    test <- 0.10
-    (proportion.population = sum(myframe$numerator)/sum(myframe$denominator))
-    variance <- sum(myframe$denominator)*(proportion.population*(1-proportion.population))
-    (std.dev <- sqrt(variance))
-    (probability <- pbinom(0.1, size = 1000, prob = proportion.population, lower.tail = TRUE, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
-    # http://www.stat.yale.edu/Courses/1997-98/101/binom.htm
-    (probability <- pnorm(test, mean = proportion.population, sd = std.dev, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
+	test <- 0.10
+	(proportion.population = sum(myframe$numerator)/sum(myframe$denominator))
+	variance <- sum(myframe$denominator)*(proportion.population*(1-proportion.population))
+	(std.dev <- sqrt(variance))
+	(probability <- pbinom(0.1, size = 1000, prob = proportion.population, lower.tail = TRUE, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
+	# http://www.stat.yale.edu/Courses/1997-98/101/binom.htm
+	(probability <- pnorm(test, mean = proportion.population, sd = std.dev, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
 
 	stop(paste("std.dev: ",std.dev, sep=""))
 
