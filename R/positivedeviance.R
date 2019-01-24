@@ -30,8 +30,10 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
 	
 	#stop(paste("Dataframe rows: ",nrow(myframe), sep=""))
 
-	myframe$numerator<-as.numeric(myframe$numerator)
-	myframe$denominator<-as.numeric(myframe$denominator)
+	column.names <- c("rowname","numerator", "denominator")
+
+	myframe$numerator   <-as.numeric(myframe$numerator)
+	myframe$denominator <-as.numeric(myframe$denominator)
 	
 	stop(paste("myframe$denominator: ",myframe$denominator, sep=""))
 
