@@ -21,7 +21,7 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
 	temp <- paste('Mymatrix <- matrix(c(',temp,'), ncol=',num.columns,', byrow=TRUE)')
 	x<-eval(parse(file = "", n = NULL, text = temp))
 
-	stop(paste("x: ",x, sep="")) # Works
+	#stop(paste("x: ",x, sep="")) # Works
 	
 	# Delete first row if contains column labels (detected by as.numeric(year) = false)
 	first.row.header <- FALSE
@@ -39,10 +39,10 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
 	#stop(paste("Dataframe rows: ",nrow(myframe), sep=""))
 	stop(paste("Dataframe rows: ",nrow(myframe),"\n","myframe: ","\n",myframe, sep=""))
 
-	myframe$numerator   <-as.numeric(myframe$numerator)
-	myframe$denominator <-as.numeric(myframe$denominator)
+	myframe$numerator<-as.numeric(as.character(str_trim(myframe$numerator)))
+	myframe$denominator<-as.numeric(as.character(str_trim(myframe$denominator)))
 	
-	stop(paste("myframe$denominator: ",myframe$denominator, sep=""))
+	#stop(paste("myframe$denominator: ",myframe$denominator, sep=""))
 
 	subjectlabel <- topic
 	test <- 0.10
@@ -53,7 +53,7 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
 	# http://www.stat.yale.edu/Courses/1997-98/101/binom.htm
 	(probability <- pnorm(test, mean = proportion.population, sd = std.dev, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
 
-	stop(paste("std.dev: ",std.dev, sep=""))
+	#stop(paste("std.dev: ",std.dev, sep=""))
 
 	# Plot
     x <- seq(0, 1, by = 0.01)
