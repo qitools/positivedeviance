@@ -26,12 +26,6 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
 	# Delete terminal rows if contains instructions (detected by as.numeric(year) = false)
 	x <- x[!(is.na(as.numeric(x[,2])) == TRUE),]
 
-	column.names <- c("Study","year", "pmid", "exp_events", "exp_total","control_events","control_total")
-	for(i in 1: num.cofactors)
-		{
-		column.names<- append(column.names,paste('cofactor',i,sep=""))
-		}
-	dimnames(x) <- list(NULL, column.names)
 	myframe <- data.frame (x)
 	remove(x)
 	
