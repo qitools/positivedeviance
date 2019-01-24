@@ -1,4 +1,4 @@
-positivedeviance <- function(content, topic, outcome, outcome.type, threshold, benchmark, benchmark.type, type, theme) {
+positivedeviance <- function(content, topic, outcome, outcome_type, threshold, benchmark, benchmark_type, type, theme) {
     #myframe <- data.frame (mymatrix) # For testing
     myframe <- data.frame (content)
     test <- 0.10
