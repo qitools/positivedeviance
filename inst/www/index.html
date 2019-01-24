@@ -33,21 +33,25 @@ $(document).ready(function(){
   // drawplot
   function drawplot(){
     $("#plotbutton").attr("disabled", "disabled")
-	temp = editor.getSession().getValue()
+
+  	temp = editor.getSession().getValue()
 	//Three replacements below are not required on a local server, but are at https://public.opencpu.org/ocpu/github/
-	temp = temp.replace(/\r?\n/g, '')
+	//temp = temp.replace(/\r?\n/g, '')
 	temp = temp.replace(/\s+$/g, '')
+	temp = temp.replace(/$\s+/g, '')
 	temp = temp.replace(/,$/g, '')
+	//var req = $('#target').contents().find('#plotdiv').rplot("intervention", {
+
 	var req = $('#target').contents().find('#plotdiv').r_fun_plot("positivedeviance", {
-	  content: temp,
-	  topic : $("#topic").val(),
-	  outcome : $("#outcome").val(),
-	  outcome_type : $("#outcome_type").val(),
-	  benchmark : $("#benchmark").val(),
-	  benchmark_type : $("#benchmark_type").val(),
-	  threshold : $("#threshold").val(),
-	  type: $("#type").val(),
-	  theme : $("#theme").val()
+	content: temp,
+	topic : $("#topic").val(),
+	outcome : $("#outcome").val(),
+	outcome_type : $("#outcome_type").val(),
+	benchmark : $("#benchmark").val(),
+	benchmark_type : $("#benchmark_type").val(),
+	threshold : $("#threshold").val(),
+	type: $("#type").val(),
+	theme : $("#theme").val()
     }).always(function(){
       $("#plotbutton").removeAttr("disabled");
     }).fail(function(){
