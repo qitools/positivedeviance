@@ -1,7 +1,7 @@
 positivedeviance <- function(content, topic, outcome, outcome_type, threshold, benchmark, benchmark_type, type, theme) {
     #myframe <- data.frame (mymatrix) # For testing
     myframe <- data.frame (content)
-    topic <- subjectlabel
+    subjectlabel <- topic
     test <- 0.10
     (proportion.population = sum(myframe$numerator)/sum(myframe$denominator))
     variance <- sum(myframe$denominator)*(proportion.population*(1-proportion.population))
