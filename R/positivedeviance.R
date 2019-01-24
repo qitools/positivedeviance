@@ -28,7 +28,7 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
 	myframe <- data.frame (x)
 	remove(x)
 	
-	stop(paste("Dataframe rows: ",nrow(myframe), sep=""))
+	#stop(paste("Dataframe rows: ",nrow(myframe), sep=""))
 
 	myframe$numerator<-as.numeric(myframe$numerator)
 	myframe$denominator<-as.numeric(myframe$denominator)
@@ -40,6 +40,8 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
     (probability <- pbinom(0.1, size = 1000, prob = proportion.population, lower.tail = TRUE, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
     # http://www.stat.yale.edu/Courses/1997-98/101/binom.htm
     (probability <- pnorm(test, mean = proportion.population, sd = std.dev, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
+
+	stop(paste("std.dev: ",std.dev, sep=""))
 
 	# Plot
     x <- seq(0, 1, by = 0.01)
