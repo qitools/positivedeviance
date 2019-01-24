@@ -25,12 +25,13 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
 	# Delete terminal rows if contains instructions (detected by as.numeric(year) = false)
 	x <- x[!(is.na(as.numeric(x[,2])) == TRUE),]
 
+	column.names <- c("rowname","numerator", "denominator")
+	dimnames(x) <- list(NULL, column.names)
+
 	myframe <- data.frame (x)
 	remove(x)
 	
 	#stop(paste("Dataframe rows: ",nrow(myframe), sep=""))
-
-	column.names <- c("rowname","numerator", "denominator")
 
 	myframe$numerator   <-as.numeric(myframe$numerator)
 	myframe$denominator <-as.numeric(myframe$denominator)
