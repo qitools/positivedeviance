@@ -42,9 +42,10 @@ $(document).ready(function(){
 	  content: temp,
 	  topic : $("#topic").val(),
 	  outcome : $("#outcome").val(),
+	  outcome.type : $("#outcome.type").val()
 	  threshold : $("#threshold").val(),
+	  benchmark : $("#benchmark").val()
 	  type: $("#type").val(),
-	  total : $("#totalencounters").val(),
 	  theme : $("#theme").val()
     }).always(function(){
       $("#plotbutton").removeAttr("disabled");
@@ -187,20 +188,26 @@ color:#FFFFFF;
             <input type="text" id="topic" value="Positive deviance:"/> <br/>
 
             <label>Outcome:</label> 
-            <input type="text" id="outcome" value="Example bad outcome"/> <br/>
+            <input type="text" id="outcome" value="Example bad outcome"/>
 
-            <label>Distribution type</label> 
+            <label>Type</label> 
+            <select id="type">
+              <option value="b" selected>Bad</option>
+              <option value="g">Good</option>
+            </select> <br />
+
+	<label>Distribution type</label> 
             <select id="type">
               <option value="b" selected>Binomial</option>
               <option value="p">Normal</option>
             </select> <br />
 
-	    <label>Threshold (minimum #observations per unit of analysis required for plotting):</label> 
+	<label>Threshold (minimum #observations per unit of analysis required for plotting):</label> 
             <input type="text" id="threshold" value="4"/> <br/>
 
             <label>Benchmark:</label> 
-            <input type="text" id="benchmark_name" value="Best published report"/> 
-            <input type="text" id="benchmark_value" value="0.20"/> 
+            <input type="text" id="benchmark.type" value="Best published report"/> 
+            <input type="text" id="benchmark" value="0.20"/> 
 
             <div style="display:none"><label>Plot logo:</label> 
             <select id="theme">
