@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>QI Tools: Pareto chart.</title>
+<title>QI Tools: Positive deviants</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
@@ -38,9 +38,11 @@ $(document).ready(function(){
 	temp = temp.replace(/\r?\n/g, '')
 	temp = temp.replace(/\s+$/g, '')
 	temp = temp.replace(/,$/g, '')
-	var req = $('#target').contents().find('#plotdiv').r_fun_plot("pareto", {
+	var req = $('#target').contents().find('#plotdiv').r_fun_plot("positivedeviance", {
 	  content: temp,
 	  topic : $("#topic").val(),
+	  outcome : $("#outcome").val(),
+	  threshold : $("#threshold").val(),
 	  type: $("#type").val(),
 	  total : $("#totalencounters").val(),
 	  theme : $("#theme").val()
@@ -179,14 +181,7 @@ color:#FFFFFF;
 'Site 2', 4, 8,
 'Site 3', 9, 11,
 'Site 4', 8, 10,
-'Site 5', 7, 11</div>	
-            <br />
-            <label>Distribution type</label> 
-            <select id="type">
-              <option value="b">Binomial</option>
-              <option value="p" selected>Normal</option>
-            </select>
-
+'Site 5', 7, 11,</div>	
             <br />
             <label>Topic (for title - optional):</label> 
             <input type="text" id="topic" value="Positive deviance:"/> <br/>
@@ -194,7 +189,13 @@ color:#FFFFFF;
             <label>Outcome:</label> 
             <input type="text" id="outcome" value="Example bad outcome"/> <br/>
 
-		<label>Threshold (minimum #observations per unit of analysis required for plotting):</label> 
+            <label>Distribution type</label> 
+            <select id="type">
+              <option value="b" selected>Binomial</option>
+              <option value="p">Normal</option>
+            </select> <br />
+
+	    <label>Threshold (minimum #observations per unit of analysis required for plotting):</label> 
             <input type="text" id="threshold" value="4"/> <br/>
 
             <label>Benchmark:</label> 
