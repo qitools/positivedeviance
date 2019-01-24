@@ -1,7 +1,7 @@
 positivedeviance <- function(content, topic, outcome, outcome_type, threshold, benchmark, benchmark_type, type, theme) {
 	#myframe <- data.frame (mymatrix) # For testing
 	myframe <- data.frame (content)
-	stop(paste("Dataframe rows: ",nrow(myframe), sep="")
+	stop(paste("Dataframe rows: ",nrow(myframe), sep=""))
 	myframe$numerator<-as.numeric(myframe$numerator)
 	myframe$denominator<-as.numeric(myframe$denominator)
 	subjectlabel <- topic
