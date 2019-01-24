@@ -1,12 +1,8 @@
 positivedeviance <- function(content, topic, outcome, outcome_type, threshold, benchmark, benchmark_type, type, theme) {
 	#myframe <- data.frame (mymatrix) # For testing
 	
-	#stop(paste("Content: ",content, sep=""))
-
 	first.row <- substr(content, 1, regexpr("\n",content))
 	num.columns <- str_count(first.row, ",")
-
-	stop(paste("Number of columns: ",num.columns, sep=""))
 
 	temp <- content
 	# Uses package meta http://cran.r-project.org/web/packages/meta/
@@ -32,7 +28,7 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
 	myframe <- data.frame (x)
 	remove(x)
 	
-	stop(paste("Dataframe rows: ",nrow(myframe), sep=""))
+	#stop(paste("Dataframe rows: ",nrow(myframe), sep=""))
 
 	myframe$numerator<-as.numeric(myframe$numerator)
 	myframe$denominator<-as.numeric(myframe$denominator)
