@@ -42,9 +42,10 @@ $(document).ready(function(){
 	  content: temp,
 	  topic : $("#topic").val(),
 	  outcome : $("#outcome").val(),
-	  outcome.type : $("#outcome.type").val()
-	  threshold : $("#threshold").val(),
+	  outcome_type : $("#outcome_type").val()
 	  benchmark : $("#benchmark").val()
+	  benchmark_type : $("#benchmark_type").val()
+	  threshold : $("#threshold").val(),
 	  type: $("#type").val(),
 	  theme : $("#theme").val()
     }).always(function(){
@@ -191,10 +192,14 @@ color:#FFFFFF;
             <input type="text" id="outcome" value="Example bad outcome"/>
 
             <label>Type</label> 
-            <select id="type">
+            <select id="outcome_type">
               <option value="b" selected>Bad</option>
               <option value="g">Good</option>
             </select> <br />
+
+            <label>Benchmark:</label> 
+            <input type="text" id="benchmark_type" value="Best published report"/> 
+            <input type="text" id="benchmark" value="0.20"/> 
 
 	<label>Distribution type</label> 
             <select id="type">
@@ -202,12 +207,8 @@ color:#FFFFFF;
               <option value="p">Normal</option>
             </select> <br />
 
-	<label>Threshold (minimum #observations per unit of analysis required for plotting):</label> 
+	<label>Threshold (#observations per row required for plotting):</label> 
             <input type="text" id="threshold" value="4"/> <br/>
-
-            <label>Benchmark:</label> 
-            <input type="text" id="benchmark.type" value="Best published report"/> 
-            <input type="text" id="benchmark" value="0.20"/> 
 
             <div style="display:none"><label>Plot logo:</label> 
             <select id="theme">
