@@ -158,10 +158,10 @@ color:#FFFFFF;
 
 	<ul id="menu">
 	<li class="listitem"><a href="../../home/www/" class="menuitem">Home</a></li>
-	<li class="listitem"><a href="../../ishikawa/www/" class="menuitem">Ishikawa diagram</a></li>
-	<li class="listitem"><a href="../../pareto/www/" class="menuitem">Pareto &amp; Sorted <br/>bar charts</a></li>
+	<li class="listitem"><a href="../../ishikawa/www/" class="menuitem">Ishikawa<br/>diagram</a></li>
+	<li class="listitem"><a href="../../pareto/www/" class="menuitem">Pareto &amp; Sorted<br/>bar charts</a></li>
 	<li class="listitem"><a href="../../charts/www/" class="menuitem">Process control &amp; Run charts</a></li>
-	<li class="listitem"><a href="../../positivedeviance/www/" class="menuitem">Positive deviance</a></li>
+	<li class="listitem"><a href="../../positivedeviance/www/" class="menuitem">Positive<br/>deviance</a></li>
 	<li class="listitem"><a href="../../processmap/www/" class="menuitem">Process maps</a></li>
 	<li class="listitem"><a href="../../home/www/measures.html" class="menuitem">Specific <br/>quality measures</a></li>
 	</ul> 
@@ -171,16 +171,15 @@ color:#FFFFFF;
 		<!-- Left column -->
 		<div style="width:500px;float:left">
 			<form class="well" id="paramform" target="target" style="width:500px;">
-			<fieldset style="border: 3px solid #6DC6E7; background-color: #FFFFFF; width:500px;height:440px;">
+			<fieldset style="border: 3px solid #6DC6E7; background-color: #FFFFFF; width:500px;height:500px;">
 			<legend style="font-weight:bold">Enter inputs</legend>
 			<div>Replace the date in this example <a href="https://en.wikipedia.org/wiki/Probability_distribution">probability distribution</a> with your observations.</div>
 			<div>Note that line breaks in names can be created by inserting '\n' into the line names.</div>
-			<div id="editor">'Non-parsable', 7,
-'Site 1', 5, 10,
-'Site 2', 4, 10,
-'Site 3', 9, 10,
+			<div id="editor">'Site 1', 5, 10,
+'Site 2', 4, 8,
+'Site 3', 9, 11,
 'Site 4', 8, 10,
-'Site 5', 1</div>	
+'Site 5', 7, 11</div>	
             <br />
             <label>Distribution type</label> 
             <select id="type">
@@ -190,13 +189,13 @@ color:#FFFFFF;
 
             <br />
             <label>Topic (for title - optional):</label> 
-            <input type="text" id="topic" value="Positive deviance:"/> 
-
-            <label>Threshold (minimum number of observations per unit of analysis required for plotting):</label> 
-            <input type="text" id="threshold" value="4"/> 
+            <input type="text" id="topic" value="Positive deviance:"/> <br/>
 
             <label>Outcome:</label> 
             <input type="text" id="outcome" value="Example bad outcome"/> 
+
+		<label>Threshold (minimum #observations per unit of analysis required for plotting):</label> 
+            <input type="text" id="threshold" value="4"/> <br/>
 
             <label>Benchmark:</label> 
             <input type="text" id="benchmark_name" value="Best published report"/> 
