@@ -16,7 +16,7 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
     #densities<-dbinom(x, size = 1, prob = proportion.population , log = FALSE) # *adjust
     plot (x, densities, type = "n", xlab=paste("Results: Percentage ",outcome,sep=""), ylab = "Probablity of result",
           main = paste("Distribution of ",outcome," by ", subjectlabel,sep="")# 
-          ,xlim=c(0,1))#,ylim=c(0,1))
+          ,xlim=c(0,1),ylim=c(0,1))
     s <- spline(x, densities, xout=seq(0,1,by=0.01))
     lines(s)
     points(test,probability, col="red", pch=19)
