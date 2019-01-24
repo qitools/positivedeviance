@@ -4,7 +4,7 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
 	first.row <- substr(content, 1, regexpr("\n",content))
 	num.columns <- str_count(first.row, ",")
 
-	stop(paste("num.columns: ",num.columns, sep=""))
+	#stop(paste("num.columns: ",num.columns, sep="")) # Works
 
 	temp <- content
 	# Uses package meta http://cran.r-project.org/web/packages/meta/
@@ -20,6 +20,9 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
 	temp <- paste('"',temp,'"',sep = '')
 	temp <- paste('Mymatrix <- matrix(c(',temp,'), ncol=',num.columns,', byrow=TRUE)')
 	x<-eval(parse(file = "", n = NULL, text = temp))
+
+	stop(paste("x: ",x, sep="")) # Works
+	
 	# Delete first row if contains column labels (detected by as.numeric(year) = false)
 	first.row.header <- FALSE
 	if (is.na(as.numeric(x[1,2])) == TRUE){first.row.header <- TRUE}
