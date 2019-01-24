@@ -1,6 +1,8 @@
 positivedeviance <- function(content, topic, outcome, outcome_type, threshold, benchmark, benchmark_type, type, theme) {
     #myframe <- data.frame (mymatrix) # For testing
     myframe <- data.frame (content)
+    myframe$numerator<-as.numeric(myframe$numerator)
+    myframe$denominator<-as.numeric(myframe$denominator)
     subjectlabel <- topic
     test <- 0.10
     (proportion.population = sum(myframe$numerator)/sum(myframe$denominator))
@@ -36,6 +38,6 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
       text(par("usr")[2]-1*strwidth("A"),par("usr")[4]-3 * strheight("A"),textout2,adj=c(1,0), cex=0.8)
     }
 
-    text(par("usr")[2]/3,par("usr")[3]+(par("usr")[4]-par("usr")[3])/2, "This example is three doctors, each with 1000 patients, \nwho have outcomes rates of 10%, 15%, 20%.\nWhat population percentile is the doctor with 10%?")
+    #text(par("usr")[2]/3,par("usr")[3]+(par("usr")[4]-par("usr")[3])/2, "This example is three doctors, each with 1000 patients, \nwho have outcomes rates of 10%, 15%, 20%.\nWhat population percentile is the doctor with 10%?")
 	
 }
