@@ -1,7 +1,38 @@
 positivedeviance <- function(content, topic, outcome, outcome_type, threshold, benchmark, benchmark_type, type, theme) {
 	#myframe <- data.frame (mymatrix) # For testing
-	myframe <- data.frame (content)
+	
+	temp <- content
+	# Uses package meta http://cran.r-project.org/web/packages/meta/
+	# http://stat.ethz.ch/R-manual/R-devel/library/base/html/regex.html
+	#temp <- gsub('\n', '', fixed = TRUE, temp, perl = TRUE)
+	#temp <- gsub("\\s+$", "", temp, perl = TRUE) #Removing trailing whitespace
+	#temp <- gsub(",+$", "", temp, perl = TRUE) #Remove trailing comma if accidentally added by user online
+	temp <- gsub("\r", ' ', fixed = TRUE, temp)
+	temp <- gsub("\n", ' ', fixed = TRUE, temp)
+	temp <- gsub("\t", ' ', fixed = TRUE, temp)
+	temp <- gsub(',', '","', fixed = TRUE, temp)
+
+	temp <- paste('"',temp,'"',sep = '')
+	temp <- paste('Mymatrix <- matrix(c(',temp,'), ncol=',num.columns,', byrow=TRUE)')
+	x<-eval(parse(file = "", n = NULL, text = temp))
+	# Delete first row if contains column labels (detected by as.numeric(year) = false)
+	first.row.header <- FALSE
+	if (is.na(as.numeric(x[1,2])) == TRUE){first.row.header <- TRUE}
+	if (first.row.header == TRUE){x <- x[-c(1),]}
+	# Delete terminal rows if contains instructions (detected by as.numeric(year) = false)
+	x <- x[!(is.na(as.numeric(x[,2])) == TRUE),]
+
+	column.names <- c("Study","year", "pmid", "exp_events", "exp_total","control_events","control_total")
+	for(i in 1: num.cofactors)
+		{
+		column.names<- append(column.names,paste('cofactor',i,sep=""))
+		}
+	dimnames(x) <- list(NULL, column.names)
+	myframe <- data.frame (x)
+	remove(x)
+	
 	stop(paste("Dataframe rows: ",nrow(myframe), sep=""))
+
 	myframe$numerator<-as.numeric(myframe$numerator)
 	myframe$denominator<-as.numeric(myframe$denominator)
 	subjectlabel <- topic
