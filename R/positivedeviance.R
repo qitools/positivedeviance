@@ -11,7 +11,7 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
     (probability <- pbinom(0.1, size = 1000, prob = proportion.population, lower.tail = TRUE, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
     # http://www.stat.yale.edu/Courses/1997-98/101/binom.htm
     (probability <- pnorm(test, mean = proportion.population, sd = std.dev, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
-
+stop()
     # Plot
     x <- seq(0, 1, by = 0.01)
     densities<-dnorm(x, mean = proportion.population, sd = std.dev, log = FALSE) # *adjust
