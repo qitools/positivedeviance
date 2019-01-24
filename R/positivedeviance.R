@@ -4,6 +4,8 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
 	first.row <- substr(content, 1, regexpr("\n",content))
 	num.columns <- str_count(first.row, ",")
 
+	stop(paste("num.columns: ",num.columns, sep=""))
+
 	temp <- content
 	# Uses package meta http://cran.r-project.org/web/packages/meta/
 	# http://stat.ethz.ch/R-manual/R-devel/library/base/html/regex.html
