@@ -36,12 +36,12 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
 	myframe <- data.frame (x)
 	remove(x)
 	
-	#stop(paste("Dataframe rows: ",nrow(myframe),"\n","myframe: ","\n",myframe, sep=""))
+	#stop(paste("Dataframe rows: ",nrow(myframe),"\n","myframe: ","\n",myframe, sep="")) # Works
 
 	myframe$numerator<-as.numeric(as.character(str_trim(myframe$numerator)))
 	myframe$denominator<-as.numeric(as.character(str_trim(myframe$denominator)))
 	
-	#stop(paste("myframe$denominator: ",myframe$denominator, sep=""))
+	#stop(paste("myframe$denominator: ",myframe$denominator, sep="")) # Works
 
 	subjectlabel <- topic
 	test <- 0.10
@@ -52,22 +52,22 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
 	# http://www.stat.yale.edu/Courses/1997-98/101/binom.htm
 	(probability <- pnorm(test, mean = proportion.population, sd = std.dev, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
 
-	#stop(paste("std.dev: ",std.dev, sep=""))
+	#stop(paste("std.dev: ",std.dev, sep="")) # Works
 
 	# Plot
-    x <- seq(0, 1, by = 0.01)
-    densities<-dnorm(x, mean = proportion.population, sd = std.dev, log = FALSE) # *adjust
-    #x <- seq(0, 100, by = 1)
-    #densities<-dbinom(x, size = 1, prob = proportion.population , log = FALSE) # *adjust
-    plot (x, densities, type = "n", xlab=paste("Results: Percentage ",outcome,sep=""), ylab = "Probablity of result",
+	x <- seq(0, 1, by = 0.01)
+	densities<-dnorm(x, mean = proportion.population, sd = std.dev, log = FALSE) # *adjust
+	#x <- seq(0, 100, by = 1)
+	#densities<-dbinom(x, size = 1, prob = proportion.population , log = FALSE) # *adjust
+	plot (x, densities, type = "n", xlab=paste("Results: Percentage ",outcome,sep=""), ylab = "Probablity of result",
           main = paste("Distribution of ",outcome," by ", subjectlabel,sep="")# 
           ,xlim=c(0,1))
-    s <- spline(x, densities, xout=seq(0,1,by=0.01))
-    lines(s)
-    points(test,probability, col="red", pch=19)
+	s <- spline(x, densities, xout=seq(0,1,by=0.01))
+	lines(s)
+	points(test,probability, col="red", pch=19)
 
-    #Indicate local rate
-    axis(1,at=proportion.population,labels="Clinic rate", col.ticks="red", col.axis="red", col="red", las = 2)
+	#Indicate local rate
+	axis(1,at=proportion.population,labels="Mean rate", col.ticks="red", col.axis="red", col="red", las = 2)
 
     # Display details
     textout1 <- paste("Probability of ",test,"% is ",round(probability,3),"%",sep="")
