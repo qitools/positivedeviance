@@ -51,14 +51,18 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
 	(probability <- pbinom(0.1, size = 1000, prob = proportion.population, lower.tail = TRUE, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
 	# http://www.stat.yale.edu/Courses/1997-98/101/binom.htm
 	(probability <- pnorm(test, mean = proportion.population, sd = std.dev, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
-
+	size = nrow(myframe)
+	
 	#stop(paste("std.dev: ",std.dev, sep="")) # Works
 
 	# Plot
 	x <- seq(0, 1, by = 0.01)
-	densities<-dnorm(x, mean = proportion.population, sd = std.dev, log = FALSE) # *adjust
-	#x <- seq(0, 100, by = 1)
-	#densities<-dbinom(x, size = 1, prob = proportion.population , log = FALSE) # *adjust
+	if (type == "n" > 50){
+		densities<-dnorm(x, mean = proportion.population, sd = std.dev, log = FALSE) # *adjust
+		}
+	if (type == "p" > 50){
+		densities<-dbinom(x, size = size, prob = proportion.population , log = FALSE) # *adjust
+		}
 	plot (x, densities, type = "n", xlab=paste("Results: Percentage ",outcome,sep=""), ylab = "Probablity of result",
           main = paste("Distribution of ",outcome," by ", subjectlabel,sep="")# 
           ,xlim=c(0,1))
