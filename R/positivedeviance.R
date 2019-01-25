@@ -1,4 +1,4 @@
-positivedeviance <- function(content, topic, outcome, outcome_type, threshold, benchmark, benchmark_type, type, theme) {
+positivedeviance <- function(content, topic, outcome, outcome_type, threshold_count, benchmark, benchmark_type, type, theme) {
 	#myframe <- data.frame (mymatrix) # For testing
 	
 	first.row <- substr(content, 1, regexpr("\n",content))
@@ -40,6 +40,7 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
 
 	myframe$numerator<-as.numeric(as.character(str_trim(myframe$numerator)))
 	myframe$denominator<-as.numeric(as.character(str_trim(myframe$denominator)))
+	size = nrow(myframe)
 	
 	#stop(paste("myframe$denominator: ",myframe$denominator, sep="")) # Works
 
@@ -48,10 +49,9 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
 	(proportion.population = sum(myframe$numerator)/sum(myframe$denominator))
 	variance <- sum(myframe$denominator)*(proportion.population*(1-proportion.population))
 	(std.dev <- sqrt(variance))
-	(probability <- pbinom(0.1, size = 1000, prob = proportion.population, lower.tail = TRUE, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
+	(probability <- pbinom(test, size = size, prob = proportion.population, lower.tail = TRUE, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
 	# http://www.stat.yale.edu/Courses/1997-98/101/binom.htm
 	(probability <- pnorm(test, mean = proportion.population, sd = std.dev, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
-	size = nrow(myframe)
 	
 	#stop(paste("std.dev: ",std.dev, sep="")) # Works
 
@@ -63,15 +63,36 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold, b
 	if (type == "p" > 50){
 		densities<-dbinom(x, size = size, prob = proportion.population , log = FALSE) # *adjust
 		}
-	plot (x, densities, type = "n", xlab=paste("Results: Percentage ",outcome,sep=""), ylab = "Probablity of result",
-          main = paste("Distribution of ",outcome," by ", subjectlabel,sep="")# 
-          ,xlim=c(0,1))
-	s <- spline(x, densities, xout=seq(0,1,by=0.01))
+	x <- seq(0, size, by = 1)
+	#x <- seq(0, 1, by = 0.01) # No work
+	densities<-dbinom(x, size, prob = proportion.population, log = FALSE) # *adjust
+	plot (x*adjust, densities, type = "n", xlab=paste("Results: Percentage ",outcome,sep=""), ylab = "Probablity of result",
+	      main = paste("Distribution of ",outcome," by ", subjectlabel,sep=""),xlim=c(0,100), ylim=c(0,1))
+	s <- spline(x*adjust, densities, xout=seq(0,100,by=1))
 	lines(s)
-	points(test,probability, col="red", pch=19)
+	points(test*adjust,probability, col="red", pch=19)
 
+	#Ratings that qualify (> threshold_count observations)
+	data.threshold <-data[which(data$Observations >= threshold_count),]
+	(nrow(data.threshold))
+
+	#Plot point(s) that qualify
+	points(data.threshold$Outcome.rate*100,s$y[data.threshold$Outcome.rate*100], col="black", pch=19, cex = 1)
+	temp.list  <- unique(data.threshold$Outcome.rate, incomparables = FALSE)
+	for(i in 1:length(temp.list))
+	{
+	  temp.data <- data.threshold[which(data.threshold$Outcome.rate == temp.list[i]),] 
+	  temp.value <- nrow(temp.data)
+	  text(temp.list[i]*100,s$y[temp.data$Outcome.rate*100],temp.value, pos=3, col="black", font=1)
+	}
+	
 	#Indicate local rate
-	axis(1,at=proportion.population,labels="Mean rate", col.ticks="red", col.axis="red", col="red", las = 2)
+	axis(1,at=proportion.population*size*adjust,labels="", col.ticks="red", col.axis="red", col="red")
+	text(proportion.population*size*adjust,0,paste("Mean rate: ",round(100*proportion.population,0),"%",sep=""),col="red")
+	
+	#Benchmark
+	segments(benchmark*100,0,benchmark*100,s$y[benchmark*100], col="green")
+	axis(1,at=benchmark*100,labels="", col.ticks="green", col.axis="green", col="green")
 
     # Display details
     textout1 <- paste("Probability of ",test,"% is ",round(probability,3),"%",sep="")
