@@ -53,7 +53,7 @@ $(document).ready(function(){
 	outcome_type : $("#outcome_type").val(),
 	benchmark : $("#benchmark").val(),
 	benchmark_type : $("#benchmark_type").val(),
-	threshold : $("#threshold").val(),
+	threshold_count : $("#threshold_count").val(),
 	type: $("#type").val(),
 	theme : $("#theme").val()
     }).always(function(){
@@ -254,7 +254,7 @@ color:#FFFFFF;
             </select> <br />
 
 	<label>Threshold (#observations per row required for plotting):</label> 
-            <input type="text" id="threshold" style="width:25px" value="4"/> <br/>
+            <input type="text" id="threshold_count" style="width:25px" value="4"/> <br/>
 
             <div style="display:none"><label>Plot logo:</label> 
             <select id="theme">
