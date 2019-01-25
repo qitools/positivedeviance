@@ -65,12 +65,20 @@ $(document).ready(function(){
     drawplot();
   });
 
-    $("#type").on("change", function(e){
+  $("#addcommas").on("click", function(e){
     e.preventDefault();
-    if ($("#type").val() == "b"){$("#totalencounters").css("display","inline")}
-	else {$("#totalencounters").css("display","none")}
-  });
-
+    temp = editor.getValue()
+	temp = temp.replace(/\n/g, ',\n')
+	temp = temp.replace(/$\s+/g, '')
+	temp = temp.replace(/\s+$/g, '')
+	temp = temp.replace(/ +/g, ', ')
+	temp = temp.replace(/\t/g, ', ')
+	temp = temp + ","
+	temp = temp.replace(/,,/g, ',')
+    editor.setValue(temp,1);
+  });	
+	
+	
     $(".example").click(function(){
 	if($(this).val()=="ex_1") {$("#type").val("p");$("#totalencounters").css("display","none");;editor.setValue("'Non-parsable', 7,\n'Refused (cost)', 4,\n'Refused (other)', 4,\n'No documentation', 8,\n'Not PCP encounter', 1",1);}
 	if($(this).val()=="ex_2") {$("#type").val("p");$("#totalencounters").css("display","none");;editor.setValue("'Non-parsable', 7,\n'Refused (cost)', 4,\n'Refused (other)', 4,\n'No documentation', 8,\n'Not PCP encounter', 9",1);}
@@ -182,7 +190,8 @@ color:#FFFFFF;
 			<fieldset style="border: 3px solid #6DC6E7; background-color: #FFFFFF; width:500px;height:525px;">
 			<legend style="font-weight:bold">Enter inputs</legend>
 			<div>Replace the date in this example <a href="https://en.wikipedia.org/wiki/Probability_distribution">probability distribution</a> with your observations.</div>
-			<div id="editor">'Site 1', 5, 10,
+			<div>Separate columns with commas. <a id="addcommas" href="#">Click here</a> to add commas.</div>
+				<div id="editor">'Site 1', 5, 10,
 'Site 2', 4, 8,
 'Site 3', 9, 11,
 'Site 4', 8, 10,
