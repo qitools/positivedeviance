@@ -20,8 +20,12 @@
 <script> 
 $(document).ready(function(){
 
-  //optional, requires jquery-ui.
-  $("#plotdiv").resizable()
+	//optional, requires jquery-ui.
+	$("#plotdiv").resizable()
+
+	if(isAPIAvailable()) {
+	  $('#files').bind('change', handleFileSelect);
+	}
 
   //For Ajax.org Cloud9 Editor
   var editor = ace.edit("editor");
@@ -84,7 +88,35 @@ $(document).ready(function(){
 	if($(this).val()=="ex_2") {$("#type").val("p");$("#totalencounters").css("display","none");;editor.setValue("'Non-parsable', 7,\n'Refused (cost)', 4,\n'Refused (other)', 4,\n'No documentation', 8,\n'Not PCP encounter', 9",1);}
 	if($(this).val()=="ex_3") {$("#type").val("b");$("#totalencounters").css("display","inline");$("#totalencounters").val(24);;editor.setValue("'Non-parsable', 7,\n'Refused (cost)', 4,\n'Refused (other)', 4,\n'No documentation', 8,\n'Not PCP encounter', 9",1);}
   });
-  
+
+	function handleFileSelect(evt) {
+	    var files = evt.target.files; // FileList object
+	    var file = files[0];
+	    // read the file contents
+	    printTable(file);
+	  }
+
+	function printTable(file) {
+ 		var reader = new FileReader();
+		reader.readAsText(file);
+		reader.onload = function(event){
+			var csv = event.target.result;
+			var data = $.csv.toArrays(csv);
+			var html = '';
+			for(var row in data) {
+				if($("#header").val() == "FALSE" || [row] > 0 ){
+			for(var item in data[row]) {
+				html += data[row][item] + ', ';
+				}
+			html += '\r\n';
+			}
+		}
+		editor.setValue(html,1);
+	};
+    
+	reader.onerror = function(){ alert('Unable to read ' + file.fileName); };
+	}
+
   //init on start
   //drawplot();
   
@@ -189,8 +221,11 @@ color:#FFFFFF;
 			<form class="well" id="paramform" target="target" style="width:500px;">
 			<fieldset style="border: 3px solid #6DC6E7; background-color: #FFFFFF; width:500px;height:525px;">
 			<legend style="font-weight:bold">Enter inputs</legend>
-			<div>Replace the date in this example <a href="https://en.wikipedia.org/wiki/Probability_distribution">probability distribution</a> with your observations.</div>
-			<div>Separate columns with commas. <a id="addcommas" href="#">Click here</a> to add commas.</div>
+			<ul>
+			<li>Replace the date in this example <a href="https://en.wikipedia.org/wiki/Probability_distribution">probability distribution</a> with your observations.</li>
+			<li>Upload a csv file formatted as this <a href="example.csv">example file</a>.
+				<input type=file id=files name=files style="width:200px"/></li>
+				<li>Separate columns with commas. <a id="addcommas" href="#">Click here</a> to add commas.</li></ul></div>
 				<div id="editor">'Site 1', 5, 10,
 'Site 2', 4, 8,
 'Site 3', 9, 11,
