@@ -6,7 +6,7 @@ positivedeviance <- function(content, topic, outcome, outcome_type, threshold_co
 
 	#stop(paste("num.columns: ",num.columns, sep="")) # Works
 
-	temp <- content
+	temp <- content 
 	# Uses package meta http://cran.r-project.org/web/packages/meta/
 	# http://stat.ethz.ch/R-manual/R-devel/library/base/html/regex.html
 	#temp <- gsub('\n', '', fixed = TRUE, temp, perl = TRUE)
