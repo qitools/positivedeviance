@@ -1,5 +1,5 @@
 positivedeviance <- function(content, topic, outcome, outcome_type, threshold_count, benchmark, benchmark_type, type, theme) {
-	#myframe <- data.frame (mymatrix) # For testing
+	#myframe <- data.frame (mymatrix) # For testing 
 	
 	first.row <- substr(content, 1, regexpr("\n",content))
 	num.columns <- str_count(first.row, ",")
