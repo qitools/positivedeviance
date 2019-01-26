@@ -9,10 +9,10 @@ To install in R on your computer:
 
     library(devtools)
     install_github("opencpu", "jeroenooms")
-    install_github("pareto", "qitools")
+    install_github("positivedeviance", "qitools")
 
     library(opencpu)
-    opencpu$browse("library/pareto/www")
+    opencpu$browse("library/positivedeviance/www")
 
 Use the same function using a local webserver on your computer:
 
