@@ -101,7 +101,7 @@ positivedeviance <- function(content, topic, subjectlabel, outcome, outcome_type
 	#stop(paste("benchmark_value:",benchmark_value,sep=""))
 	#benchmark
 	segments(benchmark_value*100,0,benchmark_value*100,s$y[benchmark_value*100], col="green")
-	axis(1,at=benchmark_value*100,labels="", col.ticks="green", col.axis="green", col="green")
+	axis(1,at=benchmark_value*100,labels="Benchmark", col.ticks="green", col.axis="green", col="green", las = 2)
 
 	#Indicate local rate
 	axis(1,at=proportion.population*100,labels="Mean", col.ticks="red", col.axis="red", col="red", las = 2)
