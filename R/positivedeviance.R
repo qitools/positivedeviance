@@ -1,6 +1,7 @@
 positivedeviance <- function(content, topic, subjectlabel, outcome, outcome_type, threshold_count, threshold_value,benchmark_value, benchmark_type, type, theme) {
 	#data <- data.frame (mymatrix) # For testing 
-  #stop("Request received") #Works	
+	if (!topic=="99"){stop("This web app is under constrution") }
+ 	#stop("Request received") #Works	
 	first.row <- substr(content, 1, regexpr("\n",content))
 	num.columns <- str_count(first.row, ",")
 
