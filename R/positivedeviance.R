@@ -74,9 +74,10 @@ positivedeviance <- function(content, topic, subjectlabel, outcome, outcome_type
 		densities<-dbinom(x, size = size, prob = proportion.population , log = FALSE) # *adjust
 	}
 	#stop(paste("densities: ",densities, sep="")) # Works
-	par(mar=c(5.25,4.1,4.1,2.1), mfrow=c(1,1))
-	plot (x*adjust, densities, type = "n", xlab=paste("Results: Percentage ",outcome,sep=""), ylab = "Probablity of result",
+	#par(mar=c(5.1,4.1,4.1,2.1), mfrow=c(1,1))
+	plot (x*adjust, densities, type = "n", xlab="", ylab = "Probablity of result",
 	      main = paste("Distribution of ",outcome," by ", subjectlabel,sep=""),xlim=c(0,100), ylim=c(0,1))
+	mtext(paste("Results: Percentage ",outcome,sep=""), side=1, line = 3)
 	s <- spline(x*adjust, densities, xout=seq(0,100,by=1))
 	lines(s)
 	
@@ -102,10 +103,10 @@ positivedeviance <- function(content, topic, subjectlabel, outcome, outcome_type
 	#stop(paste("benchmark_value:",benchmark_value,sep=""))
 	#benchmark
 	segments(benchmark_value*100,0,benchmark_value*100,s$y[benchmark_value*100], col="green")
-	axis(1,at=benchmark_value*100,labels="Benchmark", col.ticks="green", col.axis="green", col="green", las = 2)
+	axis(1,at=benchmark_value*100,labels="B", col.ticks="green", col.axis="green", col="green", lwd=2, padj=1.2, las = 1)
 
 	#Indicate local rate
-	axis(1,at=proportion.population*100,labels="Mean", col.ticks="red", col.axis="red", col="red", las = 2)
+	axis(1,at=proportion.population*100,labels="M", col.ticks="red", col.axis="red", col="red", lwd=2, padj=1.2, las = 1)
 	#axis(1,at=proportion.population*size*adjust,labels="", col.ticks="red", col.axis="red", col="red")
 	#text(proportion.population*size*adjust,0,paste("Mean rate: ",round(100*proportion.population,0),"%",sep=""),col="red")
 	
@@ -132,22 +133,28 @@ positivedeviance <- function(content, topic, subjectlabel, outcome, outcome_type
   	temp.list
 	}	
 	#Details
-	textout1 <- paste("Number of ",topic," assessed: ",size," (observations: ",total,")",sep="")
+	textout0 <- paste("Summary:",sep="")
+	textout1 <- paste("Number of ",subjectlabel," assessed: ",size," (observations: ",total,")",sep="")
 	textout2 <- paste("Not displayed are ", subjectlabel, " with less than ",threshold_count," observations",sep="")
 	textout3 <- paste("Range of ",outcome," among all ",subjectlabel,": ",round(100*min(data$Outcome.rate),0),"% to ",round(100*max(data$Outcome.rate),0),"%",sep="")
 	textout4 <- paste("       ... among ",subjectlabel," with ", threshold_count," or more observations: ",round(100*min(data.threshold$Outcome.rate),0),"% to ",round(100*max(data.threshold$Outcome.rate),0),"%",sep="")
 	if (!outcome_type == "NA"){textout5 <- paste("       ... among positive deviants: ",round(100*min(deviants$Outcome.rate),0),"% to ",round(100*max(deviants$Outcome.rate),0),"%",sep="")}
-	textout6 <- paste("Result of ",benchmark_type,": " ,benchmark_value,"%",sep="")
-	textout10 <- paste("Numbers indicate number of ",subjectlabel," with that result",sep="")
-	if (proportion.population > 0.50){
+	textout10 <- paste("Legend:",sep="")
+	textout11 <- paste("Numbers indicate number of ",subjectlabel," with that result",sep="")
+	textout12 <- paste("M: mean is " ,proportion.population*100,"%",sep="")
+	textout13 <- paste("B: ",benchmark_type,": " ,benchmark_value*100,"%",sep="")
+	if (proportion.population > 0){ #So always use this arrangement
 	  xpos <- par("usr")[1] + 2.0*strwidth("A")
-	  text(xpos,par("usr")[4]-1.5*strheight("A"),textout1,adj=c(0,0), cex=0.8)
-	  text(xpos,par("usr")[4]-3.0*strheight("A"),textout2,adj=c(0,0), cex=0.8)
-	  text(xpos,par("usr")[4]-4.5*strheight("A"),textout3,adj=c(0,0), cex=0.8)
-	  text(xpos,par("usr")[4]-6.5*strheight("A"),textout4,adj=c(0,0), cex=0.8)
-	  if (!outcome_type == "NA"){text(xpos,par("usr")[4]-8*strheight("A"),textout5,adj=c(0,0), cex=0.8)}
-	  if (benchmark_value < 101){text(xpos,par("usr")[4]-9.5*strheight("A"),textout6,adj=c(0,0), cex=0.8, col="green")}
-	  text(par("usr")[2] - 2.0*strwidth("A"),par("usr")[4]-1.5*strheight("A"),textout10,adj=c(1,0), cex=0.8)
+	  text(xpos,par("usr")[4]-1.5*strheight("A"),textout0,adj=c(0,0), cex=1.0, font = 2)
+	  text(xpos,par("usr")[4]-3.0*strheight("A"),textout1,adj=c(0,0), cex=0.8)
+	  text(xpos,par("usr")[4]-4.5*strheight("A"),textout2,adj=c(0,0), cex=0.8)
+	  text(xpos,par("usr")[4]-6.0*strheight("A"),textout3,adj=c(0,0), cex=0.8)
+	  text(xpos,par("usr")[4]-7.5*strheight("A"),textout4,adj=c(0,0), cex=0.8)
+	  if (!outcome_type == "NA"){text(xpos,par("usr")[4]-9*strheight("A"),textout5,adj=c(0,0), cex=0.8)}
+	  text(par("usr")[2] - 2.0*strwidth("A"),par("usr")[4]-1.5*strheight("A"),textout10,adj=c(1,0), cex=1.0, font = 2)
+	  text(par("usr")[2] - 2.0*strwidth("A"),par("usr")[4]-3.0*strheight("A"),textout11,adj=c(1,0), cex=0.8)
+	  text(par("usr")[2] - 2.0*strwidth("A"),par("usr")[4]-4.5*strheight("A"),textout12,adj=c(1,0), cex=0.8, col="red")
+	  if (benchmark_value < 101)  {text(par("usr")[2] - 2.0*strwidth("A"),par("usr")[4]-6.0*strheight("A"),textout13,adj=c(1,0), cex=0.8, col="green")}
 	}else{
 	  xpos = par("usr")[2] - 2.0*strwidth("A")
 	  text(xpos,par("usr")[4]-1.5*strheight("A"),textout1,adj=c(1,0), cex=0.8)
