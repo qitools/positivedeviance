@@ -4,7 +4,6 @@
 <title>QI Tools: Positive deviants</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
 <!-- jquery -->
 <script src="//code.jquery.com/jquery-2.1.3.min.js"> </script>
@@ -55,7 +54,6 @@ $(document).ready(function(){
   // drawplot
   function drawplot(){
     $("#plotbutton").attr("disabled", "disabled")
-
   	temp = editor.getSession().getValue()
 	//Three replacements below are not required on a local server, but are at https://public.opencpu.org/ocpu/github/
 	//temp = temp.replace(/\r?\n/g, '')
@@ -63,7 +61,7 @@ $(document).ready(function(){
 	temp = temp.replace(/$\s+/g, '')
 	temp = temp.replace(/,$/g, '')
 
-	var req = $('#target').contents().find('#plotdiv').rplot("positivedeviance", {
+	var req = $('#plotdiv').rplot("positivedeviance", {
 		content: temp,
 		topic : $("#topic").val(),
 		outcome : $("#outcome").val(),
@@ -101,6 +99,13 @@ $(document).ready(function(){
     editor.setValue(temp,1);
   });	  
 
+  //Examples	
+    $(".example").click(function(){
+	if($(this).val()=="ex_1") {$("#type").val("p");$("#totalencounters").css("display","none");;editor.setValue("1,12,30,\n2,8,25,\n3,5,20,\n4,3,15,\n5,6,14,\n6,5,13,\n7,6,12,\n8,5,12,\n10,4,11,\n11,5,11,\n12,2,11,\n13,5,11,\n14,3,9,\n15,2,8,\n16,3,8,\n17,3,7,\n18,1,6,\n19,1,4,\n20,4,7,\n21,2,3,",1);}
+	if($(this).val()=="ex_2") {$("#type").val("p");$("#totalencounters").css("display","none");;editor.setValue("'Non-parsable', 7,\n'Refused (cost)', 4,\n'Refused (other)', 4,\n'No documentation', 8,\n'Not PCP encounter', 9",1);}
+	if($(this).val()=="ex_3") {$("#type").val("b");$("#totalencounters").css("display","inline");$("#totalencounters").val(24);;editor.setValue("'Non-parsable', 7,\n'Refused (cost)', 4,\n'Refused (other)', 4,\n'No documentation', 8,\n'Not PCP encounter', 9",1);}
+  });
+
   function isAPIAvailable() {
     // Check for the various File API support.
     if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -123,42 +128,8 @@ $(document).ready(function(){
       return false;
     }
   }
-  
-	function handleFileSelect(evt) {
-	    var files = evt.target.files; // FileList object
-	    var file = files[0];
-	    // read the file contents
-	    printTable(file);
-	  }
 
-	function printTable(file) {
- 		var reader = new FileReader();
-		reader.readAsText(file);
-		reader.onload = function(event){
-			var csv = event.target.result;
-			var data = $.csv.toArrays(csv);
-			var html = '';
-			for(var row in data) {
-				if($("#header").val() == "FALSE" || [row] > 0 ){
-			for(var item in data[row]) {
-				html += data[row][item] + ', ';
-				}
-			html += '\r\n';
-			}
-			}
-			editor.setValue(html,1);
-			};
-		reader.onerror = function(){ alert('Unable to read ' + file.fileName); };
-		}  
-  
-  //Examples	
-    $(".example").click(function(){
-	if($(this).val()=="ex_1") {$("#type").val("p");$("#totalencounters").css("display","none");;editor.setValue("1,12,30,\n2,8,25,\n3,5,20,\n4,3,15,\n5,6,14,\n6,5,13,\n7,6,12,\n8,5,12,\n10,4,11,\n11,5,11,\n12,2,11,\n13,5,11,\n14,3,9,\n15,2,8,\n16,3,8,\n17,3,7,\n18,1,6,\n19,1,4,\n20,4,7,\n21,2,3,",1);}
-	if($(this).val()=="ex_2") {$("#type").val("p");$("#totalencounters").css("display","none");;editor.setValue("'Non-parsable', 7,\n'Refused (cost)', 4,\n'Refused (other)', 4,\n'No documentation', 8,\n'Not PCP encounter', 9",1);}
-	if($(this).val()=="ex_3") {$("#type").val("b");$("#totalencounters").css("display","inline");$("#totalencounters").val(24);;editor.setValue("'Non-parsable', 7,\n'Refused (cost)', 4,\n'Refused (other)', 4,\n'No documentation', 8,\n'Not PCP encounter', 9",1);}
-  });
-
-	function handleFileSelect(evt) {
+  function handleFileSelect(evt) {
 	    var files = evt.target.files; // FileList object
 	    var file = files[0];
 	    // read the file contents
@@ -182,7 +153,6 @@ $(document).ready(function(){
 		}
 		editor.setValue(html,1);
 	};
-    
 	reader.onerror = function(){ alert('Unable to read ' + file.fileName); };
 	}
 
@@ -192,13 +162,19 @@ $(document).ready(function(){
 });
 </script>
 <style>
+
 .container
 {
-width: 860px;
+/* width: 860px; 01/26/2019 */
 margin-top: 0px;
 margin-right: auto;
 margin-bottom: 0px;
 margin-left: auto;
+}
+fieldset.options{
+	border: 3px solid #6DC6E7;
+	background-color: #FFFFFF;
+	width:575px;height:100px;
 }
 #editor { 
   position: relative;
@@ -284,7 +260,6 @@ color:#FFFFFF;
 	</ul> 
 	<div id="">&nbsp;</div> 
 	
-    <div class="row">
 		<!-- Left column -->
 		<div style="width:500px;float:left">
 			<form class="well" id="paramform" target="target" style="width:500px;">
@@ -304,7 +279,7 @@ color:#FFFFFF;
 'Site 5', 7, 11,</div>	
             <br />
             <label>Topic (for title - optional):</label> 
-            <input type="text" id="topic" value="Positive deviance:"/> <br/>
+            <input type="text" id="topic" value="this field not used"/> <br/>
 
             <label>Subjects (sites or people type):</label> 
             <input type="text" id="subjectlabel" value="sites"/> <br/>
@@ -320,7 +295,7 @@ color:#FFFFFF;
             </select> <br />
 
             <label>Benchmark:</label> 
-            <input type="text" id="benchmark_type" value="Best published report"/> Value <input type="text" id="benchmark_value" style="width:25px" value="0.20"/>  <br />
+            <input type="text" id="benchmark_type" value="Best published report"/> Value <input type="text" id="benchmark_value" style="width:25px" value="0.70"/>  <br />
 
 	<label>Distribution type</label> 
             <select id="type">
@@ -332,7 +307,7 @@ color:#FFFFFF;
             <input type="text" id="threshold_count" style="width:25px" value="4"/> <br/>
 
 	<label>Threshold for PDs (for plotting points in red):</label> 
-            <input type="text" id="threshold_value" style="width:25px" value="0.60"/> <br/>
+            <input type="text" id="threshold_value" style="width:25px" value="0.75"/> <br/>
 
             <div style="display:none"><label>Plot logo:</label> 
             <select id="theme">
@@ -369,16 +344,15 @@ color:#FFFFFF;
 	  </div>
 	
 	<div style="clear:both">&nbsp;</div>
-	
-	<iframe id="target" style="width:1000px;height:600px;border: 3px solid #6DC6E7;" name="target" width="700px" height="600px" src="output.html">
-	</iframe>
-	</div>
-	 
-    <div class="row">
-      <div class="span12">
+	<div >Hint: if bad spacing between title/footer text and the plot, click 'png' file type in upper right of plot. Then after the image opens in a new browser window, alter the image's dimensions in the url of the window. <a href="images/plot.resize.png" title="Click to display example in a new window" target="_blank">Click here to see screen capture of an example</a>.&nbsp;<img src="images/External.svg.png" alt="opens in new window" width="13"></div>
+      <div class="span9">
+        <div id="plotdiv"></div>
+      </div>
+	      <div class="span12">
         <h3>About</h3>
         <h4>Technical details</h4>
         <p>This is an OpenCPU application.</p>
+		<p>Please help improve this application <br/>by editing the source code.</p>
         <table class="table table-striped">
           <tr><th>Resource</th> <th>link</th></tr>
           <tr><td>Package Info</td> <td><a href=".." target="blank">link</a></td></tr>       
@@ -388,7 +362,18 @@ color:#FFFFFF;
         </table>
                
       </div>
-    </div>
-  </div>
+</div> <!-- end of container -->
+<script>
+//For gh-pages
+//Page history and edit
+var pagename = location.pathname.split('/').slice(-1);
+if (pagename.length < 1){pagename = "index.html"}
+document.write("<div style='text-align:center'><a href='https://github.com/qitools/positivedeviance/blob/master/inst/www/" + pagename + "'>Edit this page</a> - <a href='https://github.com/qitools/positivedeviance/commits/master/inst/www/" + pagename + "'>Page history</a></div>")
+</script>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>	
 </body>
 </html>

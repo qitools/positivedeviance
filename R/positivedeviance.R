@@ -37,7 +37,9 @@ positivedeviance <- function(content, topic, subjectlabel, outcome, outcome_type
 	remove(x)
 	
 	#stop(paste("Dataframe rows: ",nrow(data),"\n","data: ","\n",data, sep="")) # Works
-
+  
+	#### Start here if running locally
+	
 	data$Outcomes<-as.numeric(as.character(str_trim(data$Outcomes)))
 	data$Observations<-as.numeric(as.character(str_trim(data$Observations)))
 	data$Outcome.rate<-data$Outcomes/data$Observations
@@ -48,6 +50,7 @@ positivedeviance <- function(content, topic, subjectlabel, outcome, outcome_type
 
 	benchmark_value <- as.numeric(benchmark_value)
 	threshold_value <- as.numeric(threshold_value)
+	threshold_count <- as.numeric(threshold_count)
 	(total <- sum(data$Observations))
 	(proportion.population <- sum(data$Outcomes)/total)
 	variance <- sum(data$Observations)*(proportion.population*(1-proportion.population))
@@ -61,6 +64,7 @@ positivedeviance <- function(content, topic, subjectlabel, outcome, outcome_type
 
 	# Plot
 	x <- seq(0, size, by = 1)
+	#x <- seq(0, 1, by = 0.01) # No work
 	#stop(paste("x: ",x, sep="")) # Works
 	if (type == "n"){
 		densities<-dnorm(x, mean = proportion.population, sd = std.dev, log = FALSE) # *adjust
@@ -69,21 +73,19 @@ positivedeviance <- function(content, topic, subjectlabel, outcome, outcome_type
 		densities<-dbinom(x, size = size, prob = proportion.population , log = FALSE) # *adjust
 	}
 	#stop(paste("densities: ",densities, sep="")) # Works
-	#x <- seq(0, 1, by = 0.01) # No work
-	# Plot
-	x <- seq(0, size, by = 1)
-	#x <- seq(0, 1, by = 0.01) # No work
-	densities<-dbinom(x, size, prob = proportion.population, log = FALSE) # *adjust
-	#par(mar = rep(2, 4))
-	par(mar=c(5.1,4.1,4.1,2.1), mfrow=c(1,1))
 	plot (x*adjust, densities, type = "n", xlab=paste("Results: Percentage ",outcome,sep=""), ylab = "Probablity of result",
-	      main = paste("Distribution of ",outcome," by ", subjectlabel,sep=""),margin = 0.2, xlim=c(0,100), ylim=c(0,1))
+	      main = paste("Distribution of ",outcome," by ", subjectlabel,sep=""),xlim=c(0,100), ylim=c(0,1))
 	s <- spline(x*adjust, densities, xout=seq(0,100,by=1))
 	lines(s)
 	
+	#stop(paste("data$Observations:",data$Observations,sep=""))
+	#stop(paste("threshold_count:",threshold_count,sep=""))
+
 	#Ratings that qualify (> threshold_count observations)
 	data.threshold <-data[which(data$Observations >= threshold_count),]
 	(nrow(data.threshold))
+	#OOPS - for some reason getting only 1 row
+	#stop(paste("nrow(data.threshold): ",nrow(data.threshold),sep=""))
 	
 	#Plot point(s) that qualify
 	points(data.threshold$Outcome.rate*100,s$y[data.threshold$Outcome.rate*100], col="black", pch=19, cex = 1)
@@ -99,16 +101,16 @@ positivedeviance <- function(content, topic, subjectlabel, outcome, outcome_type
 	#benchmark
 	segments(benchmark_value*100,0,benchmark_value*100,s$y[benchmark_value*100], col="green")
 	axis(1,at=benchmark_value*100,labels="", col.ticks="green", col.axis="green", col="green")
-	
+
 	#Indicate local rate
-	#axis(1,at=proportion.population*100,labels="Mean rate", col.ticks="red", col.axis="red", col="red", las = 2)
-	axis(1,at=proportion.population*size*adjust,labels="", col.ticks="red", col.axis="red", col="red")
-	text(proportion.population*size*adjust,0,paste("Mean rate: ",round(100*proportion.population,0),"%",sep=""),col="red")
+	axis(1,at=proportion.population*100,labels="Mean", col.ticks="red", col.axis="red", col="red", las = 2)
+	#axis(1,at=proportion.population*size*adjust,labels="", col.ticks="red", col.axis="red", col="red")
+	#text(proportion.population*size*adjust,0,paste("Mean rate: ",round(100*proportion.population,0),"%",sep=""),col="red")
 	
 	#Plot deviants in red
 	if (!outcome_type == "NA"){
   	deviants <- data.threshold[which(data.threshold$Observations >= threshold_count & data.threshold$Outcome.rate < threshold_value),]
-  	if (outcome_type =="b"){deviants <- data.threshold[which(data.threshold$Observations >= threshold_count & data.threshold$outcome > threshold_value),]}
+  	if (outcome_type =="g"){deviants <- data.threshold[which(data.threshold$Observations >= threshold_count & data.threshold$Outcome.rate > threshold_value),]}
   	(nrow(deviants))
   	#points(deviants$outcome*100,s$y[deviants$outcome*1000], col="red", pch=19, cex=1 + 0.5*(temp.value - 1))
   	(temp.list  <- unique(deviants$Outcome.rate, incomparables = FALSE))
@@ -129,30 +131,30 @@ positivedeviance <- function(content, topic, subjectlabel, outcome, outcome_type
 	}	
 	#Details
 	textout1 <- paste("Number of ",topic," assessed: ",size," (observations: ",total,")",sep="")
-	textout2 <- paste("Numbers indicate number of ",subjectlabel," with that result",sep="")
-	textout3 <- paste("Not displayed are ", subjectlabel, " with less than ",threshold_count," observations",sep="")
-	textout4 <- paste("Range of ",outcome," among all ",subjectlabel,": ",round(100*min(data$Outcome.rate),0),"% to ",round(100*max(data$Outcome.rate),0),"%",sep="")
-	textout5 <- paste("       ... among ",subjectlabel," with ", threshold_count," or more observations: ",round(100*min(data.threshold$Outcome.rate),0),"% to ",round(100*max(data.threshold$Outcome.rate),0),"%",sep="")
-	if (!outcome_type == "NA"){textout6 <- paste("       ... among positive deviants: ",round(100*min(deviants$Outcome.rate),0),"% to ",round(100*max(deviants$Outcome.rate),0),"%",sep="")}
-	textout7 <- paste("Result of ",benchmark_type,": " ,benchmark_value,"%",sep="")
-	if (proportion.population > 50){
+	textout2 <- paste("Not displayed are ", subjectlabel, " with less than ",threshold_count," observations",sep="")
+	textout3 <- paste("Range of ",outcome," among all ",subjectlabel,": ",round(100*min(data$Outcome.rate),0),"% to ",round(100*max(data$Outcome.rate),0),"%",sep="")
+	textout4 <- paste("       ... among ",subjectlabel," with ", threshold_count," or more observations: ",round(100*min(data.threshold$Outcome.rate),0),"% to ",round(100*max(data.threshold$Outcome.rate),0),"%",sep="")
+	if (!outcome_type == "NA"){textout5 <- paste("       ... among positive deviants: ",round(100*min(deviants$Outcome.rate),0),"% to ",round(100*max(deviants$Outcome.rate),0),"%",sep="")}
+	textout6 <- paste("Result of ",benchmark_type,": " ,benchmark_value,"%",sep="")
+	textout10 <- paste("Numbers indicate number of ",subjectlabel," with that result",sep="")
+	if (proportion.population > 0.50){
 	  xpos <- par("usr")[1] + 2.0*strwidth("A")
 	  text(xpos,par("usr")[4]-1.5*strheight("A"),textout1,adj=c(0,0), cex=0.8)
 	  text(xpos,par("usr")[4]-3.0*strheight("A"),textout2,adj=c(0,0), cex=0.8)
 	  text(xpos,par("usr")[4]-4.5*strheight("A"),textout3,adj=c(0,0), cex=0.8)
 	  text(xpos,par("usr")[4]-6.5*strheight("A"),textout4,adj=c(0,0), cex=0.8)
-	  text(xpos,par("usr")[4]-8.0*strheight("A"),textout5,adj=c(0,0), cex=0.8)
-	  if (!outcome_type == "NA"){text(xpos,par("usr")[4]-9.5*strheight("A"),textout6,adj=c(0,0), cex=0.8)}
-	  if (benchmark_value < 101){text(xpos,par("usr")[4]-11*strheight("A"),textout7,adj=c(0,0), cex=0.8, col="green")}
+	  if (!outcome_type == "NA"){text(xpos,par("usr")[4]-8*strheight("A"),textout5,adj=c(0,0), cex=0.8)}
+	  if (benchmark_value < 101){text(xpos,par("usr")[4]-9.5*strheight("A"),textout6,adj=c(0,0), cex=0.8, col="green")}
+	  text(par("usr")[2] - 2.0*strwidth("A"),par("usr")[4]-1.5*strheight("A"),textout10,adj=c(1,0), cex=0.8)
 	}else{
 	  xpos = par("usr")[2] - 2.0*strwidth("A")
 	  text(xpos,par("usr")[4]-1.5*strheight("A"),textout1,adj=c(1,0), cex=0.8)
 	  text(xpos,par("usr")[4]-3.0*strheight("A"),textout2,adj=c(1,0), cex=0.8)
 	  text(xpos,par("usr")[4]-4.5*strheight("A"),textout3,adj=c(1,0), cex=0.8)
 	  text(xpos,par("usr")[4]-6.5*strheight("A"),textout4,adj=c(1,0), cex=0.8)
-	  text(xpos,par("usr")[4]-8.0*strheight("A"),textout5,adj=c(1,0), cex=0.8)
-	  if (!outcome_type == "NA"){text(xpos,par("usr")[4]-9.5*strheight("A"),textout6,adj=c(1,0), cex=0.8)}
-	  if (benchmark_value < 101){text(xpos,par("usr")[4]-11*strheight("A"),textout7,adj=c(1,0), cex=0.8, col="green")}
+	  if (!outcome_type == "NA"){text(xpos,par("usr")[4]-8*strheight("A"),textout5,adj=c(1,0), cex=0.8)}
+	  if (benchmark_value < 101){text(xpos,par("usr")[4]-9.5*strheight("A"),textout6,adj=c(1,0), cex=0.8, col="green")}
+	  text(par("usr")[1] + 2.0*strwidth("A"),par("usr")[4]-1.5*strheight("A"),textout10,adj=c(0,0), cex=0.8)
 	}
 	#text(par("usr")[2]/3,par("usr")[3]+(par("usr")[4]-par("usr")[3])/2, "This example is three doctors, each with 1000 patients, \nwho have outcomes rates of 10%, 15%, 20%.\nWhat population percentile is the doctor with 10%?")
 	
