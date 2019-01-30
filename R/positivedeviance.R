@@ -103,14 +103,14 @@ positivedeviance <- function(content, topic, subjectlabel, outcome, outcome_type
 	#stop(paste("benchmark_value:",benchmark_value,sep=""))
 	#benchmark
 	segments(benchmark_value*100,0,benchmark_value*100,s$y[benchmark_value*100], col="green")
-	axis(1,at=benchmark_value*100,labels="B", col.ticks="green", col.axis="green", col="green", lwd=2, padj=1.2, las = 1)
+	axis(1,at=benchmark_value*100,labels="B", col.ticks="green", col.axis="green", col="green", font=2, lwd=2, padj=1.2, las = 1)
 
 	#Indicate local rate
-	axis(1,at=proportion.population*100,labels="M", col.ticks="red", col.axis="red", col="red", lwd=2, padj=1.2, las = 1)
-	#axis(1,at=proportion.population*size*adjust,labels="", col.ticks="red", col.axis="red", col="red")
-	#text(proportion.population*size*adjust,0,paste("Mean rate: ",round(100*proportion.population,0),"%",sep=""),col="red")
+	axis(1,at=proportion.population*100,labels="M", col.ticks="blue", col.axis="blue", col="blue", lwd=2, padj=1.2, las = 1)
+	#axis(1,at=proportion.population*size*adjust,labels="", col.ticks="blue", col.axis="blue", col="blue")
+	#text(proportion.population*size*adjust,0,paste("Mean rate: ",round(100*proportion.population,0),"%",sep=""),col="blue")
 	
-	#Plot deviants in red
+	#Plot deviants in green
 	if (!outcome_type == "NA"){
   	deviants <- data.threshold[which(data.threshold$Observations >= threshold_count & data.threshold$Outcome.rate < threshold_value),]
   	if (outcome_type =="g"){deviants <- data.threshold[which(data.threshold$Observations >= threshold_count & data.threshold$Outcome.rate > threshold_value),]}
@@ -124,8 +124,8 @@ positivedeviance <- function(content, topic, subjectlabel, outcome, outcome_type
   	  temp.value <- nrow(temp.data)
   	  point.size <- 1 + 0.25*(temp.value - 1)
   	  point.size <- 1
-  	  points(temp.data$Outcome.rate*100,s$y[temp.data$Outcome.rate*100], col="red", pch=19, cex=point.size)
-  	  text(temp.list[i]*100,s$y[temp.data$Outcome.rate*100],temp.value, pos=3, col="red", font=2)
+  	  points(temp.data$Outcome.rate*100,s$y[temp.data$Outcome.rate*100], col="green", pch=19, cex=point.size)
+  	  text(temp.list[i]*100,s$y[temp.data$Outcome.rate*100],temp.value, pos=3, col="green", font=2)
   	  #temp.data <- deviants[which(deviants$outcome != temp.value),] 
   	}
   	
@@ -141,30 +141,22 @@ positivedeviance <- function(content, topic, subjectlabel, outcome, outcome_type
 	if (!outcome_type == "NA"){textout5 <- paste("       ... among positive deviants: ",round(100*min(deviants$Outcome.rate),0),"% to ",round(100*max(deviants$Outcome.rate),0),"%",sep="")}
 	textout10 <- paste("Legend:",sep="")
 	textout11 <- paste("Numbers indicate number of ",subjectlabel," with that result",sep="")
-	textout12 <- paste("M: mean is " ,proportion.population*100,"%",sep="")
+	textout12 <- paste("M: mean is " ,round(proportion.population*100,0),"%",sep="")
 	textout13 <- paste("B: ",benchmark_type,": " ,benchmark_value*100,"%",sep="")
-	if (proportion.population > 0){ #So always use this arrangement
+	#if (proportion.population > 0){ #So always use this arrangement
 	  xpos <- par("usr")[1] + 2.0*strwidth("A")
-	  text(xpos,par("usr")[4]-1.5*strheight("A"),textout0,adj=c(0,0), cex=1.0, font = 2)
-	  text(xpos,par("usr")[4]-3.0*strheight("A"),textout1,adj=c(0,0), cex=0.8)
-	  text(xpos,par("usr")[4]-4.5*strheight("A"),textout2,adj=c(0,0), cex=0.8)
-	  text(xpos,par("usr")[4]-6.0*strheight("A"),textout3,adj=c(0,0), cex=0.8)
-	  text(xpos,par("usr")[4]-7.5*strheight("A"),textout4,adj=c(0,0), cex=0.8)
-	  if (!outcome_type == "NA"){text(xpos,par("usr")[4]-9*strheight("A"),textout5,adj=c(0,0), cex=0.8)}
-	  text(par("usr")[2] - 2.0*strwidth("A"),par("usr")[4]-1.5*strheight("A"),textout10,adj=c(1,0), cex=1.0, font = 2)
-	  text(par("usr")[2] - 2.0*strwidth("A"),par("usr")[4]-3.0*strheight("A"),textout11,adj=c(1,0), cex=0.8)
-	  text(par("usr")[2] - 2.0*strwidth("A"),par("usr")[4]-4.5*strheight("A"),textout12,adj=c(1,0), cex=0.8, col="red")
-	  if (benchmark_value < 101)  {text(par("usr")[2] - 2.0*strwidth("A"),par("usr")[4]-6.0*strheight("A"),textout13,adj=c(1,0), cex=0.8, col="green")}
-	}else{
-	  xpos = par("usr")[2] - 2.0*strwidth("A")
-	  text(xpos,par("usr")[4]-1.5*strheight("A"),textout1,adj=c(1,0), cex=0.8)
-	  text(xpos,par("usr")[4]-3.0*strheight("A"),textout2,adj=c(1,0), cex=0.8)
-	  text(xpos,par("usr")[4]-4.5*strheight("A"),textout3,adj=c(1,0), cex=0.8)
-	  text(xpos,par("usr")[4]-6.5*strheight("A"),textout4,adj=c(1,0), cex=0.8)
-	  if (!outcome_type == "NA"){text(xpos,par("usr")[4]-8*strheight("A"),textout5,adj=c(1,0), cex=0.8)}
-	  if (benchmark_value < 101){text(xpos,par("usr")[4]-9.5*strheight("A"),textout6,adj=c(1,0), cex=0.8, col="green")}
-	  text(par("usr")[1] + 2.0*strwidth("A"),par("usr")[4]-1.5*strheight("A"),textout10,adj=c(0,0), cex=0.8)
-	}
-	#text(par("usr")[2]/3,par("usr")[3]+(par("usr")[4]-par("usr")[3])/2, "This example is three doctors, each with 1000 patients, \nwho have outcomes rates of 10%, 15%, 20%.\nWhat population percentile is the doctor with 10%?")
+	  text(xpos,par("usr")[4]-2.0*strheight("A"),textout0,adj=c(0,0), cex=1.0, font = 2)
+	  text(xpos,par("usr")[4]-3.5*strheight("A"),textout1,adj=c(0,0), cex=0.8)
+	  text(xpos,par("usr")[4]-5.0*strheight("A"),textout2,adj=c(0,0), cex=0.8)
+	  text(xpos,par("usr")[4]-6.5*strheight("A"),textout3,adj=c(0,0), cex=0.8)
+	  text(xpos,par("usr")[4]-8.0*strheight("A"),textout4,adj=c(0,0), cex=0.8)
+	  if (!outcome_type == "NA"){text(xpos,par("usr")[4]-9*strheight("A"),textout5,col="green", font=2, adj=c(0,0), cex=0.8)}
+	  xpos <- par("usr")[2] - 2.0*strwidth("A")
+	  text(xpos,par("usr")[4]-2.0*strheight("A"),textout10,adj=c(1,0), cex=1.0, font = 2)
+	  text(xpos,par("usr")[4]-3.5*strheight("A"),textout11,adj=c(1,0), cex=0.8)
+	  text(xpos,par("usr")[4]-5.0*strheight("A"),textout12,adj=c(1,0), cex=0.8, col="blue")
+	  if (benchmark_value < 101)  {text(par("usr")[2] - 2.0*strwidth("A"),par("usr")[4]-65*strheight("A"),textout13,adj=c(1,0), font=2, cex=0.8, col="green")}
+
+	  #text(par("usr")[2]/3,par("usr")[3]+(par("usr")[4]-par("usr")[3])/2, "This example is three doctors, each with 1000 patients, \nwho have outcomes rates of 10%, 15%, 20%.\nWhat population percentile is the doctor with 10%?")
 	
 }
