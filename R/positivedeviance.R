@@ -164,7 +164,7 @@ positivedeviance <- function(content, topic, subjectlabel, outcome, outcome_type
   text(xpos,par("usr")[4]-2.0*strheight("A"),textout10,adj=c(1,0), cex=1.0, font = 2)
   text(xpos,par("usr")[4]-3.5*strheight("A"),textout11,adj=c(1,0), cex=0.8)
   text(xpos,par("usr")[4]-5.0*strheight("A"),textout12,adj=c(1,0), cex=0.8, col="blue")
-  text(xpos,par("usr")[4]-5.0*strheight("A"),textout13,adj=c(1,0), cex=0.8, col="green")
+  text(xpos,par("usr")[4]-6.5*strheight("A"),textout13,adj=c(1,0), cex=0.8, col="green")
   if (benchmark_value < 101)  {text(par("usr")[2] - 2.0*strwidth("A"),par("usr")[4]-65*strheight("A"),textout13,adj=c(1,0), font=2, cex=0.8, col="green")}
   
   #text(par("usr")[2]/3,par("usr")[3]+(par("usr")[4]-par("usr")[3])/2, "This example is three doctors, each with 1000 patients, \nwho have outcomes rates of 10%, 15%, 20%.\nWhat population percentile is the doctor with 10%?")
