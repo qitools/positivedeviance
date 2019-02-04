@@ -159,7 +159,7 @@ positivedeviance <- function(content, topic, subjectlabel, outcome, outcome_type
   text(xpos,par("usr")[4]-5.0*strheight("A"),textout2,adj=c(0,0), cex=0.8)
   text(xpos,par("usr")[4]-6.5*strheight("A"),textout3,adj=c(0,0), cex=0.8)
   text(xpos,par("usr")[4]-8.0*strheight("A"),textout4,adj=c(0,0), cex=0.8)
-  if (!outcome_type == "NA"){text(xpos,par("usr")[4]-9*strheight("A"),textout5,col="green", font=2, adj=c(0,0), cex=0.8)}
+  if (!outcome_type == "NA"){text(xpos,par("usr")[4]-9.5*strheight("A"),textout5,col="green", font=2, adj=c(0,0), cex=0.8)}
   xpos <- par("usr")[2] - 2.0*strwidth("A")
   text(xpos,par("usr")[4]-2.0*strheight("A"),textout10,adj=c(1,0), cex=1.0, font = 2)
   text(xpos,par("usr")[4]-3.5*strheight("A"),textout11,adj=c(1,0), cex=0.8)
