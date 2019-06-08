@@ -91,7 +91,7 @@ positivedeviance <- function(content, topic, subject_label, outcome_label, outco
   adjust = (x_max-x_min)/size
   #stop(paste("densities: ",densities, sep="")) # Works
   # Make plot but *NO* points yet as these will be equally distributed
-  plot (x*adjust*adjust.axis, densities, type = "p", xlab=xlab, ylab = "Probablity of result", yaxt='n',
+  plot (x*adjust*adjust.axis, densities, type = "n", xlab=xlab, ylab = "Probablity of result", yaxt='n',
         main = paste("Distribution of ",outcome_label," by ", subject_label,sep=""),xlim=c(x_min,x_max*adjust.axis), ylim=c(0,1.5*max(densities)))
   axis(2,at=0.05,labels="0.05", col.ticks="green", col.axis="green", col="green", font=2, lwd=2, padj=0.5, las = 1)
   #Lines smoothed. Note that we make x=100 rather than x=size
