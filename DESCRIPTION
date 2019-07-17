@@ -12,7 +12,8 @@ Imports:
     httr,
     RJSONIO,
     stringr,
-    reshape2
+    reshape2,
+    meta
 Collate:
 	'positivedeviance.R'
 	'display_logo.R'
