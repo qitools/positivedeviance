@@ -201,9 +201,9 @@ positivedeviance <- function(content, topic, subject_label, outcome_label, outco
   if (distribution_type == "n"){
     textout13 <- paste("M: mean is " ,4.0,sep="")
     }
-  textout14 <- paste("B: ",benchmark_type,": " ,benchmark_value*100,"%",sep="")
+  textout14 <- paste("B: ",benchmark_label,": " ,benchmark_value*100,"%",sep="")
   if (distribution_type == "n"){
-    textout14 <- paste("B: ",benchmark_type,": " ,benchmark_value,sep="")
+    textout14 <- paste("B: ",benchmark_label,": " ,benchmark_value,sep="")
   }
   # Now write the texts
   # Left-hand side of plot
