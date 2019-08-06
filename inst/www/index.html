@@ -71,7 +71,8 @@ $(document).ready(function(){
 		benchmark_label : $("#benchmark_label").val(),
 		threshold_count : $("#threshold_count").val(),
 		threshold_value : $("#threshold_value").val(),
-		distribution_type: $("#distribution_type").val(),
+		data_type: $("#data_type").val(),
+		output_type: $("#output_type").val(),
 		x_min:           $("#x_min").val(),
 		x_max:           $("#x_max").val(),
 		theme:           $("#theme").val()
@@ -302,13 +303,17 @@ color:#FFFFFF;
             <label>Benchmark:</label> 
             <input type="text" id="benchmark_label" value="Best published report"/> Value <input type="text" id="benchmark_value" style="width:25px" value="0.70"/>  <br />
 
-	<label>Distribution type</label> 
-            <select id="distribution_type">
-              <option value="b" selected>Binomial (for proportions)</option>
-              <option value="n">Normal (for means)</option>
+	<label>Data type</label> 
+            <select id="data_type">
+              <option value="p" selected>Proportions</option>
+              <option value="m">Means</option>
+            </select><br />
+	<label>Output type</label> 
+            <select id="output_type">
+              <option value="d" selected>Distribution</option>
+              <option value="f">Forest plot</option>
             </select> <span>X-axis limits: <input type="text" id="x_min" value="0" style="width:25px" /> to <input type="text" id="x_max" value="1" style="width:25px" /></span><br />
-
-	<label>Threshold (#observations per row required for plotting):</label> 
+	<label>Threshold (#observations per row required for plotting on histogram):</label> 
             <input type="text" id="threshold_count" style="width:25px" value="4"/> <br/>
 
 	<label>Threshold for PDs (colors PDs green when outcome type not NA):</label>  
