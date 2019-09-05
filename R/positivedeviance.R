@@ -239,7 +239,7 @@ positivedeviance <- function(content, topic, subject_label, outcome_label, outco
 		# Determine PDs give them a column that prepends astericks and colors estimates
 		if (data_type == "p"){
 		  # Named
-		  forest(meta1, leftcols=c("studlab","event","n"),leftlabs=c(subject_label,outcome_label,"Observations"),print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab= TRUE,xlim=c(0,1))
+		  forest(meta1, leftcols=c("studlab","event","n"),leftlabs=c(subject_label,outcome_label,"Observations"),print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab= meta1$studlab ,xlim=c(0,1))
 		  # Anon
 		  #forest(meta1, leftcols=c("studlab","event","n"),leftlabs=c(subject_label,outcome_label,"Observations"),print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab=1:nrow(data),xlim=c(0,1))
 			}
