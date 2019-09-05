@@ -86,7 +86,9 @@ positivedeviance <- function(content, topic, subject_label, outcome_label, outco
 	  # Meta-analysis
 	  data <- data[order(data$Outcome.value),]
 	  row.names(data)
-	  meta1 <- metaprop(data$Outcomes, data$Observations, studlab = row.names(data),data=data, sm="PRAW", hakn = TRUE, method = "Inverse",comb.fixed = FALSE,incr=0.5)
+	  meta1 <- metaprop(data$Outcomes, data$Observations, studlab = data$Subject ,data=data, sm="PRAW", hakn = TRUE, method = "Inverse",comb.fixed = FALSE,incr=0.5)
+    # Anonymous
+	  #meta1 <- metaprop(data$Outcomes, data$Observations, studlab = row.names(data),data=data, sm="PRAW", hakn = TRUE, method = "Inverse",comb.fixed = FALSE,incr=0.5)
 	  summary(meta1)
 	  (TE = round(meta1$TE.random,2))
 	  (TE_text = paste("Rate: ",TE," (",round(meta1$lower.random,2)," - ",round(meta1$upper.random,2),")",sep=""))
