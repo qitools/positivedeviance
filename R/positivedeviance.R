@@ -86,7 +86,8 @@ positivedeviance <- function(content, topic, subject_label, outcome_label, outco
 	  # Meta-analysis
 	  data <- data[order(data$Outcome.value),]
 	  row.names(data)
-	  meta1 <- metaprop(data$Outcomes, data$Observations, studlab = data$Subject ,data=data, sm="PRAW", hakn = TRUE, method = "Inverse",comb.fixed = FALSE,incr=0.5)
+	  meta1 <- metaprop(Outcomes, Observations, studlab = Subject, data=data, hakn = TRUE, comb.fixed=FALSE)
+	#  meta1 <- metaprop(Outcomes, Observations, studlab = Subject ,data=data, sm="PRAW", hakn = TRUE, method = "Inverse", comb.fixed = FALSE, incr=0.5)
     # Anonymous
 	  #meta1 <- metaprop(data$Outcomes, data$Observations, studlab = row.names(data),data=data, sm="PRAW", hakn = TRUE, method = "Inverse",comb.fixed = FALSE,incr=0.5)
 	  summary(meta1)
@@ -240,8 +241,14 @@ positivedeviance <- function(content, topic, subject_label, outcome_label, outco
 		{
 		# Determine PDs give them a column that prepends astericks and colors estimates
 		if (data_type == "p"){
+			positive.deviants <- 0
+			negative.deviants <- 0
+			for(i in 1:length(meta1$TE)){
+			  if (meta1$lower[i]>inv.logit(meta1$TE.random)){meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");positive.deviants <- positive.deviants + 1}
+			  if (meta1$upper[i]<inv.logit(meta1$TE.random)){meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");negative.deviants <- negative.deviants + 1}
+			}
 		  # Named
-		  forest(meta1, leftcols=c("studlab","event","n"),leftlabs=c(subject_label,outcome_label,"Observations"),print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab= meta1$studlab ,xlim=c(0,1))
+		  forest(meta1, leftcols=c("studlab","event","n"),leftlabs=c(subject_label,outcome_label,"Observations"), print.I2.ci = TRUE, print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab= meta1$studlab ,xlim=c(0,1))
 		  # Anon
 		  #forest(meta1, leftcols=c("studlab","event","n"),leftlabs=c(subject_label,outcome_label,"Observations"),print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab=1:nrow(data),xlim=c(0,1))
 			}

@@ -13,6 +13,7 @@ Imports:
     RJSONIO,
     stringr,
     reshape2,
+	boot,
     meta
 Collate:
 	'positivedeviance.R'
