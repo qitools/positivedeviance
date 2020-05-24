@@ -3,6 +3,8 @@ positivedeviance <- function(content, topic, subject_label, outcome_label, outco
   #if (!topic=="99"){stop("This web app is under constrution") }
   #stop("Request received") #Works	
   
+  if (is.na(benchmark_value) {benchmark_value <- NULL})
+	
   if (is.data.frame(content)){
     # Script is being run locally on a desktop and not online at openCPU
     #Column names of local file must be 
@@ -86,7 +88,7 @@ positivedeviance <- function(content, topic, subject_label, outcome_label, outco
 	  # Meta-analysis
 	  data <- data[order(data$Outcome.value),]
 	  row.names(data)
-	  meta1 <- metaprop(Outcomes, Observations, studlab = Subject, data=data, hakn = TRUE, comb.fixed=FALSE)
+	  meta1 <- metaprop(Outcomes, Observations, studlab = Subject, data=data, method = 'inverse', hakn = TRUE, comb.fixed=FALSE)
 	#  meta1 <- metaprop(Outcomes, Observations, studlab = Subject ,data=data, sm="PRAW", hakn = TRUE, method = "Inverse", comb.fixed = FALSE, incr=0.5)
     # Anonymous
 	  #meta1 <- metaprop(data$Outcomes, data$Observations, studlab = row.names(data),data=data, sm="PRAW", hakn = TRUE, method = "Inverse",comb.fixed = FALSE,incr=0.5)
@@ -248,7 +250,11 @@ positivedeviance <- function(content, topic, subject_label, outcome_label, outco
 			  if (meta1$upper[i]<inv.logit(meta1$TE.random)){meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");negative.deviants <- negative.deviants + 1}
 			}
 		  # Named
-		  forest(meta1, leftcols=c("studlab","event","n"),leftlabs=c(subject_label,outcome_label,"Observations"), print.I2.ci = TRUE, print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab= meta1$studlab ,xlim=c(0,1))
+		  forest(meta1, 
+			 leftcols=c("studlab","event","n"),
+			 leftlabs=c(subject_label,outcome_label,"Observations"), 
+			 ref = benchmark_value,
+			 print.I2.ci = TRUE, print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab= meta1$studlab ,xlim=c(0,1))
 		  # Anon
 		  #forest(meta1, leftcols=c("studlab","event","n"),leftlabs=c(subject_label,outcome_label,"Observations"),print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab=1:nrow(data),xlim=c(0,1))
 			}
