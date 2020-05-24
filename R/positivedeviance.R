@@ -3,7 +3,7 @@ positivedeviance <- function(content, topic, subject_label, outcome_label, outco
   #if (!topic=="99"){stop("This web app is under constrution") }
   #stop("Request received") #Works	
   
-  if (is.na(benchmark_value) {benchmark_value <- NULL})
+  if (is.na(benchmark_value)) {benchmark_value <- NULL}
 	
   if (is.data.frame(content)){
     # Script is being run locally on a desktop and not online at openCPU
