@@ -1,5 +1,5 @@
 positivedeviance <- function(content, topic, subject_label, outcome_label, outcome_type, threshold_count, threshold_value,benchmark_value, benchmark_label, data_type, output_type, x_min, x_max, theme) {
-# Current not used: x_min, x_max,
+# Current not used: x_min, x_max, 
   #if (!topic=="99"){stop("This web app is under constrution") }
   #stop("Request received") #Works	
   
