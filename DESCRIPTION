@@ -14,6 +14,7 @@ Imports:
     stringr,
     reshape2,
 	boot,
+	grid,
     meta
 Collate:
 	'positivedeviance.R'
