@@ -260,5 +260,10 @@ positivedeviance <- function(content, topic, subject_label, outcome_label, outco
 		  #forest(meta1, leftcols=c("studlab","event","n"),leftlabs=c(subject_label,outcome_label,"Observations"),print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab=1:nrow(data),xlim=c(0,1))
 			}
 		grid.text(topic, 0.5, 0.95, gp=gpar(cex=1.4))
+	  	if (!is.na(benchmark_value){
+			Footer <- "Notes:"
+			Footer <- paste(Footer,"\nGoal is ", benchmark_label, ": ", benchmark_value)
+			grid.text(Footer, 0.5, 0.07, gp=gpar(cex=1))
+			}
   		}
 }
