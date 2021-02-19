@@ -88,7 +88,8 @@ positivedeviance <- function(content, topic, subject_label, outcome_label, outco
 	  # Meta-analysis
 	  data <- data[order(data$Outcome.value),]
 	  row.names(data)
-	  meta1 <- metaprop(Outcomes, Observations, studlab = Subject, data=data, method = 'inverse', hakn = TRUE, comb.fixed=FALSE)
+	  # Method to GLMM 02/19/2021
+	  meta1 <- metaprop(Outcomes, Observations, studlab = Subject, data=data, method = 'GLMM', hakn = TRUE, comb.fixed=FALSE)
 	#  meta1 <- metaprop(Outcomes, Observations, studlab = Subject ,data=data, sm="PRAW", hakn = TRUE, method = "Inverse", comb.fixed = FALSE, incr=0.5)
     # Anonymous
 	  #meta1 <- metaprop(data$Outcomes, data$Observations, studlab = row.names(data),data=data, sm="PRAW", hakn = TRUE, method = "Inverse",comb.fixed = FALSE,incr=0.5)
@@ -258,5 +259,6 @@ positivedeviance <- function(content, topic, subject_label, outcome_label, outco
 		  # Anon
 		  #forest(meta1, leftcols=c("studlab","event","n"),leftlabs=c(subject_label,outcome_label,"Observations"),print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab=1:nrow(data),xlim=c(0,1))
 			}
-		}
+		grid.text(topic, 0.5, 0.95, gp=gpar(cex=1.4))
+  		}
 }
