@@ -259,11 +259,13 @@ positivedeviance <- function(content, topic, subject_label, outcome_label, outco
 		  # Anon
 		  #forest(meta1, leftcols=c("studlab","event","n"),leftlabs=c(subject_label,outcome_label,"Observations"),print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab=1:nrow(data),xlim=c(0,1))
 			}
+		# Title
 		grid.text(topic, 0.5, 0.95, gp=gpar(cex=1.4))
-	  	if (benchmark_value != 0){
-			Footer <- "Notes:"
-			Footer <- paste(Footer,"\nGoal is ", benchmark_label, ": ", benchmark_value)
-			grid.text(Footer, 0.5, 0.07, gp=gpar(cex=1))
+		#Footer
+		if (benchmark_value != 0){
+			grid.text('Notes:', 0.08, 0.08, hjust=0, gp=gpar(cex=1, font=2))
+			Footer <- paste(Footer,"\nGoal is ", benchmark_label, ": ", benchmark_value, " (solid vertical line)")
+			grid.text(Footer, 0.08, 0.06, hjust=0, gp=gpar(cex=1, font=1))
 			}
   		}
 }
