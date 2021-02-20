@@ -264,7 +264,8 @@ positivedeviance <- function(content, topic, subject_label, outcome_label, outco
 		#Footer
 		if (benchmark_value != 0){
 			grid.text('Notes:', 0.08, 0.08, hjust=0, gp=gpar(cex=1, font=2))
-			Footer <- paste(Footer,"\nGoal is ", benchmark_label, ": ", benchmark_value, " (solid vertical line)")
+			Footer <- NULL
+			Footer <- paste(Footer,"Goal is ", benchmark_label, ": ", benchmark_value, " (solid vertical line)")
 			grid.text(Footer, 0.08, 0.06, hjust=0, gp=gpar(cex=1, font=1))
 			}
   		}
