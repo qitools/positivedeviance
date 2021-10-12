@@ -3,7 +3,7 @@ positivedeviance <- function(content, topic, subject_label, outcome_label, outco
   #if (!topic=="99"){stop("This web app is under constrution") }
   #stop("Request received") #Works	
   
-  if (is.na(benchmark_value)) {benchmark_value <- NULL}
+  if (is.na(benchmark_value) | benchmark_value == 'NULL') {benchmark_value <- NA}
 	
   if (is.data.frame(content)){ 
     # Script is being run locally on a desktop and not online at openCPU
@@ -262,7 +262,7 @@ positivedeviance <- function(content, topic, subject_label, outcome_label, outco
 		# Title
 		grid.text(topic, 0.5, 0.95, gp=gpar(cex=1.4))
 		#Footer
-		if (benchmark_value != 0){
+		if (!is.na(benchmark_value)){
 			grid.text('Notes:', 0.08, 0.08, hjust=0, gp=gpar(cex=1, font=2))
 			Footer <- NULL
 			Footer <- paste(Footer,"Goal is ", benchmark_label, ": ", benchmark_value, " (solid vertical line)")
