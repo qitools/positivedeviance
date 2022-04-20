@@ -66,6 +66,7 @@ $(document).ready(function(){
 		topic :          $("#topic").val(),
 		outcome_label :  $("#outcome_label").val(),
 		subject_label :  $("#subject_label").val(),
+		group		:  $("#group").val(),
 		outcome_type :   $("#outcome_type").val(),
 		benchmark_value : $("#benchmark_value").val(),
 		benchmark_label : $("#benchmark_label").val(),
@@ -313,6 +314,8 @@ color:#FFFFFF;
 
             <label>Subjects (sites or people type):</label> 
             <input type="text" id="subject_label" value="site"/> <br/>
+				
+	    <label>subgroup by sites? </label> <select id="group" name="group"><option value=NO selected> No </option> <option value=YES> YES </option> </select><br/>
 
             <label>Outcome:</label> 
             <input type="text" id="outcome_label" value="Example bad outcome"/>
