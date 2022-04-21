@@ -89,7 +89,7 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
 	  data <- data[order(data$Outcome.value),]
 	  row.names(data)
 	  # Method to GLMM 02/19/2021
-	  if (subgroup =='YES')}
+	  if (subgroup =='YES'){
 		meta1 <- metaprop(Outcomes, Observations, studlab = Subject, subgroup = 'Site', data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE)
 	  }else}
 		meta1 <- metaprop(Outcomes, Observations, studlab = Subject, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE)
