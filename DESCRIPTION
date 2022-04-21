@@ -8,6 +8,7 @@ Maintainer: Robert Badgett <rbadgett@kumc.edu>
 Description: OpenCPU application for selected QI tools in package QCC. 
 License: GPL
 Imports:
+    openxlsx,
     ggplot2,
     httr,
     RJSONIO,
