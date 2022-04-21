@@ -1,4 +1,4 @@
-positivedeviance <- function(content, topic, subject_label, outcome_label, outcome_type, threshold_count, threshold_value,benchmark_value, benchmark_label, data_type, output_type, x_min, x_max, theme) {
+positivedeviance <- function(content, topic, subject_label, subgoup, outcome_label, outcome_type, threshold_count, threshold_value,benchmark_value, benchmark_label, data_type, output_type, x_min, x_max, theme) {
 # Current not used: x_min, x_max,  
   #if (!topic=="99"){stop("This web app is under constrution") }
   #stop("Request received") #Works	
@@ -88,7 +88,7 @@ positivedeviance <- function(content, topic, subject_label, outcome_label, outco
 	  # Meta-analysis
 	  data <- data[order(data$Outcome.value),]
 	  row.names(data)
-	  subgroup <- ifelse(group == 'YES', 'Site', NULL)
+	  subgroup <- ifelse(subgroup == 'YES', 'Site', NULL)
 	  # Method to GLMM 02/19/2021
 	  meta1 <- metaprop(Outcomes, Observations, studlab = Subject, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE)
 	#  meta1 <- metaprop(Outcomes, Observations, studlab = Subject ,data=data, sm="PRAW", hakn = TRUE, method = "Inverse", fixed = FALSE, incr=0.5)
