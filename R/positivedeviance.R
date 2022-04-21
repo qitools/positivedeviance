@@ -88,7 +88,7 @@ positivedeviance <- function(content, topic, subject_label, subgoup, outcome_lab
 	  # Meta-analysis
 	  data <- data[order(data$Outcome.value),]
 	  row.names(data)
-	  subgroup <- ifelse(subgroup == 'YES', 'Site', NULL)
+	  subgroup <- ifelse(subgroup == 'YES', 'Site', '')
 	  # Method to GLMM 02/19/2021
 	  meta1 <- metaprop(Outcomes, Observations, studlab = Subject, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE)
 	#  meta1 <- metaprop(Outcomes, Observations, studlab = Subject ,data=data, sm="PRAW", hakn = TRUE, method = "Inverse", fixed = FALSE, incr=0.5)
