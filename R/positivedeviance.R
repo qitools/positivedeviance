@@ -1,4 +1,4 @@
-positivedeviance <- function(content, topic, subject_label, subgroup, outcome_label, outcome_type, threshold_observations, threshold_value,benchmark_value, benchmark_label, data_type, output_type, x_min, x_max, theme) {
+positivedeviance <- function(content, topic, subject_label, subgroup, outcome_label, outcome_type, displaynames, threshold_observations, threshold_value,benchmark_value, benchmark_label, data_type, output_type, x_min, x_max, theme) {
 # Current not used: x_min, x_max,  
   #if (!topic=="99"){stop("This web app is under constrution") }
   #stop("Request received") #Works	
@@ -57,7 +57,7 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
   #stop(paste("Dataframe rows: ",nrow(data),"\n","data: ","\n",data, sep="")) # Works
   
   #### Start here if running locally
-  
+	
   #Calculations
   data$Outcomes<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Outcomes)))))
   data$Observations<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
@@ -94,10 +94,14 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
 	  }else{
 		meta1 <- metaprop(Outcomes, Observations, studlab = Subject, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE)
 	  }
-	
-	#  meta1 <- metaprop(Outcomes, Observations, studlab = Subject ,data=data, sm="PRAW", hakn = TRUE, method = "Inverse", fixed = FALSE, incr=0.5)
-    # Anonymous
-	  #meta1 <- metaprop(data$Outcomes, data$Observations, studlab = row.names(data),data=data, sm="PRAW", hakn = TRUE, method = "Inverse",comb.fixed = FALSE,incr=0.5)
+	  # Display names?
+	  if (displaynames=='none'){meta1$studlab <-  seq.int(nrow(meta1$data))}
+	  if (displaynames=='selected'){
+	    for(i in 1:nrow(meta1$data))
+	      {
+	      if (grepl('*', meta1$studlab[i], fixed = TRUE)==FALSE){meta1$studlab[i] <-  i}
+	      }
+	    }
 	  summary(meta1)
 	  (TE = round(meta1$TE.random,2))
 	  (TE_text = paste("Rate: ",TE," (",round(meta1$lower.random,2)," - ",round(meta1$upper.random,2),")",sep=""))
