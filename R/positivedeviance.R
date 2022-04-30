@@ -12,7 +12,6 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
   }else{
     # Script is being run online at openCPU and not locally on a desktop
     # Special handling if needed of content
-    first.row <- substr(content, 1, regexpr("\n",content))
     num.columns <- str_count(first.row, ",")
 
     #stop(paste("num.columns: ",num.columns, sep="")) # Works
@@ -94,14 +93,6 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
 	  }else{
 		meta1 <- metaprop(Outcomes, Observations, studlab = Subject, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE)
 	  }
-	  # Display names?
-	  if (displaynames=='none'){meta1$studlab <-  seq.int(nrow(meta1$data))}
-	  if (displaynames=='selected'){
-	    for(i in 1:nrow(meta1$data))
-	      {
-	      if (grepl('*', meta1$studlab[i], fixed = TRUE)==FALSE){meta1$studlab[i] <-  i}
-	      }
-	    }
 	  summary(meta1)
 	  (TE = round(meta1$TE.random,2))
 	  (TE_text = paste("Rate: ",TE," (",round(meta1$lower.random,2)," - ",round(meta1$upper.random,2),")",sep=""))
@@ -259,14 +250,19 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
 			  if (meta1$lower[i]>inv.logit(meta1$TE.random)){meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");positive.deviants <- positive.deviants + 1}
 			  if (meta1$upper[i]<inv.logit(meta1$TE.random)){meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");negative.deviants <- negative.deviants + 1}
 			}
-		  # Named
+		  # Display names?
+		  if (displaynames=='none'){meta1$studlab <-  seq.int(nrow(meta1$data))}
+		  if (displaynames=='selected'){
+		    for(i in 1:nrow(meta1$data))
+		      {
+		      if (grepl('*', meta1$studlab[i], fixed = TRUE)==FALSE){meta1$studlab[i] <-  i}
+		      }
+		    }
 		  forest(meta1, 
 			 leftcols=c("studlab","event","n"),
 			 leftlabs=c(subject_label,outcome_label,"Observations"), 
 			 ref = benchmark_value,
 			 print.I2.ci = TRUE, print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab= meta1$studlab ,xlim=c(0,1))
-		  # Anon
-		  #forest(meta1, leftcols=c("studlab","event","n"),leftlabs=c(subject_label,outcome_label,"Observations"),print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab=1:nrow(data),xlim=c(0,1))
 			}
 		# Title
 		grid.text(topic, 0.5, 0.95, gp=gpar(cex=1.4))
