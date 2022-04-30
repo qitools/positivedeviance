@@ -12,6 +12,7 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
   }else{
     # Script is being run online at openCPU and not locally on a desktop
     # Special handling if needed of content
+    first.row <- substr(content, 1, regexpr("\n",content))
     num.columns <- str_count(first.row, ",")
 
     #stop(paste("num.columns: ",num.columns, sep="")) # Works
