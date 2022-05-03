@@ -42,12 +42,14 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
   # Delete terminal rows if contains instructions (detected by as.numeric(year) = false)
   x <- x[!(is.na(as.numeric(x[,3])) == TRUE),]
   
-  if (data_type == "p"){
+#### Start here if running locally
+
+if (data_type == "p"){
 	column.names <- c("Subject","Group", "Outcomes", "Observations")
 	}
-#	if (data_type == "m"){
-#	column.names <- c("Subject","Group", "Result", "Obs_or_SD")
-#	}
+if (data_type == "m"){
+	column.names <- c("Subject","Group", "mean", "sd")
+	}
   #dimnames(x) <- list(NULL, column.names)
   colnames(x) <- column.names
   
@@ -56,20 +58,18 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
   
   #stop(paste("Dataframe rows: ",nrow(data),"\n","data: ","\n",data, sep="")) # Works
   
-  #### Start here if running locally
-	
-  #Calculations
-  data$Outcomes<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Outcomes)))))
-  data$Observations<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
   if (data_type == "m"){
     data$Mean<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Mean)))))
     data$Outcome.value <-data$Mean
     }
   if (data_type == "p"){
-    data$Outcome.value <-data$Outcomes/data$Observations
-    (proportion.population <- sum(data$Outcomes)/sum(data$Observations))
-    variance <- sum(data$Observations)*(proportion.population*(1-proportion.population))
-    (std.dev <- sqrt(variance))
+	#Calculations
+	data$Outcomes<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Outcomes)))))
+	data$Observations<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
+	data$Outcome.value <-data$Outcomes/data$Observations
+	(proportion.population <- sum(data$Outcomes)/sum(data$Observations))
+	variance <- sum(data$Observations)*(proportion.population*(1-proportion.population))
+	(std.dev <- sqrt(variance))
   }
   size = nrow(data)
   size_population = sum(data$Observations)
@@ -240,16 +240,16 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
 	  
 	  #text(par("usr")[2]/3,par("usr")[3]+(par("usr")[4]-par("usr")[3])/2, "This example is three doctors, each with 1000 patients, \nwho have outcomes rates of 10%, 15%, 20%.\nWhat population percentile is the doctor with 10%?")
 		}
-  if (output_type == "f")
+  if (output_type == "f") #------------------------------------------------------------------------
     # Forest plots
 		{
 		# Determine PDs give them a column that prepends astericks and colors estimates
-		if (data_type == "ppp"){
-			for(i in 1:length(meta1$TE)){
-			  if (meta1$lower[i]>inv.logit(meta1$TE.random)){meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");positive.deviants <- positive.deviants + 1}
-			  if (meta1$upper[i]<inv.logit(meta1$TE.random)){meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");negative.deviants <- negative.deviants + 1}
-			}
-
+#		if (data_type == "p"){
+#			for(i in 1:length(meta1$TE)){
+#			  if (meta1$lower[i]>inv.logit(meta1$TE.random)){meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");positive.deviants <- positive.deviants + 1}
+#			  if (meta1$upper[i]<inv.logit(meta1$TE.random)){meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");negative.deviants <- negative.deviants + 1}
+#			}
+{
 			
 ##* Identify deviants------------------
 left.deviants <- NULL
