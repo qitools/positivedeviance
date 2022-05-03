@@ -39,7 +39,7 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
     x<-eval(parse(file = "", n = NULL, text = temp))
   }
   
-  stop(paste("x: ",x, sep="")) # Works
+  #stop(paste("x: ",x, sep="")) # Works
   
   # Delete first row if contains column labels (detected by as.numeric(year) = false)
   first.row.header <- FALSE
@@ -56,12 +56,16 @@ if (data_type == "p"){
 if (data_type == "m"){
 	column.names <- c("Subject",'ID',"Group", "Observations", "mean", "sd")
 	}
+
   #dimnames(x) <- list(NULL, column.names)
   colnames(x) <- column.names
   
   data <- data.frame (x)
   #remove(x)
   
+  data$Outcomes<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Outcomes)))))
+  data$Observations<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
+
   #stop(paste("Dataframe rows: ",nrow(data),"\n","data: ","\n",data, sep="")) # Works
   
   if (data_type == "m"){
@@ -70,8 +74,6 @@ if (data_type == "m"){
     }
   if (data_type == "p"){
 	#Calculations
-	data$Outcomes<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Outcomes)))))
-	data$Observations<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
 	data$Outcome.value <-data$Outcomes/data$Observations
 	(proportion.population <- sum(data$Outcomes)/sum(data$Observations))
 	variance <- sum(data$Observations)*(proportion.population*(1-proportion.population))
@@ -86,7 +88,7 @@ if (data_type == "m"){
   # http://www.stat.yale.edu/Courses/1997-98/101/binom.htm
   (probability <- pnorm(test, mean = proportion.population, sd = std.dev, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
   
-  #stop(paste("std.dev: ",std.dev, sep="")) # Works
+  stop(paste("std.dev: ",std.dev, sep="")) # Works
   if (data_type == "p"){
 	  # Meta-analysis
 	  data <- data[order(data$Outcome.value),]
