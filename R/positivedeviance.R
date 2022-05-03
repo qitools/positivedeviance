@@ -249,7 +249,7 @@ if (data_type == "m"){
 #			  if (meta1$lower[i]>inv.logit(meta1$TE.random)){meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");positive.deviants <- positive.deviants + 1}
 #			  if (meta1$upper[i]<inv.logit(meta1$TE.random)){meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");negative.deviants <- negative.deviants + 1}
 #			}
-{
+if (1 == 1){
 			
 ##* Identify deviants------------------
 left.deviants <- NULL
