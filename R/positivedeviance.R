@@ -6,6 +6,10 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
 `%notin%` <- Negate(`%in%`)
 	
   if (is.na(benchmark_value) | benchmark_value == 'NULL') {benchmark_value <- NA}
+
+  benchmark_value <- as.numeric(benchmark_value)
+  threshold_value <- as.numeric(threshold_value)
+  threshold_observations <- as.numeric(threshold_observations)
 	
   if (is.data.frame(content)){ 
     # Script is being run locally on a desktop and not online at openCPU
@@ -35,7 +39,7 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
     x<-eval(parse(file = "", n = NULL, text = temp))
   }
   
-  #stop(paste("x: ",x, sep="")) # Works
+  stop(paste("x: ",x, sep="")) # Works
   
   # Delete first row if contains column labels (detected by as.numeric(year) = false)
   first.row.header <- FALSE
@@ -77,9 +81,6 @@ if (data_type == "m"){
   size_population = sum(data$Observations)
   (total <- sum(data$Observations))
 
-  benchmark_value <- as.numeric(benchmark_value)
-  threshold_value <- as.numeric(threshold_value)
-  threshold_observations <- as.numeric(threshold_observations)
   test <- 0.10
   (probability <- pbinom(test, size = size, prob = proportion.population, lower.tail = TRUE, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
   # http://www.stat.yale.edu/Courses/1997-98/101/binom.htm
