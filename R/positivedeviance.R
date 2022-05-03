@@ -244,21 +244,52 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
     # Forest plots
 		{
 		# Determine PDs give them a column that prepends astericks and colors estimates
-		if (data_type == "p"){
-			positive.deviants <- 0
-			negative.deviants <- 0
+		if (data_type == "ppp"){
 			for(i in 1:length(meta1$TE)){
 			  if (meta1$lower[i]>inv.logit(meta1$TE.random)){meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");positive.deviants <- positive.deviants + 1}
 			  if (meta1$upper[i]<inv.logit(meta1$TE.random)){meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");negative.deviants <- negative.deviants + 1}
 			}
-		  # Display names?
-		  if (displaynames=='none'){meta1$studlab <-  seq.int(nrow(meta1$data))}
-		  if (displaynames=='selected'){
-		    for(i in 1:nrow(meta1$data))
-		      {
-		      if (grepl('*', meta1$studlab[i], fixed = TRUE)==FALSE){meta1$studlab[i] <-  i}
-		      }
-		    }
+
+			
+##* Identify deviants------------------
+left.deviants <- NULL
+right.deviants <- NULL
+for(i in 1:length(meta1$TE)){
+  # Simple adding of asterisk to deviants
+  # !!! may need inv.logit(meta1$TE.random) for proportions
+  if (meta1$upper[i]<(meta1$TE.random)){
+    left.deviants <- rbind(left.deviants,meta1$TE[i])}
+  if (meta1$lower[i]>=(meta1$TE.random)){
+    right.deviants <- rbind(right.deviants,meta1$TE[i])}
+  }
+(left.deviants)
+(right.deviants)
+
+##** Display attribution/names------------------
+for(i in 1:length(meta1$TE)){
+  # Replacing names as needed
+  if (displaynames == 'none'){meta1$studlab[i] <- meta1$data$ID[i]}
+  if (displaynames == 'selected'){
+    if (outcome_type == 'b' & meta1$TE[i] %notin% left.deviants){meta1$studlab[i] <- meta1$data$ID[i]}
+    if (outcome_type == 'g' & meta1$TE[i] %notin% right.deviants){meta1$studlab[i] <- meta1$data$ID[i]}
+    }
+  }
+meta1$studlab
+
+##** Asterisk to deviants------------------
+for(i in 1:length(meta1$TE)){
+  # Simple adding of asterisk to deviants
+  if (meta1$upper[i]<(meta1$TE.random)){
+    meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");
+    left.deviants <- rbind(left.deviants,meta1$data[i,'mean'])}
+if (meta1$lower[i]>=(meta1$TE.random)){
+  meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");
+  right.deviants <- rbind(right.deviants,meta1$data[i,'mean'])}
+
+}
+meta1$studlab
+
+
 		  forest(meta1, 
 			 leftcols=c("studlab","event","n"),
 			 leftlabs=c(subject_label,outcome_label,"Observations"), 
