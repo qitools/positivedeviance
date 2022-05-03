@@ -47,10 +47,10 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
 #### Start here if running locally
 
 if (data_type == "p"){
-	column.names <- c("Subject","Group", "Outcomes", "Observations")
+	column.names <- c("Subject",'ID',"Group", "Outcomes", "Observations")
 	}
 if (data_type == "m"){
-	column.names <- c("Subject","Group", "Observations", "mean", "sd")
+	column.names <- c("Subject",'ID',"Group", "Observations", "mean", "sd")
 	}
   #dimnames(x) <- list(NULL, column.names)
   colnames(x) <- column.names
