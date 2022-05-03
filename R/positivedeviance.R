@@ -3,6 +3,8 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
   #if (!topic=="99"){stop("This web app is under constrution") }
   #stop("Request received") #Works	
   
+`%notin%` <- Negate(`%in%`)
+	
   if (is.na(benchmark_value) | benchmark_value == 'NULL') {benchmark_value <- NA}
 	
   if (is.data.frame(content)){ 
@@ -48,7 +50,7 @@ if (data_type == "p"){
 	column.names <- c("Subject","Group", "Outcomes", "Observations")
 	}
 if (data_type == "m"){
-	column.names <- c("Subject","Group", "mean", "sd")
+	column.names <- c("Subject","Group", "Observations", "mean", "sd")
 	}
   #dimnames(x) <- list(NULL, column.names)
   colnames(x) <- column.names
@@ -94,15 +96,38 @@ if (data_type == "m"){
 	  }else{
 		meta1 <- metaprop(Outcomes, Observations, studlab = Subject, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE)
 	  }
-	  summary(meta1)
-	  (TE = round(meta1$TE.random,2))
-	  (TE_text = paste("Rate: ",TE," (",round(meta1$lower.random,2)," - ",round(meta1$upper.random,2),")",sep=""))
-	  I2 = round(meta1$I2*100,1)
-	  I2.L = round(meta1$lower.I2*100,1)
-	  I2.U = round(meta1$upper.I2*100,1)
-	  #text(par("usr")[2],(par("usr")[4]-1.4*strheight("A"))                     ,cex=1.2,adj=c(1,0),TE_text, font=1, col="black")
-	  #text(par("usr")[2],(par("usr")[4]-3.0*strheight("A"))                     ,cex=1.2,adj=c(1,0),paste("I2 = ",I2,"% (",I2.L," to ",I2.U,")", sep=""), font=1, col="black")
 	}
+
+if (data_type == "m"){
+  meta1 <- metamean(Observations,mean,sd,
+                  studlab = Name,
+                  #subgroup = Training.year, 
+                  subgroup = NULL,
+                  title = "Meta-analysis of minutes",
+                  data=example.data, fixed=FALSE, sm = "MLN", hakn=TRUE)
+  meta1$TE
+  (paste(meta1$lower,inv.logit(meta1$TE),meta1$upper))
+  }
+
+  if (data_type == "m"){
+	  # Meta-analysis
+	  data <- data[order(data$Outcome.value),]
+	  row.names(data)
+	  # Method to GLMM 02/19/2021
+	  if (subgroup =='YES'){
+		meta1 <- metaprop(Observations,mean,sd, studlab = Subject, subgroup = Group, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE)
+	  }else{
+		meta1 <- metaprop(Observations,mean,sd, studlab = Subject, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE)
+	  }
+	}
+  summary(meta1)
+  (TE = round(meta1$TE.random,2))
+  (TE_text = paste("Rate: ",TE," (",round(meta1$lower.random,2)," - ",round(meta1$upper.random,2),")",sep=""))
+  I2 = round(meta1$I2*100,1)
+  I2.L = round(meta1$lower.I2*100,1)
+  I2.U = round(meta1$upper.I2*100,1)
+  #text(par("usr")[2],(par("usr")[4]-1.4*strheight("A"))                     ,cex=1.2,adj=c(1,0),TE_text, font=1, col="black")
+  #text(par("usr")[2],(par("usr")[4]-3.0*strheight("A"))                     ,cex=1.2,adj=c(1,0),paste("I2 = ",I2,"% (",I2.L," to ",I2.U,")", sep=""), font=1, col="black")
 	
   # Plot
   if (output_type == "d")
@@ -242,15 +267,7 @@ if (data_type == "m"){
 		}
   if (output_type == "f") #------------------------------------------------------------------------
     # Forest plots
-		{
-		# Determine PDs give them a column that prepends astericks and colors estimates
-#		if (data_type == "p"){
-#			for(i in 1:length(meta1$TE)){
-#			  if (meta1$lower[i]>inv.logit(meta1$TE.random)){meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");positive.deviants <- positive.deviants + 1}
-#			  if (meta1$upper[i]<inv.logit(meta1$TE.random)){meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");negative.deviants <- negative.deviants + 1}
-#			}
 if (1 == 1){
-			
 ##* Identify deviants------------------
 left.deviants <- NULL
 right.deviants <- NULL
@@ -289,7 +306,7 @@ if (meta1$lower[i]>=(meta1$TE.random)){
 }
 meta1$studlab
 
-
+##* Forest plot ----------------------------------------------------
 		  forest(meta1, 
 			 leftcols=c("studlab","event","n"),
 			 leftlabs=c(subject_label,outcome_label,"Observations"), 
