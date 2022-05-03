@@ -265,9 +265,7 @@ if (data_type == "m"){
 	  
 	  #text(par("usr")[2]/3,par("usr")[3]+(par("usr")[4]-par("usr")[3])/2, "This example is three doctors, each with 1000 patients, \nwho have outcomes rates of 10%, 15%, 20%.\nWhat population percentile is the doctor with 10%?")
 		}
-  if (output_type == "f") #------------------------------------------------------------------------
-    # Forest plots
-if (1 == 1){
+  if (output_type == "f"){ # Forest plots-------------------------------------------------------------
 ##* Identify deviants------------------
 left.deviants <- NULL
 right.deviants <- NULL
@@ -312,7 +310,6 @@ meta1$studlab
 			 leftlabs=c(subject_label,outcome_label,"Observations"), 
 			 ref = benchmark_value,
 			 print.I2.ci = TRUE, print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab= meta1$studlab ,xlim=c(0,1))
-			}
 		# Title
 		grid.text(topic, 0.5, 0.95, gp=gpar(cex=1.4))
 		#Footer
