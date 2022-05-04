@@ -103,9 +103,9 @@ if (data_type == "m"){
 
 if (data_type == "m"){
 	  if (subgroup =='YES'){
-		meta1 <- metamean(Observations,Mean,sd,studlab = Name,subgroup = NULL, data=example.data, fixed=FALSE, sm = "MLN", hakn=TRUE, title='Means')
+		meta1 <- metamean(Observations,Mean,sd,studlab = Name,subgroup = Group, data=data, fixed=FALSE, sm = "MLN", hakn=TRUE, title='Means')
 	  }else{
-		meta1 <- metamean(Observations,Mean,sd,studlab = Name,subgroup = NULL, data=example.data, fixed=FALSE, sm = "MLN", hakn=TRUE, title='Means')
+		meta1 <- metamean(Observations,Mean,sd,studlab = Name,subgroup = NULL, data=data, fixed=FALSE, sm = "MLN", hakn=TRUE, title='Means')
 	  }
   (paste(meta1$lower,meta1$TE,meta1$upper))
   }
@@ -307,11 +307,12 @@ for(i in 1:length(meta1$TE)){
 meta1$studlab
 
 ##* Forest plot ----------------------------------------------------
-		  forest(meta1, 
+xlim <- ifelse(data_type == 'p', c(0,1), NULL)
+		forest(meta1, 
 			 leftcols=c("studlab","event","n"),
 			 leftlabs=c(subject_label,outcome_label,"Observations"), 
 			 ref = benchmark_value,
-			 print.I2.ci = TRUE, print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab= meta1$studlab ,xlim=c(0,1))
+			 print.I2.ci = TRUE, print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab= meta1$studlab)
 		# Title
 		grid.text(topic, 0.5, 0.95, gp=gpar(cex=1.4))
 		#Footer
