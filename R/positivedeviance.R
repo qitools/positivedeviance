@@ -316,7 +316,7 @@ meta1$studlab
 
 ##* Forest plot ----------------------------------------------------
 
-#if (data_type == "m"){stop(paste("Success so far!:\n ", 'Ready for forest plots - actual plotting' , sep=""))} # Works
+if (data_type == "m"){stop(paste("Success so far!:\n ", 'Ready for forest plots - actual plotting' , sep=""))} # Works
 
 		xlim <- ifelse(data_type == 'p', c(0,1), NULL)
 
