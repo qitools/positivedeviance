@@ -120,10 +120,7 @@ if (data_type == "m"){
   I2.L = round(meta1$lower.I2*100,1)
   I2.U = round(meta1$upper.I2*100,1)
 	
-  if (data_type == "m"){stop(paste("Ready to plot: I2", I2, ', TE: ', TE_text, sep=""))} # Works
-
-#stop(paste("Success so far!:\n ",TE_text , sep="")) # Works
-
+  #if (data_type == "m"){stop(paste("Success so far! Ready to plot: I2", I2, ', TE: ', TE_text, sep=""))} # Works
 
  ## Density plots---------------------------------------------------------------------------------------
 
@@ -265,7 +262,9 @@ if (data_type == "m"){
 
  ## Forest plots---------------------------------------------------------------------------------------
   if (output_type == "f"){
-	if (data_type == "m"){stop(paste("Success so far!:\n ", 'Ready for forest plots' , sep="")) # Works
+	
+	if (data_type == "m"){stop(paste("Success so far!:\n ", 'Ready for forest plots' , sep=""))} # Works
+	
 	stop(paste("Ready for Forests:", sep="")) # Works
 	##* Identify deviants------------------
 	left.deviants <- NULL
