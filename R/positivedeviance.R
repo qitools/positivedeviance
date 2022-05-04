@@ -62,7 +62,7 @@ if (data_type == "m"){
   data <- data.frame (x)
   #remove(x)
   
-(data_type == "m"){stop(paste("Dataframe rows: ",nrow(data),"\n","data: ","\n",data, sep=""))} # Works
+if (data_type == "m"){stop(paste("Dataframe rows: ",nrow(data),"\n","data: ","\n",data, sep=""))} # Works
 
   data$Observations<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
   size = nrow(data)
