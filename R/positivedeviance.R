@@ -200,6 +200,9 @@ if (data_type == "m"){
 			deviants <- data.threshold[which(data.threshold$upper < inv.logit(meta1$TE.random)),]
 			}
 		(nrow(deviants))
+
+		stop(paste("Exampless: ",data.threshold$lower,', ',inv.logit(meta1$TE.random) , sep="")) # Works
+
 		#points(deviants$outcome*100,s$y[deviants$outcome*1000], col="red", pch=19, cex=1 + 0.5*(temp.value - 1))
 		(temp.list  <- unique(deviants$Outcome.value, incomparables = FALSE))
 		#temp.value <- min(deviants$outcome)
