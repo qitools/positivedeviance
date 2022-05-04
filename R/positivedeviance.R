@@ -291,14 +291,19 @@ meta1$studlab
 ##** Asterisk to deviants------------------
 for(i in 1:length(meta1$TE)){
   # Simple adding of asterisk to deviants
-  if (meta1$upper[i]<(meta1$TE.random)){
-    meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");
-    left.deviants <- rbind(left.deviants,meta1$data[i,'mean'])}
-if (meta1$lower[i]>=(meta1$TE.random)){
-  meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");
-  right.deviants <- rbind(right.deviants,meta1$data[i,'mean'])}
+  if (data_type == "p"){
+    if (meta1$upper[i]<(inv.logit(meta1$TE.random))){
+    meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="")}
+  if (meta1$lower[i] > (inv.logit(meta1$TE.random))){
+    meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="")}
+  }
+  if (data_type == "m"){
+    if (meta1$upper[i]<(meta1$TE.random)){
+      meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="")}
+    if (meta1$lower[i]>=(meta1$TE.random)){
+      meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="")}
+  }
 }
-
 meta1$studlab
 
 ##* Forest plot ----------------------------------------------------
