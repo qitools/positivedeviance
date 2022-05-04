@@ -257,7 +257,7 @@ if (data_type == "m"){
 	  #text(par("usr")[2]/3,par("usr")[3]+(par("usr")[4]-par("usr")[3])/2, "This example is three doctors, each with 1000 patients, \nwho have outcomes rates of 10%, 15%, 20%.\nWhat population percentile is the doctor with 10%?")
 		}
   if (output_type == "f"){ # Forest plots-------------------------------------------------------------
-	#stop(paste("Ready for Forests:", sep="")) # Works
+	stop(paste("Ready for Forests:", sep="")) # Works
 	##* Identify deviants------------------
 	left.deviants <- NULL
 	right.deviants <- NULL
