@@ -1,3 +1,7 @@
+# Add?
+# Bayesian analysis to create a double asterix?
+# Use xlim requests for means if submitted
+
 positivedeviance <- function(content, topic, subject_label, subgroup, outcome_label, outcome_type, displaynames, threshold_observations, threshold_value,benchmark_value, benchmark_label, data_type, output_type, x_min, x_max, theme) {
 # Current not used: x_min, x_max,  
   #if (!topic=="99"){stop("This web app is under construction") }
@@ -64,6 +68,7 @@ if (data_type == "m"){
   
 #if (data_type == "m"){stop(paste("Success so far!\nDataframe rows: ",nrow(data),"\n","data: ","\n",data, sep=""))} # Works
 
+  data$Subject <- str_trim(data$Subject) 
   data$Observations<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
   size = nrow(data)
   size_population = sum(data$Observations)
