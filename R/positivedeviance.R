@@ -63,15 +63,16 @@ if (data_type == "m"){
   #remove(x)
   
   #stop(paste("Dataframe rows: ",nrow(data),"\n","data: ","\n",data, sep="")) # Works
+
+  data$Observations<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
   
   if (data_type == "m"){
     data$Mean<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Mean)))))
-    data$Outcome.value <-data$Mean
+    data$Outcome.value <- data$Mean
     }
   if (data_type == "p"){
 	#Calculations
 	data$Outcomes<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Outcomes)))))
-	data$Observations<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
 	data$Outcome.value <-data$Outcomes/data$Observations
 	(proportion.population <- sum(data$Outcomes)/sum(data$Observations))
 	variance <- sum(data$Observations)*(proportion.population*(1-proportion.population))
@@ -119,7 +120,7 @@ if (data_type == "m"){
   #text(par("usr")[2],(par("usr")[4]-1.4*strheight("A"))                     ,cex=1.2,adj=c(1,0),TE_text, font=1, col="black")
   #text(par("usr")[2],(par("usr")[4]-3.0*strheight("A"))                     ,cex=1.2,adj=c(1,0),paste("I2 = ",I2,"% (",I2.L," to ",I2.U,")", sep=""), font=1, col="black")
 	
-  stop(paste("Ready to plot: I2", I2, ', TE: ', TE_text, sep="")) # Works
+  #stop(paste("Ready to plot: I2", I2, ', TE: ', TE_text, sep="")) # Works
 
   # Plot
   if (output_type == "d")
@@ -258,19 +259,20 @@ if (data_type == "m"){
 	  #text(par("usr")[2]/3,par("usr")[3]+(par("usr")[4]-par("usr")[3])/2, "This example is three doctors, each with 1000 patients, \nwho have outcomes rates of 10%, 15%, 20%.\nWhat population percentile is the doctor with 10%?")
 		}
   if (output_type == "f"){ # Forest plots-------------------------------------------------------------
-##* Identify deviants------------------
-left.deviants <- NULL
-right.deviants <- NULL
-for(i in 1:length(meta1$TE)){
-  # Simple adding of asterisk to deviants
-  # !!! may need inv.logit(meta1$TE.random) for proportions
-  if (meta1$upper[i]<(meta1$TE.random)){
-    left.deviants <- rbind(left.deviants,meta1$TE[i])}
-  if (meta1$lower[i]>=(meta1$TE.random)){
-    right.deviants <- rbind(right.deviants,meta1$TE[i])}
-  }
-(left.deviants)
-(right.deviants)
+	#stop(paste("Ready for Forests:", sep="")) # Works
+	##* Identify deviants------------------
+	left.deviants <- NULL
+	right.deviants <- NULL
+	for(i in 1:length(meta1$TE)){
+	  # Simple adding of asterisk to deviants
+	  # !!! may need inv.logit(meta1$TE.random) for proportions
+	  if (meta1$upper[i]<(meta1$TE.random)){
+		left.deviants <- rbind(left.deviants,meta1$TE[i])}
+	  if (meta1$lower[i]>=(meta1$TE.random)){
+		right.deviants <- rbind(right.deviants,meta1$TE[i])}
+	  }
+	(left.deviants)
+	(right.deviants)
 
 ##** Display attribution/names------------------
 for(i in 1:length(meta1$TE)){
