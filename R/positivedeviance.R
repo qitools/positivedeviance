@@ -69,6 +69,7 @@ if (data_type == "m"){
 #if (data_type == "m"){stop(paste("Success so far!\nDataframe rows: ",nrow(data),"\n","data: ","\n",data, sep=""))} # Works
 
   data$Subject <- str_trim(as.character(data$Subject)) 
+  data$ID      <- str_trim(as.character(data$ID)) 
   data$Observations<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
   size = nrow(data)
   size_population = sum(data$Observations)
@@ -98,7 +99,6 @@ if (data_type == "m"){
 #stop(paste("Success so far!\nOutcomes: ",data$Outcome.value , sep="")) # Works
 
   ## Meta-analysis ------------------------------------
-  data$Subject <- str_trim(as.character(data$Subject),side = "both") # try again to trim
 
   if (data_type == "p"){
 	  # Method to GLMM 02/19/2021
