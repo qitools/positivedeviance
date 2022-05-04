@@ -103,9 +103,9 @@ if (data_type == "m"){
 
 if (data_type == "m"){
 	  if (subgroup =='YES'){
-		meta1 <- metamean(Observations,Mean,sd,studlab = Name,subgroup = Group, data=data, fixed=FALSE, sm = "MLN", hakn=TRUE, title='Means')
+		meta1 <- metamean(Observations,Mean,sd,studlab = Subject,subgroup = Group, data=data, fixed=FALSE, sm = "MLN", hakn=TRUE, title='Means')
 	  }else{
-		meta1 <- metamean(Observations,Mean,sd,studlab = Name,subgroup = NULL, data=data, fixed=FALSE, sm = "MLN", hakn=TRUE, title='Means')
+		meta1 <- metamean(Observations,Mean,sd,studlab = Subject,subgroup = NULL, data=data, fixed=FALSE, sm = "MLN", hakn=TRUE, title='Means')
 	  }
   (paste(meta1$lower,meta1$TE,meta1$upper))
   }
