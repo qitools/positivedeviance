@@ -263,7 +263,7 @@ if (data_type == "m"){
  ## Forest plots---------------------------------------------------------------------------------------
   if (output_type == "f"){
 	
-	if (data_type == "m"){stop(paste("Success so far!:\n ", 'Ready for forest plots' , sep=""))} # Works
+	#if (data_type == "m"){stop(paste("Success so far!:\n ", 'Ready for forest plots' , sep=""))} # Works
 	
 	stop(paste("Ready for Forests:", sep="")) # Works
 	##* Identify deviants------------------
@@ -316,7 +316,9 @@ for(i in 1:length(meta1$TE)){
 meta1$studlab
 
 ##* Forest plot ----------------------------------------------------
-xlim <- ifelse(data_type == 'p', c(0,1), NULL)
+
+		xlim <- ifelse(data_type == 'p', c(0,1), NULL)
+
 		forest(meta1, 
 			 leftcols=c("studlab","event","n"),
 			 leftlabs=c(subject_label,outcome_label,"Observations"), 
