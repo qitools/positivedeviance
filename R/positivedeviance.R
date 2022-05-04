@@ -271,7 +271,7 @@ if (data_type == "m"){
 	  if (data_type == "m"){
 		if (meta1$upper[i]<(meta1$TE.random)){
 		  left.deviants <- rbind(left.deviants,meta1$TE[i])}
-		if (meta1$lower[i]>(smeta1$TE.random)){
+		if (meta1$lower[i]>(meta1$TE.random)){
 		  right.deviants <- rbind(right.deviants,meta1$TE[i])}
 	  }  
 	}
