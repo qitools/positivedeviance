@@ -122,7 +122,7 @@ if (data_type == "m"){
 	
   if (data_type == "m"){stop(paste("Ready to plot: I2", I2, ', TE: ', TE_text, sep=""))} # Works
 
-stop(paste("Success so far!:\n ",TE_text , sep="")) # Works
+#stop(paste("Success so far!:\n ",TE_text , sep="")) # Works
 
 
  ## Density plots---------------------------------------------------------------------------------------
@@ -264,7 +264,8 @@ stop(paste("Success so far!:\n ",TE_text , sep="")) # Works
 		}
 
  ## Forest plots---------------------------------------------------------------------------------------
-  if (output_type == "f"){ # Forest plots-------------------------------------------------------------
+  if (output_type == "f"){
+	if (data_type == "m"){stop(paste("Success so far!:\n ", 'Ready for forest plots' , sep="")) # Works
 	stop(paste("Ready for Forests:", sep="")) # Works
 	##* Identify deviants------------------
 	left.deviants <- NULL
