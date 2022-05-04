@@ -195,13 +195,13 @@ if (data_type == "m"){
 	  if (!outcome_type == "NA"){
 		if (outcome_type =="g"){
 			deviants <- data.threshold[which(data.threshold$lower > inv.logit(meta1$TE.random)),]
+		# 2022-05-04 - stopped troubleshooting why all green here
+		stop(paste("Examples: ",data.threshold$lower,', ',inv.logit(meta1$TE.random) , sep="")) # Works
 			}
 		if (outcome_type =="b"){
 			deviants <- data.threshold[which(data.threshold$upper < inv.logit(meta1$TE.random)),]
 			}
 		(nrow(deviants))
-
-		stop(paste("Exampless: ",data.threshold$lower,', ',inv.logit(meta1$TE.random) , sep="")) # Works
 
 		#points(deviants$outcome*100,s$y[deviants$outcome*1000], col="red", pch=19, cex=1 + 0.5*(temp.value - 1))
 		(temp.list  <- unique(deviants$Outcome.value, incomparables = FALSE))
