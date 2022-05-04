@@ -77,6 +77,7 @@ if (data_type == "m"){
 	variance <- sum(data$Observations)*(proportion.population*(1-proportion.population))
 	(std.dev <- sqrt(variance))
   }
+  data <- data[order(data$Outcome.value),]
   size = nrow(data)
   size_population = sum(data$Observations)
   (total <- sum(data$Observations))
@@ -87,40 +88,28 @@ if (data_type == "m"){
   (probability <- pnorm(test, mean = proportion.population, sd = std.dev, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
   
   #stop(paste("std.dev: ",std.dev, sep="")) # Works
+
+  ## Meta-analysis ------------------------------------
+
   if (data_type == "p"){
-	  # Meta-analysis
-	  data <- data[order(data$Outcome.value),]
-	  row.names(data)
 	  # Method to GLMM 02/19/2021
 	  if (subgroup =='YES'){
-		meta1 <- metaprop(Outcomes, Observations, studlab = Subject, subgroup = Group, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE)
+		meta1 <- metaprop(Outcomes, Observations, studlab = Subject, subgroup = Group, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE, title='Rates')
 	  }else{
-		meta1 <- metaprop(Outcomes, Observations, studlab = Subject, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE)
+		meta1 <- metaprop(Outcomes, Observations, studlab = Subject, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE, title='Rates')
 	  }
+  (paste(meta1$lower,inv.logit(meta1$TE),meta1$upper))
 	}
 
 if (data_type == "m"){
-  meta1 <- metamean(Observations,mean,sd,
-                  studlab = Name,
-                  #subgroup = Training.year, 
-                  subgroup = NULL,
-                  title = "Meta-analysis of minutes",
-                  data=example.data, fixed=FALSE, sm = "MLN", hakn=TRUE)
-  meta1$TE
-  (paste(meta1$lower,inv.logit(meta1$TE),meta1$upper))
+	  if (subgroup =='YES'){
+		meta1 <- metamean(Observations,Mean,sd,studlab = Name,subgroup = NULL, data=example.data, fixed=FALSE, sm = "MLN", hakn=TRUE, title='Means')
+	  }else{
+		meta1 <- metamean(Observations,Mean,sd,studlab = Name,subgroup = NULL, data=example.data, fixed=FALSE, sm = "MLN", hakn=TRUE, title='Means')
+	  }
+  (paste(meta1$lower,meta1$TE,meta1$upper))
   }
 
-  if (data_type == "m"){
-	  # Meta-analysis
-	  data <- data[order(data$Outcome.value),]
-	  row.names(data)
-	  # Method to GLMM 02/19/2021
-	  if (subgroup =='YES'){
-		meta1 <- metaprop(Observations,mean,sd, studlab = Subject, subgroup = Group, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE)
-	  }else{
-		meta1 <- metaprop(Observations,mean,sd, studlab = Subject, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE)
-	  }
-	}
   summary(meta1)
   (TE = round(meta1$TE.random,2))
   (TE_text = paste("Rate: ",TE," (",round(meta1$lower.random,2)," - ",round(meta1$upper.random,2),")",sep=""))
