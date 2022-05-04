@@ -98,6 +98,7 @@ if (data_type == "m"){
 #stop(paste("Success so far!\nOutcomes: ",data$Outcome.value , sep="")) # Works
 
   ## Meta-analysis ------------------------------------
+  data$Subject <- str_trim(as.character(data$Subject),side = "both") # try again to trim
 
   if (data_type == "p"){
 	  # Method to GLMM 02/19/2021
