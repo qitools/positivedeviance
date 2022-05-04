@@ -316,17 +316,19 @@ meta1$studlab
 
 ##* Forest plot ----------------------------------------------------
 
-if (data_type == "m"){stop(paste("Success so far!:\n ", 'Ready for forest plots - actual plotting' , sep=""))} # Works
-
+#if (data_type == "m"){stop(paste("Success so far!:\n ", 'Ready for forest plots - actual plotting' , sep=""))} # Works
+# 2022-05-04 - made it to here
 		xlim <- ifelse(data_type == 'p', c(0,1), NULL)
 
 		forest(meta1, 
-			 leftcols=c("studlab","event","n"),
+			 leftcols=c("studlab","n"), #"event", # event not present if means!
 			 leftlabs=c(subject_label,outcome_label,"Observations"), 
 			 ref = benchmark_value,
 			 print.I2.ci = TRUE, print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab= meta1$studlab)
+		
 		# Title
 		grid.text(topic, 0.5, 0.95, gp=gpar(cex=1.4))
+		
 		#Footer
 		if (!is.na(benchmark_value)){
 			grid.text('Notes:', 0.08, 0.08, hjust=0, gp=gpar(cex=1, font=2))
