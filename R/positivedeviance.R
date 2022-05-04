@@ -193,10 +193,10 @@ if (data_type == "m"){
 	  #Plot deviants in green
 	  if (!outcome_type == "NA"){
 		if (outcome_type =="g"){
-			deviants <- data.threshold[which(data.threshold$Observations >= threshold_observations & data.threshold$Outcomes > threshold_value & data.threshold$Outcome.value > inv.logit(meta1$TE.random)),]
+			deviants <- data.threshold[which(data.threshold$Observations >= threshold_observations & data.threshold$Outcomes > threshold_value & data.threshold$lower > inv.logit(meta1$TE.random)),]
 			}
 		if (outcome_type =="b"){
-			deviants <- data.threshold[which(data.threshold$Observations >= threshold_observations & data.threshold$Outcomes > threshold_value & data.threshold$Outcome.value < inv.logit(meta1$TE.random)),]
+			deviants <- data.threshold[which(data.threshold$Observations >= threshold_observations & data.threshold$Outcomes > threshold_value & data.threshold$upper < inv.logit(meta1$TE.random)),]
 			}
 		(nrow(deviants))
 		#points(deviants$outcome*100,s$y[deviants$outcome*1000], col="red", pch=19, cex=1 + 0.5*(temp.value - 1))
