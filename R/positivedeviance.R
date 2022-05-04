@@ -65,6 +65,8 @@ if (data_type == "m"){
   #stop(paste("Dataframe rows: ",nrow(data),"\n","data: ","\n",data, sep="")) # Works
 
   data$Observations<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
+  size = nrow(data)
+  size_population = sum(data$Observations)
   
   if (data_type == "m"){
     data$Mean<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Mean)))))
@@ -77,17 +79,14 @@ if (data_type == "m"){
 	(proportion.population <- sum(data$Outcomes)/sum(data$Observations))
 	variance <- sum(data$Observations)*(proportion.population*(1-proportion.population))
 	(std.dev <- sqrt(variance))
+	test <- 0.10
+	(probability <- pbinom(test, size = size, prob = proportion.population, lower.tail = TRUE, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
+	# http://www.stat.yale.edu/Courses/1997-98/101/binom.htm
+	(probability <- pnorm(test, mean = proportion.population, sd = std.dev, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
   }
-  data <- data[order(data$Outcome.value),]
-  size = nrow(data)
-  size_population = sum(data$Observations)
-  (total <- sum(data$Observations))
 
-  test <- 0.10
-  (probability <- pbinom(test, size = size, prob = proportion.population, lower.tail = TRUE, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
-  # http://www.stat.yale.edu/Courses/1997-98/101/binom.htm
-  (probability <- pnorm(test, mean = proportion.population, sd = std.dev, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
-  
+  data <- data[order(data$Outcome.value),]
+
   #stop(paste("std.dev: ",std.dev, sep="")) # Works
 
   ## Meta-analysis ------------------------------------
@@ -117,8 +116,6 @@ if (data_type == "m"){
   I2 = round(meta1$I2*100,1)
   I2.L = round(meta1$lower.I2*100,1)
   I2.U = round(meta1$upper.I2*100,1)
-  #text(par("usr")[2],(par("usr")[4]-1.4*strheight("A"))                     ,cex=1.2,adj=c(1,0),TE_text, font=1, col="black")
-  #text(par("usr")[2],(par("usr")[4]-3.0*strheight("A"))                     ,cex=1.2,adj=c(1,0),paste("I2 = ",I2,"% (",I2.L," to ",I2.U,")", sep=""), font=1, col="black")
 	
   #stop(paste("Ready to plot: I2", I2, ', TE: ', TE_text, sep="")) # Works
 
@@ -264,13 +261,19 @@ if (data_type == "m"){
 	left.deviants <- NULL
 	right.deviants <- NULL
 	for(i in 1:length(meta1$TE)){
-	  # Simple adding of asterisk to deviants
-	  # !!! may need inv.logit(meta1$TE.random) for proportions
-	  if (meta1$upper[i]<(meta1$TE.random)){
-		left.deviants <- rbind(left.deviants,meta1$TE[i])}
-	  if (meta1$lower[i]>=(meta1$TE.random)){
-		right.deviants <- rbind(right.deviants,meta1$TE[i])}
-	  }
+	  if (data_type == "p"){
+		if (meta1$upper[i]<inv.logit(meta1$TE.random)){
+		  left.deviants <- rbind(left.deviants,meta1$TE[i])}
+		if (meta1$lower[i]>inv.logit(meta1$TE.random)){
+		  right.deviants <- rbind(right.deviants,meta1$TE[i])}
+		}  
+	  if (data_type == "m"){
+		if (meta1$upper[i]<(meta1$TE.random)){
+		  left.deviants <- rbind(left.deviants,meta1$TE[i])}
+		if (meta1$lower[i]>(smeta1$TE.random)){
+		  right.deviants <- rbind(right.deviants,meta1$TE[i])}
+	  }  
+	}
 	(left.deviants)
 	(right.deviants)
 
@@ -294,8 +297,8 @@ for(i in 1:length(meta1$TE)){
 if (meta1$lower[i]>=(meta1$TE.random)){
   meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="");
   right.deviants <- rbind(right.deviants,meta1$data[i,'mean'])}
-
 }
+
 meta1$studlab
 
 ##* Forest plot ----------------------------------------------------
