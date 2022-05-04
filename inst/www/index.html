@@ -1,327 +1,425 @@
-positivedeviance <- function(content, topic, subject_label, subgroup, outcome_label, outcome_type, displaynames, threshold_observations, threshold_value,benchmark_value, benchmark_label, data_type, output_type, x_min, x_max, theme) {
-# Current not used: x_min, x_max,  
-  #if (!topic=="99"){stop("This web app is under construction") }
-  #stop("Request received") #Works	
-  
-`%notin%` <- Negate(`%in%`)
-	
-  if (is.na(benchmark_value) | benchmark_value == 'NULL') {benchmark_value <- NA}
+<!DOCTYPE html>  
+<html lang="en">
+<head>
+<title>QI Tools: Positive deviants</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-  benchmark_value <- as.numeric(benchmark_value)
-  threshold_value <- as.numeric(threshold_value)
-  threshold_observations <- as.numeric(threshold_observations)
-	
-  if (is.data.frame(content)){ 
-    # Script is being run locally on a desktop and not online at openCPU
-    #Column names of local file must be 
-    x <- content
-  }else{
-    # Script is being run online at openCPU and not locally on a desktop
-    # Special handling if needed of content
-    first.row <- substr(content, 1, regexpr("\n",content))
-    num.columns <- str_count(first.row, ",")
+<!-- jquery -->
+<script src="//code.jquery.com/jquery-2.1.3.min.js"> </script>
 
-    #stop(paste("num.columns: ",num.columns, sep="")) # Works
-    
-    temp <- content 
-    # Uses package meta http://cran.r-project.org/web/packages/meta/
-    # http://stat.ethz.ch/R-manual/R-devel/library/base/html/regex.html
-    #temp <- gsub('\n', '', fixed = TRUE, temp, perl = TRUE)
-    #temp <- gsub("\\s+$", "", temp, perl = TRUE) #Removing trailing whitespace
-    #temp <- gsub(",+$", "", temp, perl = TRUE) #Remove trailing comma if accidentally added by user online
-    temp <- gsub("\r", ' ', fixed = TRUE, temp)
-    temp <- gsub("\n", ' ', fixed = TRUE, temp)
-    temp <- gsub("\t", ' ', fixed = TRUE, temp)
-    temp <- gsub(',', '","', fixed = TRUE, temp)
-    
-    temp <- paste('"',temp,'"',sep = '')
-    temp <- paste('Mymatrix <- matrix(c(',temp,'), ncol=',num.columns,', byrow=TRUE)')
-    x<-eval(parse(file = "", n = NULL, text = temp))
-  }
-  
-  #stop(paste("x: ",x, sep="")) # Works
-  
-  # Delete first row if contains column labels (detected by as.numeric(year) = false)
-  first.row.header <- FALSE
-  if (is.na(as.numeric(x[1,3])) == TRUE){first.row.header <- TRUE}
-  if (first.row.header == TRUE){x <- x[-c(1),]}
-  # Delete terminal rows if contains instructions (detected by as.numeric(year) = false)
-  x <- x[!(is.na(as.numeric(x[,3])) == TRUE),]
-  
-#### Start here if running locally
+<!-- tooltip -->
+<script type="text/javascript" src="qtip/jquery.qtip.min.js"></script>
+<link rel="stylesheet" type="text/css" href="qtip/jquery.qtip.min.css" />
 
-if (data_type == "p"){
-	column.names <- c("Subject",'ID',"Group", "Outcomes", "Observations")
-	}
-if (data_type == "m"){
-	column.names <- c("Subject",'ID',"Group", "Observations", "Mean", "sd")
-	}
-  #dimnames(x) <- list(NULL, column.names)
-  colnames(x) <- column.names
-  
-  data <- data.frame (x)
-  #remove(x)
-  
-  #stop(paste("Dataframe rows: ",nrow(data),"\n","data: ","\n",data, sep="")) # Works
+<!-- ocpu library -->
+<script src="opencpu/opencpu-0.4.js"> </script>
 
-  data$Observations<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
-  size = nrow(data)
-  size_population = sum(data$Observations)
-  
-  if (data_type == "m"){
-    data$Mean<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Mean)))))
-	data$sd<-as.numeric(sd)
-    data$Outcome.value <- data$Mean
-    }
-  if (data_type == "p"){
-	#Calculations
-	data$Outcomes<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Outcomes)))))
-	data$Outcome.value <-data$Outcomes/data$Observations
-	(proportion.population <- sum(data$Outcomes)/sum(data$Observations))
-	variance <- sum(data$Observations)*(proportion.population*(1-proportion.population))
-	(std.dev <- sqrt(variance))
-	test <- 0.10
-	(probability <- pbinom(test, size = size, prob = proportion.population, lower.tail = TRUE, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
-	# http://www.stat.yale.edu/Courses/1997-98/101/binom.htm
-	(probability <- pnorm(test, mean = proportion.population, sd = std.dev, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
-  }
+<!-- some optional styling stuff -->
+<!-- 
+<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+-->
+<link href="jqueryui/css/ui-lightness/jquery-ui-1.10.3.custom.css" rel="stylesheet" media="screen"> 
 
-  data <- data[order(data$Outcome.value),]
+<script src="bootstrap/js/bootstrap.js"> </script>
+<script src="jqueryui/jquery-ui-1.10.3.custom.js"> </script>
 
-  #stop(paste("std.dev: ",std.dev, sep="")) # Works
+<!-- jquery-csv from http://code.google.com/p/jquery-csv/ -->
+<!-- <script src="https://jquery-csv.googlecode.com/git/src/jquery.csv.js"></script> -->
+<script src="jquery-csv/jquery.csv.js"></script>
 
-  ## Meta-analysis ------------------------------------
+<!-- http://jqueryui.com/dialog/ -->
+<script src="https://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 
-  if (data_type == "p"){
-	  # Method to GLMM 02/19/2021
-	  if (subgroup =='YES'){
-		meta1 <- metaprop(Outcomes, Observations, studlab = Subject, subgroup = Group, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE, title='Rates')
-	  }else{
-		meta1 <- metaprop(Outcomes, Observations, studlab = Subject, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE, title='Rates')
-	  }
-  (paste(meta1$lower,inv.logit(meta1$TE),meta1$upper))
+<!-- Ajax.org Cloud9 Editor from http://ace.c9.io/#nav=api&api=editor -->
+<script src="src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+
+<script> 
+$(document).ready(function(){
+
+	//optional, requires jquery-ui.
+	$("#plotdiv").resizable()
+
+	if(isAPIAvailable()) {
+	  $('#files').bind('change', handleFileSelect);
 	}
 
-if (data_type == "m"){
-	  if (subgroup =='YES'){
-		meta1 <- metamean(Observations,Mean,sd,studlab = Subject,subgroup = Group, data=data, fixed=FALSE, sm = "MLN", hakn=TRUE, title='Means')
-	  }else{
-		meta1 <- metamean(Observations,Mean,sd,studlab = Subject,subgroup = NULL, data=data, fixed=FALSE, sm = "MLN", hakn=TRUE, title='Means')
-	  }
-  (paste(meta1$lower,meta1$TE,meta1$upper))
+  //For Ajax.org Cloud9 Editor
+  var editor = ace.edit("editor");
+  editor.setTheme("ace/theme/github");
+  editor.getSession().setMode("ace/mode/r");
+  editor.setFontSize("14px");
+  editor.getSession().setUseWrapMode(true);
+  
+  // drawplot
+  function drawplot(){
+    $("#plotbutton").attr("disabled", "disabled")
+  	temp = editor.getSession().getValue()
+	//Three replacements below are not required on a local server, but are at https://public.opencpu.org/ocpu/github/
+	//temp = temp.replace(/\r?\n/g, '')
+	temp = temp.replace(/\s+$/g, '')
+	temp = temp.replace(/$\s+/g, '')
+	temp = temp.replace(/,$/g, '')
+
+	var req = $('#plotdiv').rplot("positivedeviance", {
+		content:        temp,
+		topic :          $("#topic").val(),
+		outcome_label :  $("#outcome_label").val(),
+		subject_label :  $("#subject_label").val(),
+		subgroup		:  $("#subgroup").val(),
+		outcome_type :   $("#outcome_type").val(),
+		benchmark_value : $("#benchmark_value").val(),
+		benchmark_label : $("#benchmark_label").val(),
+		benchmark_label : $("#benchmark_label").val(),
+		displaynames : $("#displaynames").val(),
+		threshold_observations : $("#threshold_observations").val(),
+		threshold_value : $("#threshold_value").val(),
+		data_type: $("#data_type").val(),
+		output_type: $("#output_type").val(),
+		x_min:           $("#x_min").val(),
+		x_max:           $("#x_max").val(),
+		theme:           $("#theme").val()
+    }).always(function(){
+      $("#plotbutton").removeAttr("disabled");
+    }).fail(function(){
+      alert("HTTP error " + req.status + ": " + req.responseText);
+    });
   }
 
-  summary(meta1)
-  (TE = round(meta1$TE.random,2))
-  (TE_text = paste("Rate: ",TE," (",round(meta1$lower.random,2)," - ",round(meta1$upper.random,2),")",sep=""))
-  I2 = round(meta1$I2*100,1)
-  I2.L = round(meta1$lower.I2*100,1)
-  I2.U = round(meta1$upper.I2*100,1)
-	
-  #stop(paste("Ready to plot: I2", I2, ', TE: ', TE_text, sep="")) # Works
+  // Click handlers
+  $("#plotbutton").on("click", function(e){
+    e.preventDefault();
+    drawplot();
+  });
 
-  # Plot
-  if (output_type == "d")
-	  {
-	  # Which size to use?
-	  size <- nrow(data)
-	  #size <- size_population
-	  n <- seq(0, size, by = 1)
-	  #x <- seq(0, 1, by = 0.01) # No work
-	  #stop(paste("x: ",x, sep="")) # Works
-	  if (data_type == "m"){
-		densities<-dnorm(n, mean = proportion.population, sd = std.dev, log = FALSE) # *adjust
-	  }
-	  if (data_type == "p"){
-		densities<-dbinom(n, size = size, prob = proportion.population , log = FALSE) # *adjust
-	  }
-	  #stop(paste("densities: ",densities, sep="")) # Works
-	  adjust = 100/size
-	  adjust.axis = 100
-	  if (data_type == "m"){
-		adjust.axis<-1
-	  }
-	  plot (n*adjust, densities/adjust, type = "n", xlab="", ylab = "Probablity of result",
-			main = paste("Distribution of ",outcome_label," by ", subject_label,sep=""),xlim=c(0,100), ylim=c(0,0.5))
-	  mtext(paste("Results: proportion with ",outcome_label,sep=""), side=1, line = 3)
-	  #####
-	  x <- seq(0, size, by = 1)
-	  densities <-dbinom(x, size = size, prob = proportion.population , log = FALSE) # *adjust
-	  s <- spline(x*adjust, densities, xout=seq(0,100,by=1))
-	  lines(s, col = "black")
+  $("#addcommas").on("click", function(e){
+    e.preventDefault();
+    temp = editor.getValue()
+	temp = temp.replace(/\n/g, ',\n')
+	temp = temp.replace(/$\s+/g, '')
+	temp = temp.replace(/\s+$/g, '')
+	temp = temp.replace(/ +/g, ', ')
+	temp = temp.replace(/\t/g, ', ')
+	temp = temp + ","
+	temp = temp.replace(/,,/g, ',')
+    editor.setValue(temp,1);
+  });	  
 
-	  #benchmark
-	  # '1+' in line below is key 02/24/2019
-	  segments(benchmark_value*adjust.axis,0,benchmark_value*adjust.axis,s$y[1+benchmark_value*adjust.axis], col="green")
-	  axis(1,at=benchmark_value*adjust.axis,labels="B", col.ticks="green", col.axis="green", col="green", font=2, lwd=2, padj=1.2, las = 1)
-	  
-	  #Indicate local rate
-	  axis(1,at=proportion.population*adjust.axis,labels="M", col.ticks="blue", col.axis="blue", col="blue", lwd=2, padj=1.2, las = 1)
-	  #text(proportion.population*size*adjust,0,paste("Mean rate: ",round(100*proportion.population,0),"%",sep=""),col="blue")
-	  
-	  #Ratings that qualify (> threshold_observations observations)
-	  data.threshold <-data[which(data$Observations >= threshold_observations),]
-	  (nrow(data.threshold))
-	  
-	  #Plot point(s) that qualify
-	  # '1+' in line below is key 02/24/2019
-	  points(data.threshold$Outcome.value*adjust.axis,s$y[1+data.threshold$Outcome.value*adjust.axis], col="black", pch=19, cex = 1)
-	  temp.list  <- unique(data.threshold$Outcome.value, incomparables = FALSE)
+  //Examples	
+    $(".example").click(function(){
+	if($(this).val()=="ex_1") {$("#distribution_type").val("p");$("#totalencounters").css("display","none");;editor.setValue("1,1,12,30,\n2,1,8,25,\n3,1,5,20,\n4,1,3,15,\n5,2,6,14,\n6,2,5,13,\n7,2,6,12,\n8,2,5,12,\n10,3,4,11,\n11,3,5,11,\n12,3,2,11,\n13,4,5,11,\n14,4,3,9,\n15,4,2,8,\n16,4,3,8,\n17,5,3,7,\n18,5,1,6,\n19,6,1,4,\n20,6,4,7,\n21,6,2,3,",1);}
+	if($(this).val()=="ex_2") {$("#distribution_type").val("p");$("#totalencounters").css("display","none");;editor.setValue("'Non-parsable', 7,\n'Refused (cost)', 4,\n'Refused (other)', 4,\n'No documentation', 8,\n'Not PCP encounter', 9",1);}
+	if($(this).val()=="ex_3") {$("#distribution_type").val("b");$("#totalencounters").css("display","inline");$("#totalencounters").val(24);;editor.setValue("'Non-parsable', 7,\n'Refused (cost)', 4,\n'Refused (other)', 4,\n'No documentation', 8,\n'Not PCP encounter', 9",1);}
+  });
 
-	  duplicates <- 0
-	  for(i in 1:length(temp.list))
-	  {
-		temp.data <- data.threshold[which(data.threshold$Outcome.value == temp.list[i]),] 
-		temp.value <- nrow(temp.data)
-		if (temp.value > 1)
-		  {# '1+' in line below is key 02/24/2019
-		  duplicates <- 1.5
-		  text(temp.list[i]*adjust.axis,s$y[1+temp.data$Outcome.value*adjust.axis],temp.value, pos=3, col="black", font=1)
-		}
-	  }
-	  
-	  #Plot deviants in green
-	  if (!outcome_type == "NA"){
-		deviants <- data.threshold[which(data.threshold$Observations >= threshold_observations & data.threshold$Outcome.value < threshold_value),]
-		if (outcome_type =="g"){deviants <- data.threshold[which(data.threshold$Observations >= threshold_observations & data.threshold$Outcome.value > threshold_value),]}
-		(nrow(deviants))
-		#points(deviants$outcome*100,s$y[deviants$outcome*1000], col="red", pch=19, cex=1 + 0.5*(temp.value - 1))
-		(temp.list  <- unique(deviants$Outcome.value, incomparables = FALSE))
-		#temp.value <- min(deviants$outcome)
-		for(i in 1:length(temp.list))
-		{
-		  temp.data <- deviants[which(deviants$Outcome.value == temp.list[i]),] 
-		  temp.value <- nrow(temp.data)
-		  point.size <- 1 + 0.25*(temp.value - 1)
-		  point.size <- 1
-		  # '1+' in line below is key 02/24/2019
-		  points(temp.data$Outcome.value*adjust.axis,s$y[1+temp.data$Outcome.value*adjust.axis], col="green", pch=19, cex=point.size)
-		  if (temp.value > 1)
-			{# '1+' in line below is key 02/24/2019
-			text(temp.list[i]*adjust.axis,s$y[1+temp.data$Outcome.value*adjust.axis],temp.value, pos=3, col="green", font=2)
-			}
-		  #temp.data <- deviants[which(deviants$outcome != temp.value),] 
-		}
-		
-		(temp.list  <- unique(deviants$Subject, incomparables = FALSE))
-		(deviant.Outcomes <- sum(deviants$Outcomes))
-		(deviant.Observations <- sum(deviants$Observations))
-		(deviant.rate <- deviant.Outcomes/deviant.Observations)
-	  }	
-	  
-	  #Details
-	  textout0 <- paste("Summary:",sep="")
-	  textout1 <- paste("Number of ",subject_label," assessed: ",size," (observations: ",total,")",sep="")
-	  textout2 <- paste("Heterogeneity (I2): ",I2,"%",sep="")
-	  textout3 <- paste("       ... among ",subject_label," with ", threshold_observations," or more observations: ",round(100*min(data.threshold$Outcome.value),0),"% to ",round(100*max(data.threshold$Outcome.value),0),"%",sep="")
-	  if (!outcome_type == "NA"){
-		textout4 <- paste("       ... among positive deviants: ",round(100*min(deviants$Outcome.value),0),"% to ",round(100*max(deviants$Outcome.value),0),"%",sep="")
-		textout5 <- paste("Among local positive deviants:",sep="")
-		textout6 <- paste("  ",round(100*deviant.rate,0),"% (",deviant.Outcomes," of ",deviant.Observations," observations) have ",outcome_label,sep="")
-		if (data_type == "m"){
-		  textout6 <- paste("  ",4.75," is mean rating",sep="")
-		  }
-	  }
-	  textout10 <- paste("Legend:",sep="")
-	  textout11 <- paste("Points indicate ", subject_label, " with  ",threshold_observations," or more observations",sep="")
-	  textout12 <- paste("Numbers indicate number of ",subject_label," with that result (if > 1)",sep="")
-	  textout13 <- paste("M: mean is " ,round(proportion.population*100,0),"%",sep="")
-	  if (data_type == "m"){
-		textout13 <- paste("M: mean is " ,4.0,sep="")
-		}
-	  textout14 <- paste("B: ",benchmark_label,": " ,benchmark_value*100,"%",sep="")
-	  if (data_type == "m"){
-		textout14 <- paste("B: ",benchmark_label,": " ,benchmark_value,sep="")
-	  }
-	  # Now write the texts
-	  # Left-hand side of plot
-	  #if (proportion.population > 0){ #So always use this arrangement
-	  xpos <- par("usr")[1] + 2.0*strwidth("A")
-	  text(xpos,par("usr")[4]-2.0*strheight("A"),textout0,adj=c(0,0), cex=1.0, font = 2)
-	  #text(xpos,par("usr")[4]-3.5*strheight("A"),textout1,adj=c(0,0), cex=0.8)
-	  text(xpos,par("usr")[4]-3.5*strheight("A"),textout2,adj=c(0,0), cex=0.8)
-	  #text(xpos,par("usr")[4]-6.5*strheight("A"),textout3,adj=c(0,0), cex=0.8)
-	  #text(xpos,par("usr")[4]-8.0*strheight("A"),textout4,adj=c(0,0), cex=0.8)
-	  if (!outcome_type == "NA"){
-		text(xpos,par("usr")[4]-5*strheight("A"),textout5,col="black", font=1, adj=c(0,0), cex=0.8)
-		text(xpos,par("usr")[4]-6.5*strheight("A"),textout6,col="black", font=1, adj=c(0,0), cex=0.8)
-	  }
-	  # Right-hand side of plot
-	  xpos <- par("usr")[2] - 2.0*strwidth("A")
-	  text(xpos,par("usr")[4]-2.0*strheight("A"),textout10,adj=c(1,0), cex=1.0, font = 2)
-	  text(xpos,par("usr")[4]-3.5*strheight("A"),textout11,adj=c(1,0), cex=0.8)
-	  if (duplicates == 1.5)  {text(xpos,par("usr")[4]-5.0*strheight("A"),textout12,adj=c(1,0), cex=0.8)}
-	  text(xpos,par("usr")[4]-(5.0+duplicates)*strheight("A"),textout13,adj=c(1,0), cex=0.8, col="blue")
-	  if (benchmark_value != 0)  {text(par("usr")[2] - 2.0*strwidth("A"),par("usr")[4]-(6.5+duplicates)*strheight("A"),textout14,adj=c(1,0), font=2, cex=0.8, col="green")}
-	  
-	  #text(par("usr")[2]/3,par("usr")[3]+(par("usr")[4]-par("usr")[3])/2, "This example is three doctors, each with 1000 patients, \nwho have outcomes rates of 10%, 15%, 20%.\nWhat population percentile is the doctor with 10%?")
-		}
-  if (output_type == "f"){ # Forest plots-------------------------------------------------------------
-	#stop(paste("Ready for Forests:", sep="")) # Works
-	##* Identify deviants------------------
-	left.deviants <- NULL
-	right.deviants <- NULL
-	for(i in 1:length(meta1$TE)){
-	  if (data_type == "p"){
-		if (meta1$upper[i]<inv.logit(meta1$TE.random)){
-		  left.deviants <- rbind(left.deviants,meta1$TE[i])}
-		if (meta1$lower[i]>inv.logit(meta1$TE.random)){
-		  right.deviants <- rbind(right.deviants,meta1$TE[i])}
-		}  
-	  if (data_type == "m"){
-		if (meta1$upper[i]<(meta1$TE.random)){
-		  left.deviants <- rbind(left.deviants,meta1$TE[i])}
-		if (meta1$lower[i]>(smeta1$TE.random)){
-		  right.deviants <- rbind(right.deviants,meta1$TE[i])}
-	  }  
-	}
-	(left.deviants)
-	(right.deviants)
-
-##** Display attribution/names------------------
-for(i in 1:length(meta1$TE)){
-  # Replacing names as needed
-  if (displaynames == 'none'){meta1$studlab[i] <- meta1$data$ID[i]}
-  if (displaynames == 'selected'){
-    if (outcome_type == 'b' & meta1$TE[i] %notin% left.deviants){meta1$studlab[i] <- meta1$data$ID[i]}
-    if (outcome_type == 'g' & meta1$TE[i] %notin% right.deviants){meta1$studlab[i] <- meta1$data$ID[i]}
+  function isAPIAvailable() {
+    // Check for the various File API support.
+    if (window.File && window.FileReader && window.FileList && window.Blob) {
+      // Great success! All the File APIs are supported.
+      return true;
+    } else {
+      // source: File API availability - http://caniuse.com/#feat=fileapi
+      // source: <output> availability - http://html5doctor.com/the-output-element/
+      document.writeln('The HTML5 APIs used in this form are only available in the following browsers:<br />');
+      // 6.0 File API & 13.0 <output>
+      document.writeln(' - Google Chrome: 13.0 or later<br />');
+      // 3.6 File API & 6.0 <output>
+      document.writeln(' - Mozilla Firefox: 6.0 or later<br />');
+      // 10.0 File API & 10.0 <output>
+      document.writeln(' - Internet Explorer: Not supported (partial support expected in 10.0)<br />');
+      // ? File API & 5.1 <output>
+      document.writeln(' - Safari: Not supported<br />');
+      // ? File API & 9.2 <output>
+      document.writeln(' - Opera: Not supported');
+      return false;
     }
   }
-meta1$studlab
 
-##** Asterisk to deviants------------------
-for(i in 1:length(meta1$TE)){
-  # Simple adding of asterisk to deviants
-  if (data_type == "p"){
-    if (meta1$upper[i]<(inv.logit(meta1$TE.random))){
-    meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="")}
-  if (meta1$lower[i] > (inv.logit(meta1$TE.random))){
-    meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="")}
-  }
-  if (data_type == "m"){
-    if (meta1$upper[i]<(meta1$TE.random)){
-      meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="")}
-    if (meta1$lower[i]>=(meta1$TE.random)){
-      meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="")}
-  }
-}
-meta1$studlab
+  function handleFileSelect(evt) {
+	    var files = evt.target.files; // FileList object
+	    var file = files[0];
+	    // read the file contents
+	    printTable(file);
+	  }
 
-##* Forest plot ----------------------------------------------------
-xlim <- ifelse(data_type == 'p', c(0,1), NULL)
-		forest(meta1, 
-			 leftcols=c("studlab","event","n"),
-			 leftlabs=c(subject_label,outcome_label,"Observations"), 
-			 ref = benchmark_value,
-			 print.I2.ci = TRUE, print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab= meta1$studlab)
-		# Title
-		grid.text(topic, 0.5, 0.95, gp=gpar(cex=1.4))
-		#Footer
-		if (!is.na(benchmark_value)){
-			grid.text('Notes:', 0.08, 0.08, hjust=0, gp=gpar(cex=1, font=2))
-			Footer <- NULL
-			Footer <- paste(Footer,"Goal is ", benchmark_label, ": ", benchmark_value, " (solid vertical line)")
-			grid.text(Footer, 0.08, 0.06, hjust=0, gp=gpar(cex=1, font=1))
+	function printTable(file) {
+ 		var reader = new FileReader();
+		reader.readAsText(file);
+		reader.onload = function(event){
+			var csv = event.target.result;
+			var data = $.csv.toArrays(csv);
+			var html = '';
+			for(var row in data) {
+				if($("#header").val() == "FALSE" || [row] > 0 ){
+			for(var item in data[row]) {
+				html += data[row][item] + ', ';
+				}
+			html += '\r\n';
 			}
-  		}
+		}
+		editor.setValue(html,1);
+	};
+	reader.onerror = function(){ alert('Unable to read ' + file.fileName); };
+	}
+
+  //init on start
+  //drawplot();
+  
+});
+</script>
+<style>
+
+.container
+{
+/* width: 860px; 01/26/2019 */
+margin-top: 0px;
+margin-right: auto;
+margin-bottom: 0px;
+margin-left: auto;
 }
+fieldset.options{
+	border: 3px solid #6DC6E7;
+	background-color: #FFFFFF;
+	width:575px;height:100px;
+}
+#editor { 
+  position: relative;
+  width: 450px;
+  height: 275px;
+}
+    
+#plotdiv {
+  width: 1000px;
+  height: 400px;
+  border: 1px solid #e3e3e3;
+  border-radius: 4px;
+}
+
+#plotbutton{
+  width: 120px;
+  margin-left: 20px;
+}
+
+.twocolumns
+{
+columns:100px 2;
+-webkit-columns:100px 2; /* Safari and Chrome */
+-moz-columns:100px 2; /* Firefox */
+}
+
+#menu
+{
+list-style-type:none;
+margin:0;
+padding:0;
+overflow:hidden;
+} 
+
+.listitem
+{
+display:inline;
+float:left;
+}
+
+a.menuitem:link,a.menuitem:visited
+{
+display:block;
+width:130px;
+height:40px;
+font-weight:bold;
+text-align:center;
+padding:4px;
+text-decoration:none;background-color:#6DC6E7;
+color:#FFFFFF;
+}
+
+a.menuitem:hover,a.menuitem:active
+{
+background-color:#0022B4;
+color:#FFFFFF;
+}
+
+</style>
+</head>
+
+<body>
+
+  <div class="container" style="width:1000px">
+
+	<div class="page-header"> 
+		<div  style="float:left;color:#0022B4">
+			<h1>QI Tools</h1>
+			<h2>Positive deviance: identifying deviants with probability distributions</h2>
+		</div>
+		<div style="float:right;color:#0022B4; margin-top: 19px">
+			<img src="images/SoMWich_1C_UnitHorz_72dpi.jpg" alt="KUSM-W logo"/>
+		</div>
+	</div>
+	<div style="clear:both"></div>
+
+	<ul id="menu">
+	<li class="listitem"><a href="../../home/www/" class="menuitem">Home</a></li>
+	<li class="listitem"><a href="../../ishikawa/www/" class="menuitem">Ishikawa<br/>diagram</a></li>
+	<li class="listitem"><a href="../../pareto/www/" class="menuitem">Pareto &amp; Sorted<br/>bar charts</a></li>
+	<li class="listitem"><a href="../../charts/www/" class="menuitem">Process control &amp; Run charts</a></li>
+	<li class="listitem"><a href="../../positivedeviance/www/" class="menuitem">Positive<br/>deviance</a></li>
+	<li class="listitem"><a href="../../processmap/www/" class="menuitem">Process maps</a></li>
+	<li class="listitem"><a href="../../home/www/measures.html" class="menuitem">Specific <br/>quality measures</a></li>
+	</ul> 
+	<div id="">&nbsp;</div> 
+	
+		<!-- Left column -->
+		<div style="width:500px;float:left">
+			<form class="well" id="paramform" target="target" style="width:500px;">
+			<fieldset style="border: 3px solid #6DC6E7; background-color: #FFFFFF; width:500px;height:850px;">
+			<legend style="font-weight:bold">Enter inputs</legend>
+			<ul>
+				<li>Before using this type of plot:
+					<ul>
+						<li>Have consent from participants to share data, else anonimize the data. Some groups may choose not to attribute data, or only to attribute the positive deviants' data on the first improvement cycle.</li>
+						<li>Conduct the positive deviance seminar at the time, or soon after sharing data. The rational is that feedback can generate much emotion (Payne, 2016 PMID <a href="http://pubmed.gov/27412170">27412170</a>) and is more effective if the solution to improvement is provided(Hysong et al, 2009 PMID <a href="http://pubmed.gov/19194332">19194332</a>). However, these approaches are uncommonly done(Hysong et al, 2021 PMID <a href="http://pubmed.gov/33830786">33830786</a>). </li>
+					</ul>
+				</li>
+				<li>Replace the data below in this example <a href="https://en.wikipedia.org/wiki/Probability_distribution">probability distribution</a> with your observations or.</li>
+				<li>Upload a csv file formatted as in this <a href="example.csv">example file</a>.
+				<input type=file id=files name=files style="width:200px"/>
+				1st row is column names? <select id="header" name="header"><option value=TRUE selected> TRUE </option> <option value=FALSE> FALSE </option> </select>
+				</li>
+				<li>Separate columns with commas. <a id="addcommas" href="#">Click here</a> to add commas.</li>
+			</ul>
+			<div id="editor">subject,group,count,observations,
+ 1,1, 3,30,
+ 2,1, 8,25,
+ 3,1, 5,20,
+ 4,1, 3,15,
+ 5,2, 6,14,
+ 6,2, 5,13,
+ 7,2, 6,12,
+ 8,2, 5,12,
+10,3, 4,11,
+11,3, 5,11,
+12,3, 2,11,
+13,3, 5,11,
+14,4, 3, 9,
+15,4, 2, 8,
+16,4, 3, 8,
+17,5, 3, 7,
+18,5, 1, 6,
+19,5, 1, 4,
+20,6, 14, 21,
+21,6, 3, 4,
+			</div>	
+            <br />
+            <label>Topic (for title - optional):</label> 
+            <input type="text" id="topic" value="Assessment of heterogeneity in our project" style="width:300px" /> <br/>
+
+            <label>Subjects (people,sites,units,etc):</label> 
+            <input type="text" id="subject_label" value="Site"/> <br/>
+				
+	    <label>Subgroup by group (column 2)? </label> <select id="subgroup" name="subgroup"><option value=NO selected> No </option> <option value=YES> YES </option> </select><br/>
+
+            <label>Outcome:</label> 
+            <input type="text" id="outcome_label" value="Example bad outcome"/>
+
+            <label>Type</label> 
+            <select id="outcome_type">
+              <option value="NA" selected>NA</option>
+              <option value="b">Bad</option>
+              <option value="g">Good</option>
+            </select> <br />
+
+            <label>Benchmark:</label> 
+            <input type="text" id="benchmark_label" value="Best published report. Jones, 2020, PMID 12345678"  style="width:300px"  /> Value <input type="text" id="benchmark_value" style="width:25px" value="0.70"/>  <br />
+
+	<label>Data type</label> 
+            <select id="data_type">
+              <option value="p" selected>Proportions</option>
+              <option value="m">Means</option>
+            </select><br />
+	<label>Plot type</label> 
+            <select id="output_type">
+              <option value="d">Distribution</option>
+              <option value="f" selected>Forest plot</option>
+            </select> <span>X-axis limits: <input type="text" id="x_min" value="0" style="width:25px" /> to <input type="text" id="x_max" value="1" style="width:25px" /></span><br />
+	
+	<label>Display names or random identiers (if forest plot):</label> 
+            <select id="displaynames">
+              <option value="none" selected>No names</option>
+              <option value="selected">Names of deviants only</option>
+              <option value="all">Names of everyone</option>
+            </select><br/>
+				
+	<label>Threshold (#observations per row required for plotting on histogram):</label> 
+            <input type="text" id="threshold_observations" style="width:25px" value="4"/> <br/>
+
+	<label>Threshold for PDs (colors PDs green when outcome type not NA):</label>  
+            <input type="text" id="threshold_value" style="width:25px" value="0.75"/> <br/>
+
+            <div style="display:none"><label>Plot logo:</label> 
+            <select id="theme">
+              <option value="white" selected>None</option>
+              <option value="KU">KU</option>
+            </select></div>
+
+            <br />
+            <button class="btn btn-small btn-primary" id="plotbutton"><i class="icon-ok icon-white"></i> Update Plot</button>
+          </fieldset>
+        </form>
+	</div>
+	
+	<!-- Right column-->
+    <div style="width:450px;float:right;background-color: #FFFFFF;">
+	<fieldset style="border: 3px solid #6DC6E7; background-color: #FFFFFF; width:450px;">
+		<legend style="font-weight:bold">Example scenarios</legend>
+		<h3 style="margin-bottom:0px">Scenario 1</h3>
+		<div><input type="radio" name="example" class="example" value="ex_1" id="ex_1" checked /><label for="ex_1">A review of bad outcomes at 20 sites with 237 observations (patient encounters).</label></div>
+			<ul>
+				<li>In this analysis, was the mean of the 20 sites better or worse than the published benchmark?</li>
+				<li>In this analysis, which points (indicate the points by their percentages on the x axis) would you choose to be positive deviants?</li>
+			</ul>
+		<h3 style="margin-bottom:0px">Scenario 2</h3>
+		<div><input type="radio" name="example" class="example" value="ex_2" id="ex_2"/><label for="ex_2">The same 20 sites with 237 observations (patient encounters).</label></div>
+			<ul>
+				<li>Pending content...</li>
+			</ul>
+		<div><input type="radio" name="example" class="example" value="ex_3" id="ex_3"/><label for="ex_3">The same anlaysis, but...</label></div>
+			<ul>
+				<li>Pending content...</li>
+			</ul>
+		</fieldset>
+	  </div>
+	
+	<div style="clear:both">&nbsp;</div>
+	<div >Hint: if bad spacing between title/footer text and the plot, click 'png' file type in upper right of plot. Then after the image opens in a new browser window, alter the image's dimensions in the url of the window. <a href="images/plot.resize.png" title="Click to display example in a new window" target="_blank">Click here to see screen capture of an example</a>.&nbsp;<img src="images/External.svg.png" alt="opens in new window" width="13"></div>
+      <div class="span9">
+        <div id="plotdiv"></div>
+      </div>
+	      <div class="span12">
+        <h3>About</h3>
+        <h4>Technical details</h4>
+        <p>This is an OpenCPU application.</p>
+		<p>Please help improve this application <br/>by editing the source code.</p>
+        <table class="table table-striped">
+          <tr><th>Resource</th> <th>link</th></tr>
+          <tr><td>Package Info</td> <td><a href=".." target="blank">link</a></td></tr>       
+          <tr><td>Function Source</td><td><a href="../R/positivedeviance/print" target="blank">link</a></td><td></tr>
+          <tr><td>Source Code</td><td><a href="https://github.com/qitools/positivedeviance" target="blank">link</a></td><td></tr>
+          <tr><td>Help Page (html)</td><td><a href="../man/qitools/html" target="blank">link</a></td><td></tr>
+        </table>
+               
+      </div>
+</div> <!-- end of container -->
+<script>
+//For gh-pages
+//Page history and edit
+var pagename = location.pathname.split('/').slice(-1);
+if (pagename.length < 1){pagename = "index.html"}
+document.write("<div style='text-align:center'><a href='https://github.com/qitools/positivedeviance/blob/master/inst/www/" + pagename + "'>Edit this page</a> - <a href='https://github.com/qitools/positivedeviance/commits/master/inst/www/" + pagename + "'>Page history</a></div>")
+</script>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>	
+</body>
+</html>
