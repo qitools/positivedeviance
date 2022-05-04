@@ -1,6 +1,6 @@
 positivedeviance <- function(content, topic, subject_label, subgroup, outcome_label, outcome_type, displaynames, threshold_observations, threshold_value,benchmark_value, benchmark_label, data_type, output_type, x_min, x_max, theme) {
 # Current not used: x_min, x_max,  
-  #if (!topic=="99"){stop("This web app is under constrution") }
+  #if (!topic=="99"){stop("This web app is under construction") }
   #stop("Request received") #Works	
   
 `%notin%` <- Negate(`%in%`)
@@ -39,7 +39,7 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
     x<-eval(parse(file = "", n = NULL, text = temp))
   }
   
-  stop(paste("x: ",x, sep="")) # Works
+  #stop(paste("x: ",x, sep="")) # Works
   
   # Delete first row if contains column labels (detected by as.numeric(year) = false)
   first.row.header <- FALSE
