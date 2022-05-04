@@ -318,11 +318,20 @@ meta1$studlab
 
 #if (data_type == "m"){stop(paste("Success so far!:\n ", 'Ready for forest plots - actual plotting' , sep=""))} # Works
 # 2022-05-04 - made it to here
-		xlim <- ifelse(data_type == 'p', c(0,1), NULL)
 
+		if (data_type == "p"){
+			xlim <- c(0,1)
+			leftcols=c("studlab","event","n")
+			leftlabs=c(subject_label,outcome_label,"Observations")
+			}
+		else{
+			xlim <- NULL
+			leftcols=c("studlab",,"n")
+			leftlabs=c(subject_label,"Observations")
+			}
 		forest(meta1, 
-			 leftcols=c("studlab","n"), #"event", # event not present if means!
-			 leftlabs=c(subject_label,outcome_label,"Observations"), 
+			 leftcols=leftcols,
+			 leftlabs=leftlabs, 
 			 ref = benchmark_value,
 			 print.I2.ci = TRUE, print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab= meta1$studlab)
 		
