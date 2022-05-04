@@ -25,7 +25,7 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
     first.row <- substr(content, 1, regexpr("\n",content))
     num.columns <- str_count(first.row, ",")
 
-    #stop(paste("num.columns: ",num.columns, sep="")) # Works
+    #stop(paste("nMade it so far:\nxum.columns: ",num.columns, sep="")) # Works
     
     temp <- content 
     # Uses package meta http://cran.r-project.org/web/packages/meta/
@@ -43,7 +43,7 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
     x<-eval(parse(file = "", n = NULL, text = temp))
   }
   
-  #stop(paste("x: ",x, sep="")) # Works
+  #stop(paste("Made it so far:\nx: ",x, sep="")) # Works
   
   # Delete first row if contains column labels (detected by as.numeric(year) = false)
   first.row.header <- FALSE
@@ -68,12 +68,12 @@ if (data_type == "m"){
   
 #if (data_type == "m"){stop(paste("Success so far!\nDataframe rows: ",nrow(data),"\n","data: ","\n",data, sep=""))} # Works
 
-  data$Subject <- str_trim(data$Subject) 
+  data$Subject <- str_trim(as.character(data$Subject)) 
   data$Observations<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
   size = nrow(data)
   size_population = sum(data$Observations)
   
-## Meta-analysis-----------------------------------------------------------------------------------
+## Summary descriptive stats ----------------------------------------------------------------------------
   
   if (data_type == "m"){
     data$Mean<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Mean)))))
