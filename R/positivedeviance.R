@@ -62,11 +62,13 @@ if (data_type == "m"){
   data <- data.frame (x)
   #remove(x)
   
-  #stop(paste("Dataframe rows: ",nrow(data),"\n","data: ","\n",data, sep="")) # Works
+(data_type == "m"){stop(paste("Dataframe rows: ",nrow(data),"\n","data: ","\n",data, sep=""))} # Works
 
   data$Observations<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
   size = nrow(data)
   size_population = sum(data$Observations)
+  
+## Meta-analysis-----------------------------------------------------------------------------------
   
   if (data_type == "m"){
     data$Mean<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Mean)))))
@@ -118,9 +120,10 @@ if (data_type == "m"){
   I2.L = round(meta1$lower.I2*100,1)
   I2.U = round(meta1$upper.I2*100,1)
 	
-  #stop(paste("Ready to plot: I2", I2, ', TE: ', TE_text, sep="")) # Works
+  if (data_type == "m"){stop(paste("Ready to plot: I2", I2, ', TE: ', TE_text, sep=""))} # Works
 
-  # Plot
+ ## Density plots---------------------------------------------------------------------------------------
+
   if (output_type == "d")
 	  {
 	  # Which size to use?
@@ -256,6 +259,8 @@ if (data_type == "m"){
 	  
 	  #text(par("usr")[2]/3,par("usr")[3]+(par("usr")[4]-par("usr")[3])/2, "This example is three doctors, each with 1000 patients, \nwho have outcomes rates of 10%, 15%, 20%.\nWhat population percentile is the doctor with 10%?")
 		}
+
+ ## Forest plots---------------------------------------------------------------------------------------
   if (output_type == "f"){ # Forest plots-------------------------------------------------------------
 	stop(paste("Ready for Forests:", sep="")) # Works
 	##* Identify deviants------------------
