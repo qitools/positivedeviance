@@ -326,7 +326,7 @@ meta1$studlab
 			}
 		else{
 			xlim <- NULL
-			leftcols=c("studlab",,"n")
+			leftcols=c("studlab", "n")
 			leftlabs=c(subject_label,"Observations")
 			}
 		forest(meta1, 
