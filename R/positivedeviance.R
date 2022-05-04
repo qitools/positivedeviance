@@ -2,7 +2,7 @@
 # Bayesian analysis to create a double asterix?
 # Use xlim requests for means if submitted
 
-positivedeviance <- function(content, topic, subject_label, subgroup, outcome_label, outcome_type, displaynames, threshold_observations, threshold_value,benchmark_value, benchmark_label, data_type, output_type, x_min, x_max, theme) {
+positivedeviance <- function(content, topic, subject_label, subgroup, outcome_label, outcome_type, displaynames, threshold_observations, threshold_value, benchmark_value, benchmark_label, data_type, output_type, x_min, x_max, theme) {
 # Current not used: x_min, x_max,  
   #if (!topic=="99"){stop("This web app is under construction") }
   #stop("Request received") #Works	
@@ -140,7 +140,7 @@ if (data_type == "m"){
 	  #x <- seq(0, 1, by = 0.01) # No work
 	  #stop(paste("x: ",x, sep="")) # Works
 	  if (data_type == "m"){
-		densities<-dnorm(n, mean = proportion_population, sd = std.dev, log = FALSE) # *adjust
+		densities<-dnorm(n, mean = mean_population, sd = std.dev, log = FALSE) # *adjust
 	  }
 	  if (data_type == "p"){
 		densities<-dbinom(n, size = size, prob = proportion_population , log = FALSE) # *adjust
@@ -149,7 +149,7 @@ if (data_type == "m"){
 	  adjust = 100/size
 	  adjust.axis = 100
 	  if (data_type == "m"){
-		adjust.axis<-1
+		adjust.axis<-1 # Need a bit of work here. *If* we want to support this type of plot
 	  }
 	  plot (n*adjust, densities/adjust, type = "n", xlab="", ylab = "Probablity of result",
 			main = paste("Distribution of ",outcome_label," by ", subject_label,sep=""),xlim=c(0,100), ylim=c(0,0.5))
@@ -192,8 +192,12 @@ if (data_type == "m"){
 	  
 	  #Plot deviants in green
 	  if (!outcome_type == "NA"){
-		deviants <- data.threshold[which(data.threshold$Observations >= threshold_observations & data.threshold$Outcome.value < threshold_value),]
-		if (outcome_type =="g"){deviants <- data.threshold[which(data.threshold$Observations >= threshold_observations & data.threshold$Outcome.value > threshold_value),]}
+		if (outcome_type =="g"){
+			deviants <- data.threshold[which(data.threshold$Observations >= threshold_observations & data.threshold$Outcomes > threshold_value & data.threshold$Outcome.value > inv.logit(meta1$TE.random)),]
+			}
+		if (outcome_type =="b"){
+			deviants <- data.threshold[which(data.threshold$Observations >= threshold_observations & data.threshold$Outcomes > threshold_value & data.threshold$Outcome.value < inv.logit(meta1$TE.random)),]
+			}
 		(nrow(deviants))
 		#points(deviants$outcome*100,s$y[deviants$outcome*1000], col="red", pch=19, cex=1 + 0.5*(temp.value - 1))
 		(temp.list  <- unique(deviants$Outcome.value, incomparables = FALSE))
