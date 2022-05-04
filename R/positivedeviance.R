@@ -332,6 +332,8 @@ meta1$studlab
 		forest(meta1, 
 			 leftcols=leftcols,
 			 leftlabs=leftlabs, 
+			 sortbar = meta1$TE,
+			 bysort = TRUE,
 			 ref = benchmark_value,
 			 print.I2.ci = TRUE, print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab= meta1$studlab)
 		
