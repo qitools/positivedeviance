@@ -70,7 +70,7 @@ if (data_type == "m"){
   
   if (data_type == "m"){
     data$Mean<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Mean)))))
-	data$sd<-as.numeric(as.numeric(sd))
+	data$sd<-as.numeric(sd)
     data$Outcome.value <- data$Mean
     }
   if (data_type == "p"){
