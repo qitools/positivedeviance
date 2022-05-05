@@ -70,6 +70,7 @@ if (data_type == "m"){
 
   data$Subject <- str_trim(as.character(data$Subject)) 
   data$ID      <- str_trim(as.character(data$ID)) 
+  data$Group <- str_trim(as.character(data$Group)) 
   data$Observations<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
   size = nrow(data)
   size_population = sum(data$Observations)
