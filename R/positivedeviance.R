@@ -7,7 +7,7 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
   #if (!topic=="99"){stop("This web app is under construction") }
   #stop("Request received") #Works	
   
-`%notin%` <- Negate(`%in%`)
+  `%notin%` <- Negate(`%in%`)
 	
   if (is.na(benchmark_value) | benchmark_value == 'NULL') {benchmark_value <- NA}
 
@@ -21,11 +21,11 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
     x <- content
   }else{
     # Script is being run online at openCPU and not locally on a desktop
-    # Special handling if needed of content
+    # Special handling is needed of content
     first.row <- substr(content, 1, regexpr("\n",content))
     num.columns <- str_count(first.row, ",")
 
-    stop(paste("nMade it so far:\nxum.columns: ",num.columns, sep="")) # Works
+    #stop(paste("nMade it so far:\nxum.columns: ",num.columns, sep="")) # Works
     
     temp <- content 
     # Uses package meta http://cran.r-project.org/web/packages/meta/
@@ -47,10 +47,10 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
   
   # Delete first row if contains column labels (detected by as.numeric(year) = false)
   first.row.header <- FALSE
-  if (is.na(as.numeric(x[1,3])) == TRUE){first.row.header <- TRUE}
+  if (is.na(as.numeric(x[1,4])) == TRUE){first.row.header <- TRUE}
   if (first.row.header == TRUE){x <- x[-c(1),]}
   # Delete terminal rows if contains instructions (detected by as.numeric(year) = false)
-  x <- x[!(is.na(as.numeric(x[,3])) == TRUE),]
+  x <- x[!(is.na(as.numeric(x[,4])) == TRUE),]
   
 #### Start here if running locally
 
