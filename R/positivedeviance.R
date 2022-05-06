@@ -18,14 +18,16 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
   if (is.data.frame(content)){ 
     # Script is being run locally on a desktop and not online at openCPU
     #Column names of local file must be 
+	# If is.numeric column 3, 
     x <- content
+    stop(paste("nMade it so far:\nIs a dataframe.\nx: ",x , sep="")) # Works
   }else{
     # Script is being run online at openCPU and not locally on a desktop
     # Special handling is needed of content
     first.row <- substr(content, 1, regexpr("\n",content))
     num.columns <- str_count(first.row, ",")
 
-    #stop(paste("nMade it so far:\nxum.columns: ",num.columns, sep="")) # Works
+    stop(paste("nMade it so far:\nNot a dataframe.\nxum.columns: ",num.columns, sep="")) # Works
     
     temp <- content 
     # Uses package meta http://cran.r-project.org/web/packages/meta/
