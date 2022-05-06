@@ -5,7 +5,7 @@
 positivedeviance <- function(content, topic, subject_label, subgroup, outcome_label, outcome_type, displaynames, threshold_observations, threshold_value, benchmark_value, benchmark_label, data_type, output_type, x_min, x_max, theme) {
 # Current not used: x_min, x_max,  
   #if (!topic=="99"){stop("This web app is under construction") }
-  #stop("Request received") #Works	
+  stop("Request received") #Works	
   
   `%notin%` <- Negate(`%in%`)
 	
@@ -713,7 +713,7 @@ meta1$studlab
 			 sortbar = meta1$TE,
 			 bysort = TRUE,
 			 ref = benchmark_value,
-			 print.I2.ci = TRUE, print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab= meta1$studlab)
+			 xlim = xlim, print.I2.ci = TRUE, print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab= meta1$studlab)
 		
 		# Title
 		grid.text(topic, 0.5, 0.95, gp=gpar(cex=1.4))
