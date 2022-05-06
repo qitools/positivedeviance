@@ -50,11 +50,11 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
   stop(paste("Made it so far:\nx: ",x, sep="")) # Works
   
   # Delete first row if contains column labels (detected by as.numeric(year) = false)
-  first.row.header <- FALSE
-  if (is.na(as.numeric(x[1,4])) == TRUE){first.row.header <- TRUE}
-  if (first.row.header == TRUE){x <- x[-c(1),]}
+  #first.row.header <- FALSE
+  #if (is.na(as.numeric(x[1,4])) == TRUE){first.row.header <- TRUE}
+  #if (first.row.header == TRUE){x <- x[-c(1),]}
   # Delete terminal rows if contains instructions (detected by as.numeric(year) = false)
-  x <- x[!(is.na(as.numeric(x[,4])) == TRUE),]
+  #x <- x[!(is.na(as.numeric(x[,4])) == TRUE),]
   
 #### Start here if running locally
 
@@ -75,7 +75,7 @@ stop(paste("Success so far!\nDataframe rows: ",nrow(data),"\n","data: ","\n",dat
   data$Subject <- str_trim(as.character(data$Subject)) 
   data$ID      <- str_trim(as.character(data$ID)) 
   data$Group <- str_trim(as.character(data$Group)) 
-  data$Observations<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
+  data$Observations<-as.numeric(gsub(",", "", as.character(str_trim(data$Observations))))
   size = nrow(data)
   size_population = sum(data$Observations)
   
