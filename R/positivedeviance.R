@@ -43,7 +43,7 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
     x<-eval(parse(file = "", n = NULL, text = temp))
   }
   
-  #stop(paste("Made it so far:\nx: ",x, sep="")) # Works
+  stop(paste("Made it so far:\nx: ",x, sep="")) # Works
   
   # Delete first row if contains column labels (detected by as.numeric(year) = false)
   first.row.header <- FALSE
