@@ -41,12 +41,12 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
   
   #stop(paste("Made it so far:\nx: ",x, sep="")) # Works
   
-  # Delete first row if contains column labels (detected by as.numeric(year) = false)
+  # Delete first row if contains column labels (detected by as.numeric(column4) = false)
   first.row.header <- FALSE
-  if (is.na(as.numeric(x[1,3])) == TRUE){first.row.header <- TRUE}
+  if (is.na(as.numeric(x[1,4])) == TRUE){first.row.header <- TRUE}
   if (first.row.header == TRUE){x <- x[-c(1),]}
-  # Delete terminal rows if contains instructions (detected by as.numeric(year) = false)
-  x <- x[!(is.na(as.numeric(x[,3])) == TRUE),]
+  # Delete terminal rows if contains instructions (detected by as.numeric(column4) = false)
+  x <- x[!(is.na(as.numeric(x[,4])) == TRUE),]
   
 #### Start here if running locally
 
