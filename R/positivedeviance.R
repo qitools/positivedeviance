@@ -14,6 +14,8 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
   benchmark_value <- as.numeric(benchmark_value)
   threshold_value <- as.numeric(threshold_value)
   threshold_observations <- as.numeric(threshold_observations)
+
+ stop(paste("nMade it so far:\nIs content a dataframe?\nx: ", is.data.frame(content), sep="")) # Works
 	
   if (is.data.frame(content)){ 
     # Script is being run locally on a desktop and not online at openCPU
