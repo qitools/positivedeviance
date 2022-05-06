@@ -25,7 +25,7 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
     first.row <- substr(content, 1, regexpr("\n",content))
     num.columns <- str_count(first.row, ",")
 
-    #stop(paste("nMade it so far:\nxum.columns: ",num.columns, sep="")) # Works
+    stop(paste("nMade it so far:\nxum.columns: ",num.columns, sep="")) # Works
     
     temp <- content 
     # Uses package meta http://cran.r-project.org/web/packages/meta/
@@ -66,7 +66,7 @@ if (data_type == "m"){
   data <- data.frame (x)
   #remove(x)
   
-#if (data_type == "m"){stop(paste("Success so far!\nDataframe rows: ",nrow(data),"\n","data: ","\n",data, sep=""))} # Works
+stop(paste("Success so far!\nDataframe rows: ",nrow(data),"\n","data: ","\n",data, sep=""))
 
   data$Subject <- str_trim(as.character(data$Subject)) 
   data$ID      <- str_trim(as.character(data$ID)) 
