@@ -297,7 +297,7 @@ for(i in 1:length(meta1$TE)){
     if (outcome_type == 'g' & meta1$TE[i] %notin% right.deviants){meta1$studlab[i] <- meta1$data$ID[i]}
     }
   }
-  study_results <- ifelse(displaynames == 'groups'), FALSE, TRUE)
+  study_results <- ifelse(displaynames == 'groups', FALSE, TRUE)
 
 ##** Asterisk to deviants------------------
 for(i in 1:length(meta1$TE)){
