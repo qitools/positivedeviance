@@ -298,6 +298,8 @@ for(i in 1:length(meta1$TE)){
     }
   }
   study_results <- ifelse(displaynames == 'groups', FALSE, TRUE)
+  subgroup <- ifelse(displaynames =='groups', YES, FALSE)
+  
 
 ##** Asterisk to deviants------------------
 for(i in 1:length(meta1$TE)){
