@@ -297,7 +297,7 @@ for(i in 1:length(meta1$TE)){
     if (outcome_type == 'g' & meta1$TE[i] %notin% right.deviants){meta1$studlab[i] <- meta1$data$ID[i]}
     }
   }
-meta1$studlab
+  study_results <- ifelse(displaynames == 'groups'), FALSE, TRUE)
 
 ##** Asterisk to deviants------------------
 for(i in 1:length(meta1$TE)){
@@ -336,6 +336,7 @@ meta1$studlab
 			 leftcols=leftcols,
 			 leftlabs=leftlabs, 
 			 sortbar = meta1$TE,
+			 study.results = study_results,
 			 bysort = TRUE,
 			 ref = benchmark_value,
 			 xlim = xlim, print.I2.ci = TRUE, print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab= meta1$studlab)
