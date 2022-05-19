@@ -10,6 +10,10 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
   benchmark_value <- as.numeric(benchmark_value)
   threshold_value <- as.numeric(threshold_value)
   threshold_observations <- as.numeric(threshold_observations)
+  
+  study_results <- ifelse(displaynames == 'groups', FALSE, TRUE)
+  subgroup <- ifelse(displaynames =='groups', 'YES', 'NO')
+
 	
   if (is.data.frame(content)){ 
     # Script is being run locally on a desktop and not online at openCPU
@@ -297,9 +301,6 @@ for(i in 1:length(meta1$TE)){
     if (outcome_type == 'g' & meta1$TE[i] %notin% right.deviants){meta1$studlab[i] <- meta1$data$ID[i]}
     }
   }
-  study_results <- ifelse(displaynames == 'groups', FALSE, TRUE)
-  subgroup <- ifelse(displaynames =='groups', 'YES', 'NO')
-  
 
 ##** Asterisk to deviants------------------
 for(i in 1:length(meta1$TE)){
