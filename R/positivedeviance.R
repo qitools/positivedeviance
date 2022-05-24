@@ -12,7 +12,7 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
   threshold_observations <- as.numeric(threshold_observations)
   
   study_results <- ifelse(displaynames == 'groups', FALSE, TRUE)
-  subgroup <- ifelse(displaynames =='groups', 'YES', 'NO')
+  subgroup <- ifelse(displaynames =='groups', 'YES')
 
 	
   if (is.data.frame(content)){ 
