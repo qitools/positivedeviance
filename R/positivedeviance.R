@@ -53,34 +53,43 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
   x <- x[!(is.na(as.numeric(x[,4])) == TRUE),]
   
 #### Start here if running locally
-
+column.names <- c("Subject",'ID',"Group", "Outcomes", "Observations")
 if (data_type == "p"){
-	column.names <- c("Subject",'ID',"Group", "Outcomes", "Observations")
+	#column.names <- c("Subject",'ID',"Group", "Outcomes", "Observations")
 	}
 if (data_type == "m"){
-	column.names <- c("Subject",'ID',"Group", "Observations", "Mean", "sd")
+	#column.names <- c("Subject",'ID',"Group", "Observations", "Mean", "sd")
+	#myframe$exp_mean<-as.numeric(substring(myframe$exp_events, 1, PosParenth1 - 1))
 	}
   #dimnames(x) <- list(NULL, column.names)
-  colnames(x) <- column.names
+  #colnames(x) <- column.names
   
   data <- data.frame (x)
-  #remove(x)
+  remove(x)
   
-#if (data_type == "m"){stop(paste("Success so far!\nDataframe rows: ",nrow(data),"\n","data: ","\n",data, sep=""))} # Works
+#if (data_type == "m"){
+	if (data_type == "m"){
+		PosParenth1 <- regexpr("(", data$Outcomes[1], fixed=TRUE)
+		PosParenth2 <- regexpr(")", data$Outcomes, fixed=TRUE)
+		data$Mean<-as.numeric(substring(data$Outcomes, 1, PosParenth1 - 1))
+		data$sd<-as.numeric(substring(data$Outcomes, PosParenth1 + 1, PosParenth2 - 1))
+		}
+	#stop(paste("Success so far!\nDataframe rows: ",nrow(data),"\n","data: ","\n",data, sep=""))
+	} # Works
 
   data$Subject		<- str_trim(as.character(data$Subject)) 
   data$ID      		<- str_trim(as.character(data$ID)) 
-  data$Observations	<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
+  data$Observations	<- as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
   size = nrow(data)
   size_population = sum(data$Observations)
   
 ## Summary descriptive stats ----------------------------------------------------------------------------
   
   if (data_type == "m"){
-    data$Mean<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Mean)))))
+  	data$Mean<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Mean)))))
 	data$sd<-as.numeric(data$sd)
 	data$product <- (data$Mean * data$Observations)
-    mean_population <- (sum(data$product))/size_population
+    	mean_population <- (sum(data$product))/size_population
     }
   if (data_type == "p"){
 	#Calculations
