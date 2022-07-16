@@ -88,6 +88,7 @@ if (data_type == "m"){
 	data$sd<-as.numeric(data$sd)
 	data$product <- (data$Mean * data$Observations)
     	mean_population <- (sum(data$product))/size_population
+	data <- data[order(data$Mean),]
     }
   if (data_type == "p"){
 	#Calculations
@@ -100,9 +101,9 @@ if (data_type == "m"){
 	(probability <- pbinom(test, size = size, prob = proportion_population, lower.tail = TRUE, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
 	# http://www.stat.yale.edu/Courses/1997-98/101/binom.htm
 	(probability <- pnorm(test, mean = proportion_population, sd = std.dev, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
+	data <- data[order(data$Outcome.value),]
   }
 
-  data <- data[order(data$Outcome.value),]
 
 #stop(paste("Success so far!\nOutcomes: ",data$Outcome.value , sep="")) # Works
 
