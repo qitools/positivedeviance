@@ -1,4 +1,4 @@
-positivedeviance <- function(content, topic, subject_label, subgroup, outcome_label, outcome_type, displaynames, threshold_observations, threshold_value,benchmark_value, benchmark_label, data_type, output_type, x_min, x_max, theme) {
+positivedeviance <- function(content, topic, Name_label, subgroup, outcome_label, outcome_type, displaynames, threshold_observations, threshold_value,benchmark_value, benchmark_label, data_type, output_type, x_min, x_max, theme) {
 # Current not used: x_min, x_max,  
   #if (!topic=="99"){stop("This web app is under construction") }
   #stop("Request received") #Works	
@@ -17,7 +17,7 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
 	
   if (is.data.frame(content)){ 
     # Script is being run locally on a desktop and not online at openCPU
-    #Column names of local file must be 
+    # Column names of local file must be 
     x <- content
   }else{
     # Script is being run online at openCPU and not locally on a desktop
@@ -25,7 +25,7 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
     first.row <- substr(content, 1, regexpr("\n",content))
     num.columns <- str_count(first.row, ",")
 
-    #stop(paste("nMade it so far:\nxum.columns: ",num.columns, sep="")) # Works
+    #stop(paste("nMade it so far:\nnum.columns: ",num.columns, sep="")) # Works
     
     temp <- content 
     # Uses package meta http://cran.r-project.org/web/packages/meta/
@@ -43,51 +43,45 @@ positivedeviance <- function(content, topic, subject_label, subgroup, outcome_la
     x<-eval(parse(file = "", n = NULL, text = temp))
   }
   
-  #stop(paste("Made it so far:\nx: ",x, sep="")) # Works
+  #stop(paste("Made it so far - matrix made:\nx: ",x, sep="")) # Works
   
   # Delete first row if contains column labels (detected by as.numeric(column4) = false)
   first.row.header <- FALSE
-  if (is.na(as.numeric(x[1,4])) == TRUE){first.row.header <- TRUE}
+  if (is.na(as.numeric(x[1,5])) == TRUE){first.row.header <- TRUE}
   if (first.row.header == TRUE){x <- x[-c(1),]}
   # Delete terminal rows if contains instructions (detected by as.numeric(column4) = false)
-  x <- x[!(is.na(as.numeric(x[,4])) == TRUE),]
-  
-#### Start here if running locally
-#column.names <- c("Subject",'ID',"Group", "Outcomes", "Observations")
-#if (data_type == "p"){
-	#column.names <- c("Subject",'ID',"Group", "Outcomes", "Observations")
-#	}
-#if (data_type == "m"){
-	#column.names <- c("Subject",'ID',"Group", "Observations", "Mean", "sd")
-	#myframe$exp_mean<-as.numeric(substring(myframe$exp_events, 1, PosParenth1 - 1))
-#	}
-  #dimnames(x) <- list(NULL, column.names)
-  #colnames(x) <- column.names
+  x <- x[!(is.na(as.numeric(x[,5])) == TRUE),]
   
   data <- data.frame (x)
+  #stop(paste("Made it so far - dataframe made!\ncolums: ", ncol(x),"\nColumn names: ",paste(colnames(data),collapse=', '),"\nrows: ",nrow(x), "\n", sep=""))
   remove(x)
   
+column.names <- c("Name",'ID',"Group", "Outcomes", "Observations")
+colnames(data) <- column.names
 if (data_type == "m"){
-	PosParenth1 <- regexpr("(", data$Outcomes[1], fixed=TRUE)
-	PosParenth2 <- regexpr(")", data$Outcomes, fixed=TRUE)
-	data$Mean<-as.numeric(substring(data$Outcomes, 1, PosParenth1 - 1))
-	data$sd<-as.numeric(substring(data$Outcomes, PosParenth1 + 1, PosParenth2 - 1))
-	#stop(paste("Success so far!\nDataframe rows: ",nrow(data),"\n","data: ","\n",data, sep=""))
-	} # Works
+	data$PosParenth1 <- regexpr("(", data$Outcomes, fixed=TRUE)
+	data$PosParenth2 <- regexpr(")", data$Outcomes, fixed=TRUE)
+	data$Mean   <- as.numeric(substring(data$Outcomes, 1, data$PosParenth1 - 1))
+	data$sd     <- as.numeric(substring(data$Outcomes, data$PosParenth1 + 1, data$PosParenth2 - 1))
+	#stop(data$Mean)
+	}
 
-  data$Subject		<- str_trim(as.character(data$Subject)) 
-  data$ID      		<- str_trim(as.character(data$ID)) 
-  data$Observations	<- as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
-  size = nrow(data)
-  size_population = sum(data$Observations)
+data$Name			<- str_trim(as.character(data$Name)) 
+data$ID      		<- str_trim(as.character(data$ID)) 
+data$Observations	<- as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
+size = nrow(data)
+size_population = sum(data$Observations)
+
+#stop(paste("Made it so far - before summary stats!\ncolums: ", ncol(data),"\nColumn names: ",paste(colnames(data),collapse=', '),"\nrows: ",nrow(data), "\n", sep=""))
   
 ## Summary descriptive stats ----------------------------------------------------------------------------
   
   if (data_type == "m"){
   	data$Mean<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Mean)))))
+	data$Outcome.value <-data$Mean
 	data$sd<-as.numeric(data$sd)
 	data$product <- (data$Mean * data$Observations)
-    	mean_population <- (sum(data$product))/size_population
+    mean_population <- (sum(data$product))/size_population
 	data <- data[order(data$Mean),]
     }
   if (data_type == "p"){
@@ -104,26 +98,26 @@ if (data_type == "m"){
 	data <- data[order(data$Outcome.value),]
   }
 
-
-#stop(paste("Success so far!\nOutcomes: ",data$Outcome.value , sep="")) # Works
+#stop(data$Outcome.value)
+#stop(paste("Made it so far - after summary stats!\ncolums: ", ncol(data),"\nColumn names: ",paste(colnames(data),collapse=', '), "\nOutcome values: ", paste(data$Outcome.value,collapse=', '), "\nrows: ",nrow(data), "\n", sep=""))
 
   ## Meta-analysis ------------------------------------
 
   if (data_type == "p"){
 	  # Method to GLMM 02/19/2021
 	  if (subgroup =='YES'){
-		meta1 <- metaprop(Outcomes, Observations, studlab = Subject, subgroup = Group, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE, title='Rates')
+		meta1 <- metaprop(Outcomes, Observations, studlab = Name, subgroup = Group, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE, title='Rates')
 	  }else{
-		meta1 <- metaprop(Outcomes, Observations, studlab = Subject, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE, title='Rates')
+		meta1 <- metaprop(Outcomes, Observations, studlab = Name, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE, title='Rates')
 	  }
   (paste(meta1$lower,inv.logit(meta1$TE),meta1$upper))
 	}
 
 if (data_type == "m"){
 	  if (subgroup =='YES'){
-		meta1 <- metamean(Observations,Mean,sd,studlab = Subject,subgroup = Group, data=data, fixed=FALSE, sm = "MLN", hakn=TRUE, title='Means')
+		meta1 <- metamean(Observations,Mean,sd,studlab = Name,subgroup = Group, data=data, fixed=FALSE, sm = "MLN", hakn=TRUE, title='Means')
 	  }else{
-		meta1 <- metamean(Observations,Mean,sd,studlab = Subject,subgroup = NULL, data=data, fixed=FALSE, sm = "MLN", hakn=TRUE, title='Means')
+		meta1 <- metamean(Observations,Mean,sd,studlab = Name, data=data, fixed=FALSE, sm = "MLN", hakn=TRUE, title='Means')
 	  }
   (paste(meta1$lower,meta1$TE,meta1$upper))
   }
@@ -135,7 +129,7 @@ if (data_type == "m"){
   I2.L = round(meta1$lower.I2*100,1)
   I2.U = round(meta1$upper.I2*100,1)
 	
-  #if (data_type == "m"){stop(paste("Success so far! Ready to plot: I2", I2, ', TE: ', TE_text, sep=""))} # Works
+  #stop(paste("Success so far! Ready to plot:\nI2 = ", I2, '\nTE: ', TE_text,"\noutput_type: ", output_type , sep=""))
 
  ## Density plots---------------------------------------------------------------------------------------
 
@@ -160,7 +154,7 @@ if (data_type == "m"){
 		adjust.axis<-1
 	  }
 	  plot (n*adjust, densities/adjust, type = "n", xlab="", ylab = "Probablity of result",
-			main = paste("Distribution of ",outcome_label," by ", subject_label,sep=""),xlim=c(0,100), ylim=c(0,0.5))
+			main = paste("Distribution of ",outcome_label," by ", Name_label,sep=""),xlim=c(0,100), ylim=c(0,0.5))
 	  mtext(paste("Results: proportion with ",outcome_label,sep=""), side=1, line = 3)
 	  #####
 	  x <- seq(0, size, by = 1)
@@ -221,7 +215,7 @@ if (data_type == "m"){
 		  #temp.data <- deviants[which(deviants$outcome != temp.value),] 
 		}
 		
-		(temp.list  <- unique(deviants$Subject, incomparables = FALSE))
+		(temp.list  <- unique(deviants$Name, incomparables = FALSE))
 		(deviant.Outcomes <- sum(deviants$Outcomes))
 		(deviant.Observations <- sum(deviants$Observations))
 		(deviant.rate <- deviant.Outcomes/deviant.Observations)
@@ -229,9 +223,9 @@ if (data_type == "m"){
 	  
 	  #Details
 	  textout0 <- paste("Summary:",sep="")
-	  textout1 <- paste("Number of ",subject_label," assessed: ",size," (observations: ", size_population,")",sep="")
+	  textout1 <- paste("Number of ",Name_label," assessed: ",size," (observations: ", size_population,")",sep="")
 	  textout2 <- paste("Heterogeneity (I2): ",I2,"%",sep="")
-	  textout3 <- paste("       ... among ",subject_label," with ", threshold_observations," or more observations: ",round(100*min(data.threshold$Outcome.value),0),"% to ",round(100*max(data.threshold$Outcome.value),0),"%",sep="")
+	  textout3 <- paste("       ... among ",Name_label," with ", threshold_observations," or more observations: ",round(100*min(data.threshold$Outcome.value),0),"% to ",round(100*max(data.threshold$Outcome.value),0),"%",sep="")
 	  if (!outcome_type == "NA"){
 		textout4 <- paste("       ... among positive deviants: ",round(100*min(deviants$Outcome.value),0),"% to ",round(100*max(deviants$Outcome.value),0),"%",sep="")
 		textout5 <- paste("Among local positive deviants:",sep="")
@@ -241,8 +235,8 @@ if (data_type == "m"){
 		  }
 	  }
 	  textout10 <- paste("Legend:",sep="")
-	  textout11 <- paste("Points indicate ", subject_label, " with  ",threshold_observations," or more observations",sep="")
-	  textout12 <- paste("Numbers indicate number of ",subject_label," with that result (if > 1)",sep="")
+	  textout11 <- paste("Points indicate ", Name_label, " with  ",threshold_observations," or more observations",sep="")
+	  textout12 <- paste("Numbers indicate number of ",Name_label," with that result (if > 1)",sep="")
 	  textout13 <- paste("M: mean is " ,round(proportion_population*100,0),"%",sep="")
 	  if (data_type == "m"){
 		textout13 <- paste("M: mean is " ,4.0,sep="")
@@ -273,12 +267,12 @@ if (data_type == "m"){
 	  if (benchmark_value != 0)  {text(par("usr")[2] - 2.0*strwidth("A"),par("usr")[4]-(6.5+duplicates)*strheight("A"),textout14,adj=c(1,0), font=2, cex=0.8, col="green")}
 	  
 	  #text(par("usr")[2]/3,par("usr")[3]+(par("usr")[4]-par("usr")[3])/2, "This example is three doctors, each with 1000 patients, \nwho have outcomes rates of 10%, 15%, 20%.\nWhat population percentile is the doctor with 10%?")
-		}
+	}
 
  ## Forest plots---------------------------------------------------------------------------------------
   if (output_type == "f"){
 	
-	#if (data_type == "m"){stop(paste("Success so far!:\n ", 'Ready for forest plots - displaying deviants ' , sep=""))} # Works
+	#stop(paste("Success so far!:\n ", 'Ready for forest plots - displaying deviants ' , sep="")) # Works
 	
 	##* Identify deviants------------------
 	left.deviants <- NULL
@@ -336,12 +330,12 @@ meta1$studlab
 		if (data_type == "p"){
 			xlim <- c(0,1)
 			leftcols=c("studlab","event","n")
-			leftlabs=c(subject_label,outcome_label,"Observations")
+			leftlabs=c(Name_label,outcome_label,"Observations")
 			}
 		else{
 			xlim <- NULL
 			leftcols=c("studlab", "n")
-			leftlabs=c(subject_label,"Observations")
+			leftlabs=c(Name_label,"Observations")
 			}
 		forest(meta1, 
 			 leftcols=leftcols,
