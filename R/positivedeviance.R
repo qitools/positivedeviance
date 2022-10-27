@@ -64,12 +64,11 @@ if (data_type == "m"){
 	data$Mean   <- as.numeric(substring(data$Outcomes, 1, data$PosParenth1 - 1))
 	data$sd     <- as.numeric(substring(data$Outcomes, data$PosParenth1 + 1, data$PosParenth2 - 1))
 	#stop(data$Mean)
-	}
-else{ # Replace empty outcome cells with zeros. This is common need for Excel.
+	}else{ # Replace empty outcome cells with zeros. This is common need for Excel.
 	data$Outcomes <- ifelse(is.na(data$Outcomes),0,data$Outcomes)
 	}
 
-data$Name			<- str_trim(as.character(data$Name)) 
+data$Name		<- str_trim(as.character(data$Name)) 
 data$ID      		<- str_trim(as.character(data$ID)) 
 data$Observations	<- as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
 size = nrow(data)
