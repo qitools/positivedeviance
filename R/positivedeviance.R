@@ -64,7 +64,7 @@ if (data_type == "m"){
 	data$Mean   <- as.numeric(substring(data$Outcomes, 1, data$PosParenth1 - 1))
 	data$sd     <- as.numeric(substring(data$Outcomes, data$PosParenth1 + 1, data$PosParenth2 - 1))
 	#stop(data$Mean)
-	}else{ # Replace empty outcome cells with zeros. This is common need for Excel.
+	}else{ # Replace empty outcome cells with zeros. This is common need for Excel. THIS IS NOT WORKING
 	data$Outcomes <- ifelse(is.na(data$Outcomes),0,data$Outcomes)
 	}
 
