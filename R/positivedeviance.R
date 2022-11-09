@@ -12,7 +12,9 @@ positivedeviance <- function(content, topic, Name_label, subgroup, outcome_label
   threshold_observations <- as.numeric(threshold_observations)
   x_min <- as.numeric(x_min)
   x_max <-  <- as.numeric(x_max)
-  
+
+stop(paste("nMade it so far:\nx_min: ", x_min, sep="")) # Works
+	
   study_results <- ifelse(displaynames == 'groups', FALSE, TRUE)
   subgroup <- ifelse(displaynames =='groups', 'YES',subgroup)
 
