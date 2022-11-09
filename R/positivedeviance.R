@@ -335,7 +335,7 @@ meta1$studlab
 			leftlabs=c(Name_label,outcome_label,"Observations")
 			}
 		else{
-			xlim <- NULL
+			xlim <- c(x_min, x_max)
 			leftcols=c("studlab", "n")
 			leftlabs=c(Name_label,"Observations")
 			}
