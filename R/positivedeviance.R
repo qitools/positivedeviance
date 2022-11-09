@@ -4,6 +4,8 @@ positivedeviance <- function(content, topic, Name_label, subgroup, outcome_label
   #stop("Request received") #Works	
   
 `%notin%` <- Negate(`%in%`)
+
+stop(paste("nMade it so far:\nx_min: ", x_min, sep="")) # Works
 	
   if (is.na(benchmark_value) | benchmark_value == 'NULL') {benchmark_value <- NA}
 
@@ -11,7 +13,7 @@ positivedeviance <- function(content, topic, Name_label, subgroup, outcome_label
   threshold_value <- as.numeric(threshold_value)
   threshold_observations <- as.numeric(threshold_observations)
   x_min <- as.numeric(x_min)
-  x_max <-  <- as.numeric(x_max)
+  x_max <- as.numeric(x_max)
 
 stop(paste("nMade it so far:\nx_min: ", x_min, sep="")) # Works
 	
