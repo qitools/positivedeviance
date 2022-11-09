@@ -10,6 +10,8 @@ positivedeviance <- function(content, topic, Name_label, subgroup, outcome_label
   benchmark_value <- as.numeric(benchmark_value)
   threshold_value <- as.numeric(threshold_value)
   threshold_observations <- as.numeric(threshold_observations)
+  x_min <- as.numeric(x_min)
+  x_max <-  <- as.numeric(x_max)
   
   study_results <- ifelse(displaynames == 'groups', FALSE, TRUE)
   subgroup <- ifelse(displaynames =='groups', 'YES',subgroup)
@@ -326,7 +328,7 @@ meta1$studlab
 
 ##* Forest plot ----------------------------------------------------
 
-if (data_type == "m"){stop(paste("Success so far!:\n ", 'Ready for forest plots - actual plotting: ' , x_min, , ' , ', x_max, sep=""))} # Works
+#if (data_type == "m"){stop(paste("Success so far!:\n ", 'Ready for forest plots - actual plotting: ' , x_min, , ' , ', x_max, sep=""))} # Works
 # 2022-05-04 - made it to here
 
 		if (data_type == "p"){
