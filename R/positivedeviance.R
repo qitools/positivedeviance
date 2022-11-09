@@ -1,11 +1,11 @@
 positivedeviance <- function(content, topic, Name_label, subgroup, outcome_label, outcome_type, displaynames, threshold_observations, threshold_value,benchmark_value, benchmark_label, data_type, output_type, x_min, x_max, theme) {
-# Current not used: x_min, x_max,  
+
   #if (!topic=="99"){stop("This web app is under construction") }
   #stop("Request received") #Works	
   
 `%notin%` <- Negate(`%in%`)
 
-stop(paste("nMade it so far:\nx_min: ", x_min, sep="")) # Works
+ #stop(paste("nMade it so far:\nx_min: ", x_min, sep="")) # Works
 	
   if (is.na(benchmark_value) | benchmark_value == 'NULL') {benchmark_value <- NA}
 
