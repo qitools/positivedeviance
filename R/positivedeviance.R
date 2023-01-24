@@ -201,7 +201,7 @@ if (data_type == "m"){
 	  }
 	  
 	  #Plot deviants in green
-	  if (!outcome_type == "NA"){
+	  if (outcome_type != "NA"){
 		deviants <- data.threshold[which(data.threshold$Observations >= threshold_observations & data.threshold$Outcome.value < threshold_value),]
 		if (outcome_type =="g"){deviants <- data.threshold[which(data.threshold$Observations >= threshold_observations & data.threshold$Outcome.value > threshold_value),]}
 		(nrow(deviants))
@@ -234,7 +234,7 @@ if (data_type == "m"){
 	  textout1 <- paste("Number of ",Name_label," assessed: ",size," (observations: ", size_population,")",sep="")
 	  textout2 <- paste("Heterogeneity (I2): ",I2,"%",sep="")
 	  textout3 <- paste("       ... among ",Name_label," with ", threshold_observations," or more observations: ",round(100*min(data.threshold$Outcome.value),0),"% to ",round(100*max(data.threshold$Outcome.value),0),"%",sep="")
-	  if (!outcome_type == "NA"){
+	  if (outcome_type != "NA"){
 		textout4 <- paste("       ... among positive deviants: ",round(100*min(deviants$Outcome.value),0),"% to ",round(100*max(deviants$Outcome.value),0),"%",sep="")
 		textout5 <- paste("Among local positive deviants:",sep="")
 		textout6 <- paste("  ",round(100*deviant.rate,0),"% (",deviant.Outcomes," of ",deviant.Observations," observations) have ",outcome_label,sep="")
@@ -262,7 +262,7 @@ if (data_type == "m"){
 	  text(xpos,par("usr")[4]-3.5*strheight("A"),textout2,adj=c(0,0), cex=0.8)
 	  #text(xpos,par("usr")[4]-6.5*strheight("A"),textout3,adj=c(0,0), cex=0.8)
 	  #text(xpos,par("usr")[4]-8.0*strheight("A"),textout4,adj=c(0,0), cex=0.8)
-	  if (!outcome_type == "NA"){
+	  if (outcome_type != "NA"){
 		text(xpos,par("usr")[4]-5*strheight("A"),textout5,col="black", font=1, adj=c(0,0), cex=0.8)
 		text(xpos,par("usr")[4]-6.5*strheight("A"),textout6,col="black", font=1, adj=c(0,0), cex=0.8)
 	  }
