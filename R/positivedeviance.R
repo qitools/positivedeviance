@@ -307,10 +307,14 @@ for(i in 1:length(meta1$TE)){
   # Replacing names as needed
   if (displaynames == 'none'){meta1$studlab[i] <- meta1$data$ID[i]}
   if (displaynames == 'selected'){
-    # if (outcome_type == 'b' & meta1$TE[i] %notin% left.deviants){meta1$studlab[i] <- meta1$data$ID[i]}
-    # if (outcome_type == 'g' & meta1$TE[i] %notin% right.deviants){meta1$studlab[i] <- meta1$data$ID[i]}
-    if (outcome_type == 'b' & meta1$upper[i] >= meta1$TE.random){meta1$studlab[i] <- meta1$data$ID[i]}
-    if (outcome_type == 'g' & meta1$lower[i] <= meta1$TE.random){meta1$studlab[i] <- meta1$data$ID[i]}
+  if (data_type == "p"){
+	if (outcome_type == 'b' & meta1$upper[i] >= inv.logit(meta1$TE.random)){meta1$studlab[i] <- meta1$data$ID[i]}
+	if (outcome_type == 'g' & meta1$lower[i] <= inv.logit(meta1$TE.random)){meta1$studlab[i] <- meta1$data$ID[i]}
+	    }
+  if (data_type == "m"){
+	if (outcome_type == 'b' & meta1$upper[i] >= meta1$TE.random){meta1$studlab[i] <- meta1$data$ID[i]}
+	if (outcome_type == 'g' & meta1$lower[i] <= meta1$TE.random){meta1$studlab[i] <- meta1$data$ID[i]}
+	    }
     }
   }
 
