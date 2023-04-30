@@ -31,7 +31,7 @@ positivedeviance <- function(content, topic, Name_label, subgroup, outcome_label
     first.row <- substr(content, 1, regexpr("\n",content))
     num.columns <- str_count(first.row, ",")
 
-    #stop(paste("nMade it so far:\nnum.columns: ",num.columns, sep="")) # Works
+	stop(paste("nMade it so far:\nnum.columns: ",num.columns, sep="")) # Works
     
     temp <- content 
     # Uses package meta http://cran.r-project.org/web/packages/meta/
