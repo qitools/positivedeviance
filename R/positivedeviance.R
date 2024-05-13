@@ -80,7 +80,7 @@ data$Observations	<- as.numeric(as.numeric(gsub(",", "", as.character(str_trim(d
 size = nrow(data)
 size_population = sum(data$Observations)
 
-stop(paste("Made it so far - before summary stats!\ncolums: ", ncol(data),"\nColumn names: ",paste(colnames(data),collapse=', '),"\nrows: ",nrow(data), "\n", sep=""))
+#stop(paste("Made it so far - before summary stats!\ncolums: ", ncol(data),"\nColumn names: ",paste(colnames(data),collapse=', '),"\nrows: ",nrow(data), "\n", sep=""))
   
 ## Summary descriptive stats ----------------------------------------------------------------------------
   
@@ -125,7 +125,7 @@ stop(paste("Made it so far - before summary stats!\ncolums: ", ncol(data),"\nCol
   }
 
 #stop(data$Outcome.value)
-#stop(paste("Made it so far - after summary stats!\ncolums: ", ncol(data),"\nColumn names: ",paste(colnames(data),collapse=', '), "\nOutcome values: ", paste(data$Outcome.value,collapse=', '), "\nrows: ",nrow(data), "\n", sep=""))
+stop(paste("Made it so far - after summary stats!\ncolums: ", ncol(data),"\nColumn names: ",paste(colnames(data),collapse=', '), "\nOutcome values: ", paste(data$Outcome.value,collapse=', '), "\nrows: ",nrow(data), "\n", sep=""))
 
   ## Meta-analysis ------------------------------------
 
