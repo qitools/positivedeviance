@@ -164,7 +164,7 @@ summary(meta1)
   I2.L = round(meta1$lower.I2*100,1)
   I2.U = round(meta1$upper.I2*100,1)
 	
-  stop(paste("Success so far! Ready to plot:\nI2 = ", I2, '\nTE: ', TE_text,"\noutput_type: ", output_type , sep=""))
+  #stop(paste("Success so far! Ready to plot:\nI2 = ", I2, '\nTE: ', TE_text,"\noutput_type: ", output_type , sep=""))
 
  ## Density plots---------------------------------------------------------------------------------------
 
@@ -181,6 +181,9 @@ summary(meta1)
 	  }
 	  if (data_type == "p"){
 		densities<-dbinom(n, size = size, prob = proportion_population , log = FALSE) # *adjust
+	  }
+	  if (data_type == "c"){
+		stop(paste("densities: for counts not implemented", sep="")) #
 	  }
 	  #stop(paste("densities: ",densities, sep="")) # Works
 	  adjust = 100/size
@@ -319,7 +322,7 @@ summary(meta1)
 		if (meta1$lower[i]>inv.logit(meta1$TE.random)){
 		  right.deviants <- rbind(right.deviants,meta1$TE[i])}
 		}  
-	  if (data_type == "m"){
+	  if (data_type %in% c("m", "c")){
 		if (meta1$upper[i]<(meta1$TE.random)){
 		  left.deviants <- rbind(left.deviants,meta1$TE[i])}
 		if (meta1$lower[i]>(meta1$TE.random)){
@@ -338,7 +341,7 @@ for(i in 1:length(meta1$TE)){
 	if (outcome_type == 'b' & meta1$upper[i] >= inv.logit(meta1$TE.random)){meta1$studlab[i] <- meta1$data$ID[i]}
 	if (outcome_type == 'g' & meta1$lower[i] <= inv.logit(meta1$TE.random)){meta1$studlab[i] <- meta1$data$ID[i]}
 	    }
-  if (data_type == "m"){
+  if (data_type %in% c("m", "c")){
 	if (outcome_type == 'b' & meta1$upper[i] >= meta1$TE.random){meta1$studlab[i] <- meta1$data$ID[i]}
 	if (outcome_type == 'g' & meta1$lower[i] <= meta1$TE.random){meta1$studlab[i] <- meta1$data$ID[i]}
 	    }
@@ -354,7 +357,7 @@ for(i in 1:length(meta1$TE)){
   if (meta1$lower[i] > (inv.logit(meta1$TE.random))){
     meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="")}
   }
-  if (data_type == "m"){
+  if (data_type %in% c("m", "c")){
     if (meta1$upper[i] <  meta1$TE.random){
       meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="")}
     if (meta1$lower[i] >= meta1$TE.random){
