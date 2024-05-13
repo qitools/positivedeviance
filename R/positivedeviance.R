@@ -80,7 +80,7 @@ data$Observations	<- as.numeric(as.numeric(gsub(",", "", as.character(str_trim(d
 size = nrow(data)
 size_population = sum(data$Observations)
 
-#stop(paste("Made it so far - before summary stats!\ncolums: ", ncol(data),"\nColumn names: ",paste(colnames(data),collapse=', '),"\nrows: ",nrow(data), "\n", sep=""))
+stop(paste("Made it so far - before summary stats!\ncolums: ", ncol(data),"\nColumn names: ",paste(colnames(data),collapse=', '),"\nrows: ",nrow(data), "\n", sep=""))
   
 ## Summary descriptive stats ----------------------------------------------------------------------------
   
@@ -150,7 +150,7 @@ if (data_type == "m"){
 
 if (data_type == "c"){ #metagen(Outcomes, se, data = data)
 	  if (subgroup =='YES'){
-		meta1 <- metagen(Outcomes,se,studlab = Name,subgroup = Group, data=data, fixed=FALSE, title='Counts')
+		meta1 <- metagen(Outcomes,se,studlab = Name, subgroup = Group, data=data, fixed=FALSE, title='Counts')
 	  }else{
 		meta1 <- metagen(Outcomes,se,studlab = Name, data=data, fixed=FALSE, title='Counts')
 	  }
