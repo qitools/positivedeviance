@@ -125,7 +125,7 @@ size_population = sum(data$Observations)
   }
 
 #stop(data$Outcome.value)
-stop(paste("Made it so far - after summary stats!\ncolums: ", ncol(data),"\nColumn names: ",paste(colnames(data),collapse=', '), "\nOutcome values: ", paste(data$Outcome.value,collapse=', '), "\nrows: ",nrow(data), "\n", sep=""))
+#stop(paste("Made it so far - after summary stats!\ncolums: ", ncol(data),"\nColumn names: ",paste(colnames(data),collapse=', '), "\nOutcome values: ", paste(data$Outcome.value,collapse=', '), "\nrows: ",nrow(data), "\n", sep=""))
 
   ## Meta-analysis ------------------------------------
 
@@ -164,7 +164,7 @@ summary(meta1)
   I2.L = round(meta1$lower.I2*100,1)
   I2.U = round(meta1$upper.I2*100,1)
 	
-  #stop(paste("Success so far! Ready to plot:\nI2 = ", I2, '\nTE: ', TE_text,"\noutput_type: ", output_type , sep=""))
+  stop(paste("Success so far! Ready to plot:\nI2 = ", I2, '\nTE: ', TE_text,"\noutput_type: ", output_type , sep=""))
 
  ## Density plots---------------------------------------------------------------------------------------
 
