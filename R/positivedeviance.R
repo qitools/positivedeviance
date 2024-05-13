@@ -89,7 +89,7 @@ size_population = sum(data$Observations)
 	data$Outcome.value <-data$Mean
 	data$sd<-as.numeric(data$sd)
 	data$product <- (data$Mean * data$Observations)
-    mean_population <- (sum(data$product))/size_population
+    	mean_population <- (sum(data$product))/size_population
 	data <- data[order(data$Mean),]
     }
   if (data_type == "p"){
@@ -104,6 +104,24 @@ size_population = sum(data$Observations)
 	# http://www.stat.yale.edu/Courses/1997-98/101/binom.htm
 	(probability <- pnorm(test, mean = proportion_population, sd = std.dev, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
 	data <- data[order(data$Outcome.value),]
+  }
+  if (data_type == "c"){ # Counts with Poisson distribution
+	#Calculations
+	data$Outcomes<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Outcomes)))))
+	
+	for(i in 1:nrow(data))
+	{
+	  data$ci.l[i] <- poisson.test(data$Outcomes[i])$conf.int[1]
+	  data$ci.u[i] <- poisson.test(data$Outcomes[i])$conf.int[2]
+	}
+	
+	# Estimate standard errors assuming Poisson distribution
+	#mydata$se <- sqrt(mydata$pe)
+	
+	# Calculate standard error
+	z_score <- qnorm(0.975)  # Z-score for 95% confidence interval
+	data$se <- (data$ci.u - data$ci.l) / (2 * z_score)	  
+	data <- data[order(data$Outcomes),]
   }
 
 #stop(data$Outcome.value)
@@ -130,7 +148,16 @@ if (data_type == "m"){
   (paste(meta1$lower,meta1$TE,meta1$upper))
   }
 
-  summary(meta1)
+if (data_type == "c"){ #metagen(Outcomes, se, data = data)
+	  if (subgroup =='YES'){
+		meta1 <- metagen(Outcomes,se,studlab = Name,subgroup = Group, data=data, fixed=FALSE, title='Counts')
+	  }else{
+		meta1 <- metagen(Outcomes,se,studlab = Name, data=data, fixed=FALSE, title='Counts')
+	  }
+  (paste(meta1$lower,meta1$TE,meta1$upper))
+  }
+
+summary(meta1)
   (TE = round(meta1$TE.random,2))
   (TE_text = paste("Rate: ",TE," (",round(meta1$lower.random,2)," - ",round(meta1$upper.random,2),")",sep=""))
   I2 = round(meta1$I2*100,1)
