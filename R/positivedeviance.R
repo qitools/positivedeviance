@@ -350,7 +350,6 @@ for(i in 1:length(meta1$TE)){
   }
 
 ##** Asterisk to deviants------------------
-stop(paste("Success so far!:\n ", 'Ready for Asterisk to deviants- ' , sep="")) # Works
 for(i in 1:length(meta1$TE)){
   # Simple adding of asterisk to deviants
   if (data_type == "p"){
@@ -370,7 +369,7 @@ meta1$studlab
 
 ##* Forest plot ----------------------------------------------------
 
-#if (data_type == "m"){stop(paste("Success so far!:\n ", 'Ready for forest plots - actual plotting: ' , x_min, , ' , ', x_max, sep=""))} # Works
+if (data_type == "c"){stop(paste("Success so far!:\n ", 'Ready for forest plots - actual plotting: ' , x_min, , ' , ', x_max, sep=""))} # Works
 # 2022-05-04 - made it to here
 
 		if (data_type == "p"){
