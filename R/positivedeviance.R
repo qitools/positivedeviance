@@ -369,7 +369,7 @@ meta1$studlab
 
 ##* Forest plot ----------------------------------------------------
 
-if (data_type == "c"){stop(paste("Success so far!:\n ", 'Ready for forest plots - actual plotting: ' , x_min, ' , ', x_max, sep=""))} # Works
+#if (data_type == "c"){stop(paste("Success so far!:\n ", 'Ready for forest plots - actual plotting: ' , x_min, ' , ', x_max, sep=""))} # Works
 # 2022-05-04 - made it to here
 
 		if (data_type == "p"){
