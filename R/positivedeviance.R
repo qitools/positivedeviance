@@ -372,10 +372,15 @@ meta1$studlab
 #if (data_type == "c"){stop(paste("Success so far!:\n ", 'Ready for forest plots - actual plotting: ' , x_min, ' , ', x_max, sep=""))} # Works
 # 2022-05-04 - made it to here
 
-		if (data_type %in% c("p", "c")){
+		if (data_type %in% c("p")){
 			xlim <- c(0,1)
 			leftcols=c("studlab","event","n")
 			leftlabs=c(Name_label,outcome_label,"Observations")
+			}
+		else if (data_type %in% c("c")){
+			xlim <- c(0,1)
+			leftcols=c("studlab","event")
+			leftlabs=c(Name_label,outcome_label)
 			}
 		else{
 			xlim <- c(x_min, x_max)
