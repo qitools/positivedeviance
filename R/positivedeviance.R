@@ -323,7 +323,7 @@ summary(meta1)
 		  right.deviants <- rbind(right.deviants,meta1$TE[i])}
 		}  
 	  if (data_type %in% c("m", "c")){
-		stop(paste("Success so far!:\n ", 'Ready for forest plots - displaying deviants ' , sep="")) # Works
+		#stop(paste("Success so far!:\n ", 'Ready for forest plots - displaying deviants ' , sep="")) # Works
 		if (meta1$upper[i]<(meta1$TE.random)){
 		  left.deviants <- rbind(left.deviants,meta1$TE[i])}
 		if (meta1$lower[i]>(meta1$TE.random)){
@@ -350,6 +350,7 @@ for(i in 1:length(meta1$TE)){
   }
 
 ##** Asterisk to deviants------------------
+stop(paste("Success so far!:\n ", 'Ready for Asterisk to deviants- ' , sep="")) # Works
 for(i in 1:length(meta1$TE)){
   # Simple adding of asterisk to deviants
   if (data_type == "p"){
