@@ -379,7 +379,7 @@ meta1$studlab
 			}
 		else if (data_type %in% c("c")){
 			xlim <- c(0,1)
-			leftcols=c("studlab","event")
+			leftcols=c("studlab","TE")
 			leftlabs=c(Name_label,outcome_label)
 			}
 		else{
