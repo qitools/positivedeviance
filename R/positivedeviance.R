@@ -378,7 +378,7 @@ meta1$studlab
 			leftlabs=c(Name_label,outcome_label,"Observations")
 			}
 		else if (data_type %in% c("c")){
-			xlim <- c(0,1)
+			xlim <- c(0,x_max)
 			leftcols=c("studlab","TE")
 			leftlabs=c(Name_label,outcome_label)
 			}
