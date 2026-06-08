@@ -349,23 +349,15 @@ for(i in 1:length(meta1$TE)){
     }
   }
 
-##** Asterisk to deviants------------------
-for(i in 1:length(meta1$TE)){
-  # Simple adding of asterisk to deviants
-  if (data_type == "p"){
-    if (meta1$upper[i]<(inv.logit(meta1$TE.random))){
-    meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="")}
-  if (meta1$lower[i] > (inv.logit(meta1$TE.random))){
-    meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="")}
-  }
-  if (data_type %in% c("m", "c")){
-    if (meta1$upper[i] <  meta1$TE.random){
-      meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="")}
-    if (meta1$lower[i] >= meta1$TE.random){
-      meta1$studlab[i] <- paste(meta1$studlab[i],"*",sep="")}
-  }
-}
-meta1$studlab
+##** Asterisk adding to deviants------------------
+	for (i in seq_along(meta1$TE)) {
+	  
+	  if (isTRUE(meta1$upper[i] < meta1$lower.random ||
+	             meta1$lower[i] > meta1$upper.random)) {
+	    
+	    meta1$studlab[i] <- paste0(meta1$studlab[i], "*")
+	  }
+	}
 
 ##* Forest plot ----------------------------------------------------
 
@@ -405,7 +397,9 @@ meta1$studlab
 			Footer <- NULL
 			Footer <- paste(Footer,"Goal is ", benchmark_label, ": ", benchmark_value, " (solid vertical line)")
 			grid.text(Footer, 0.08, 0.06, hjust=0, gp=gpar(cex=1, font=1))
-			}
+			Footer <- paste(Footer,"* Indicate\s deviants whose confidence interval does not overlap the confidence intervalal for the pooled group.")
+			grid.text(Footer, 0.08, 0.04, hjust=0, gp=gpar(cex=1, font=1))
+		}
   		}
 } 
 #
