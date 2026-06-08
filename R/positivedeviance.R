@@ -397,6 +397,7 @@ for(i in 1:length(meta1$TE)){
 			Footer <- NULL
 			Footer <- paste(Footer,"Goal is ", benchmark_label, ": ", benchmark_value, " (solid vertical line)")
 			grid.text(Footer, 0.08, 0.06, hjust=0, gp=gpar(cex=1, font=1))
+			Footer <- NULL
 			Footer <- paste(Footer,"* Indicates deviants whose confidence interval does not overlap the confidence intervalal for the pooled group.")
 			grid.text(Footer, 0.08, 0.04, hjust=0, gp=gpar(cex=1, font=1))
 		}
