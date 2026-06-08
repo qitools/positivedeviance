@@ -1,7 +1,7 @@
 positivedeviance <- function(content, topic, Name_label, subgroup, outcome_label, outcome_type, displaynames, threshold_observations, threshold_value,benchmark_value, benchmark_label, data_type, output_type, x_min, x_max, theme) {
   
   #if (!topic=="99"){stop("This web app is under construction") }
-  #stop("Request received") #Works	
+  #stop("Request received") # Works	
   
 `%notin%` <- Negate(`%in%`)
 
