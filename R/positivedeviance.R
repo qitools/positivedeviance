@@ -1,406 +1,331 @@
-positivedeviance <- function(content, topic, Name_label, subgroup, outcome_label, outcome_type, displaynames, threshold_observations, threshold_value,benchmark_value, benchmark_label, data_type, output_type, x_min, x_max, theme) {
-  
-  #if (!topic=="99"){stop("This web app is under construction") }
-  #stop("Request received") # Works	
-  
-`%notin%` <- Negate(`%in%`)
+# Overview ----
+# Corrected QI Tools positive-deviance display, 2026-11-05.
+# Adapted from qitools/positivedeviance, commit
+# 5e4d3ed59fc7e94450e4292f776b9651490bba2c (GPL).
+# Original authors: Robert Badgett, Scott Chamberlain, Jeroen Ooms.
+# Requires meta >= 7.0-0 for forest plots; distribution plots use base R only.
+# Input columns (in order): Name, ID, Group, Outcomes, Observations.
+# Outcomes: event count (p/c), or mean(SD) (m). Proportions/thresholds
+# use 0..1, not 0..100. Plot type: f = forest; d = empirical distribution.
+# Forest models retain the original GLMM proportions, log means, and
+# approximate inverse-variance raw-count models. Counts require equal exposure.
+# Asterisk = site CI does not overlap pooled CI, in the favorable direction.
+# These are exploratory candidate flags, not multiplicity-adjusted tests.
 
- #stop(paste("nMade it so far:\nx_min: ", x_min, sep="")) # Works
-	
-  if (is.na(benchmark_value) | benchmark_value == 'NULL') {benchmark_value <- NA}
+# Positive deviance function ----
+positivedeviance <- function(
+    content, topic = "Positive deviance", Name_label = "Sites", subgroup = "NO",
+    outcome_label = "Outcome", outcome_type = "g", displaynames = "selected",
+    threshold_observations = 0, threshold_value = NA_real_,
+    benchmark_value = NA_real_, benchmark_label = "Benchmark",
+    data_type = "p", output_type = "f", x_min = NA_real_, x_max = NA_real_,
+    theme = "white") {
 
-  benchmark_value <- as.numeric(benchmark_value)
-  threshold_value <- as.numeric(threshold_value)
-  threshold_observations <- as.numeric(threshold_observations)
-  x_min <- as.numeric(x_min)
-  x_max <- as.numeric(x_max)
-
-  # stop(paste("nMade it so far:\nx_min: ", x_min, sep="")) # Works
-	
-  study_results <- ifelse(displaynames == 'groups', FALSE, TRUE)
-  subgroup <- ifelse(displaynames =='groups', 'YES',subgroup)
-
-	
-  if (is.data.frame(content)){ 
-    # Script is being run locally on a desktop and not online at openCPU
-    # Column names of local file must be 
-    x <- content
-  }else{
-    # Script is being run online at openCPU and not locally on a desktop
-    # Special handling if needed of content
-    first.row <- substr(content, 1, regexpr("\n",content))
-    num.columns <- str_count(first.row, ",")
-
-    #stop(paste("nMade it so far:\nnum.columns: ",num.columns, sep="")) # Works
-    
-    temp <- content 
-    # Uses package meta http://cran.r-project.org/web/packages/meta/
-    # http://stat.ethz.ch/R-manual/R-devel/library/base/html/regex.html
-    #temp <- gsub('\n', '', fixed = TRUE, temp, perl = TRUE)
-    #temp <- gsub("\\s+$", "", temp, perl = TRUE) #Removing trailing whitespace
-    #temp <- gsub(",+$", "", temp, perl = TRUE) #Remove trailing comma if accidentally added by user online
-    temp <- gsub("\r", ' ', fixed = TRUE, temp)
-    temp <- gsub("\n", ' ', fixed = TRUE, temp)
-    temp <- gsub("\t", ' ', fixed = TRUE, temp)
-    temp <- gsub(',', '","', fixed = TRUE, temp)
-    
-    temp <- paste('"',temp,'"',sep = '')
-    temp <- paste('Mymatrix <- matrix(c(',temp,'), ncol=',num.columns,', byrow=TRUE)')
-    x<-eval(parse(file = "", n = NULL, text = temp))
-  }
-  
-  #stop(paste("Made it so far - matrix made:\nx: ",x, sep="")) # Works
-  
-  # Delete first row if contains column labels (detected by as.numeric(column4) = false)
-  first.row.header <- FALSE
-  if (is.na(as.numeric(x[1,5])) == TRUE){first.row.header <- TRUE}
-  if (first.row.header == TRUE){x <- x[-c(1),]}
-  # Delete terminal rows if contains instructions (detected by as.numeric(column4) = false)
-  x <- x[!(is.na(as.numeric(x[,5])) == TRUE),]
-  
-  data <- data.frame (x)
-  #stop(paste("Made it so far - dataframe made!\ncolums: ", ncol(x),"\nColumn names: ",paste(colnames(data),collapse=', '),"\nrows: ",nrow(x), "\n", sep=""))
-  remove(x)
-  
-column.names <- c("Name",'ID',"Group", "Outcomes", "Observations")
-colnames(data) <- column.names
-if (data_type == "m"){
-	data$PosParenth1 <- regexpr("(", data$Outcomes, fixed=TRUE)
-	data$PosParenth2 <- regexpr(")", data$Outcomes, fixed=TRUE)
-	data$Mean   <- as.numeric(substring(data$Outcomes, 1, data$PosParenth1 - 1))
-	data$sd     <- as.numeric(substring(data$Outcomes, data$PosParenth1 + 1, data$PosParenth2 - 1))
-	#stop(data$Mean)
-	}else{ # Replace empty outcome cells with zeros. This is common need for Excel. THIS IS NOT WORKING
-	data$Outcomes <- ifelse(is.na(data$Outcomes),0,data$Outcomes)
-	}
-
-data$Name		<- str_trim(as.character(data$Name)) 
-data$ID      		<- str_trim(as.character(data$ID)) 
-data$Observations	<- as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Observations)))))
-size = nrow(data)
-size_population = sum(data$Observations)
-
-#stop(paste("Made it so far - before summary stats!\ncolums: ", ncol(data),"\nColumn names: ",paste(colnames(data),collapse=', '),"\nrows: ",nrow(data), "\n", sep=""))
-  
-## Summary descriptive stats ----------------------------------------------------------------------------
-  
-  if (data_type == "m"){
-  	data$Mean<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Mean)))))
-	data$Outcome.value <-data$Mean
-	data$sd<-as.numeric(data$sd)
-	data$product <- (data$Mean * data$Observations)
-    	mean_population <- (sum(data$product))/size_population
-	data <- data[order(data$Mean),]
+  ## Validate arguments ----
+  fail <- function(message) stop(message, call. = FALSE)
+  number <- function(z, label, optional = FALSE) {
+    if (length(z) == 0L || (length(z) == 1L &&
+        (is.na(z) || trimws(as.character(z)) %in% c("", "NA", "NULL")))) {
+      if (optional) return(NA_real_)
+      fail(paste(label, "is required."))
     }
-  if (data_type == "p"){
-	#Calculations
-	data$Outcomes<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Outcomes)))))
-	data$Outcome.value <-data$Outcomes/data$Observations
-	(proportion_population <- sum(data$Outcomes)/sum(data$Observations))
-	variance <- sum(data$Observations)*(proportion_population*(1-proportion_population))
-	(std.dev <- sqrt(variance))
-	test <- 0.10
-	(probability <- pbinom(test, size = size, prob = proportion_population, lower.tail = TRUE, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
-	# http://www.stat.yale.edu/Courses/1997-98/101/binom.htm
-	(probability <- pnorm(test, mean = proportion_population, sd = std.dev, log = FALSE))#  4.22 interquartile range using openmetaanalysis methods
-	data <- data[order(data$Outcome.value),]
+    if (length(z) != 1L) fail(paste(label, "must be one number."))
+    ans <- suppressWarnings(as.numeric(as.character(z)))
+    if (!is.finite(ans)) fail(paste(label, "must be finite and numeric."))
+    ans
   }
-  if (data_type == "c"){ # Counts with Poisson distribution
-	#Calculations
-	data$Outcomes<-as.numeric(as.numeric(gsub(",", "", as.character(str_trim(data$Outcomes)))))
-	
-	for(i in 1:nrow(data))
-	{
-	  data$ci.l[i] <- poisson.test(data$Outcomes[i])$conf.int[1]
-	  data$ci.u[i] <- poisson.test(data$Outcomes[i])$conf.int[2]
-	}
-	
-	# Estimate standard errors assuming Poisson distribution
-	#mydata$se <- sqrt(mydata$pe)
-	
-	# Calculate standard error
-	z_score <- qnorm(0.975)  # Z-score for 95% confidence interval
-	data$se <- (data$ci.u - data$ci.l) / (2 * z_score)	  
-	data <- data[order(data$Outcomes),]
+  choice <- function(z, choices, label) {
+    if (length(z) != 1L || is.na(z) || !z %in% choices)
+      fail(paste(label, "must be one of", paste(choices, collapse = ", ")))
+    z
   }
-
-#stop(data$Outcome.value)
-#stop(paste("Made it so far - after summary stats!\ncolums: ", ncol(data),"\nColumn names: ",paste(colnames(data),collapse=', '), "\nOutcome values: ", paste(data$Outcome.value,collapse=', '), "\nrows: ",nrow(data), "\n", sep=""))
-
-  ## Meta-analysis ------------------------------------
-
-  if (data_type == "p"){
-	  # Method to GLMM 02/19/2021
-	  if (subgroup =='YES'){
-		meta1 <- metaprop(Outcomes, Observations, studlab = Name, subgroup = Group, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE, title='Rates')
-	  }else{
-		meta1 <- metaprop(Outcomes, Observations, studlab = Name, data=data, method = 'GLMM', hakn = TRUE, fixed=FALSE, title='Rates')
-	  }
-  (paste(meta1$lower,inv.logit(meta1$TE),meta1$upper))
-	}
-
-if (data_type == "m"){
-	  if (subgroup =='YES'){
-		meta1 <- metamean(Observations,Mean,sd,studlab = Name,subgroup = Group, data=data, fixed=FALSE, sm = "MLN", hakn=TRUE, title='Means')
-	  }else{
-		meta1 <- metamean(Observations,Mean,sd,studlab = Name, data=data, fixed=FALSE, sm = "MLN", hakn=TRUE, title='Means')
-	  }
-  (paste(meta1$lower,meta1$TE,meta1$upper))
+  data_type <- choice(data_type, c("p", "m", "c"), "data_type")
+  output_type <- choice(output_type, c("f", "d"), "output_type")
+  if (length(outcome_type) == 1L && is.na(outcome_type)) outcome_type <- "NA"
+  outcome_type <- choice(outcome_type, c("g", "b", "NA"), "outcome_type")
+  displaynames <- choice(displaynames, c("all", "selected", "none", "groups"), "displaynames")
+  subgroup <- choice(subgroup, c("YES", "NO"), "subgroup")
+  if (displaynames == "groups") subgroup <- "YES"
+  threshold_observations <- number(threshold_observations, "threshold_observations")
+  if (threshold_observations < 0) fail("threshold_observations cannot be negative.")
+  threshold_value <- number(threshold_value, "threshold_value", TRUE)
+  benchmark_value <- number(benchmark_value, "benchmark_value", TRUE)
+  x_min <- number(x_min, "x_min", TRUE)
+  x_max <- number(x_max, "x_max", TRUE)
+  if (!is.na(x_min) && !is.na(x_max) && x_min >= x_max)
+    fail("x_min must be smaller than x_max.")
+  if (data_type == "p") {
+    if (!is.na(benchmark_value) && (benchmark_value < 0 || benchmark_value > 1))
+      fail("For proportions, benchmark_value must be between 0 and 1.")
+    if (output_type == "d" && outcome_type != "NA" &&
+        !is.na(threshold_value) && (threshold_value < 0 || threshold_value > 1))
+      fail("For proportions, threshold_value must be between 0 and 1 (e.g., 0.05 for 5%).")
+    if ((!is.na(x_min) && (x_min < 0 || x_min > 1)) ||
+        (!is.na(x_max) && (x_max < 0 || x_max > 1)))
+      fail("For proportions, x-axis limits must be between 0 and 1.")
   }
 
-if (data_type == "c"){ #metagen(Outcomes, se, data = data)
-	  if (subgroup =='YES'){
-		meta1 <- metagen(Outcomes,se,studlab = Name, subgroup = Group, data=data, fixed=FALSE, title='Counts')
-	  }else{
-		meta1 <- metagen(Outcomes,se,studlab = Name, data=data, fixed=FALSE, title='Counts')
-	  }
-  (paste(meta1$lower,meta1$TE,meta1$upper))
+  ## Read and prepare input ----
+  # Standard CSV parser: quoted names, CRLF, optional trailing empty column.
+  # No evaluation of input as R code; do not replace missing outcomes by zero.
+  if (is.data.frame(content) || is.matrix(content)) {
+    dat <- as.data.frame(content, stringsAsFactors = FALSE)
+  } else {
+    if (!is.character(content) || length(content) != 1L || !nzchar(trimws(content)))
+      fail("content must be a nonempty CSV string, data frame, or matrix.")
+    content <- sub("^\ufeff", "", content)
+    content <- gsub("\r\n?", "\n", content)
+    dat <- tryCatch(utils::read.csv(text = content, header = FALSE,
+        colClasses = "character", strip.white = TRUE, fill = TRUE,
+        blank.lines.skip = TRUE, comment.char = "", check.names = FALSE,
+        na.strings = c("", "NA")), error = function(e)
+          fail(paste("Cannot read CSV:", conditionMessage(e))))
   }
+  dat[] <- lapply(dat, function(z) trimws(as.character(z)))
+  if (ncol(dat) %in% c(5L, 6L) && all(is.na(dat[[ncol(dat)]]) | dat[[ncol(dat)]] == ""))
+    dat <- dat[-ncol(dat)]
+  ### Legacy four-column format ----
+  # The repository's proportions download uses an older FOUR-column format.
+  legacy_header <- c("id", "clinic", "count", "observations")
+  if (ncol(dat) == 4L) {
+    header <- nrow(dat) > 0L && identical(tolower(unname(unlist(dat[1, ]))), legacy_header)
+    named <- identical(tolower(names(dat)), legacy_header)
+    if (!header && !named)
+      fail("Four-column input must use the legacy header ID,Clinic,Count,Observations.")
+    if (header) dat <- dat[-1, , drop = FALSE]
+    dat <- data.frame(Name = paste0("Site ", dat[[1]]), ID = dat[[1]],
+        Group = dat[[2]], Outcomes = dat[[3]], Observations = dat[[4]],
+        stringsAsFactors = FALSE)
+  }
+  if (ncol(dat) != 5L) fail("Provide exactly five columns: Name, ID, Group, Outcomes, Observations.")
+  names(dat) <- c("Name", "ID", "Group", "Outcomes", "Observations")
+  dat <- dat[rowSums(!is.na(dat) & dat != "") > 0, , drop = FALSE]
+  ### Column names and header ----
+  # Recognize the header by its first field, rather than discarding bad data.
+  if (nrow(dat) && !is.na(dat$Name[1]) && !is.na(dat$Observations[1]) &&
+      tolower(dat$Name[1]) %in% c("name", "names") &&
+      tolower(dat$Observations[1]) %in% c("observations", "n", "matches"))
+    dat <- dat[-1, , drop = FALSE]
+  if (!nrow(dat)) fail("No data rows were supplied.")
+  rownames(dat) <- NULL
+  ### Validate data values ----
+  numeric_column <- function(z, label) {
+    ans <- suppressWarnings(as.numeric(gsub(",", "", z, fixed = TRUE)))
+    bad <- which(!is.finite(ans))
+    if (length(bad)) fail(paste0(label, " is missing or invalid in data row(s): ",
+                                paste(bad, collapse = ", "), "."))
+    ans
+  }
+  dat$Observations <- numeric_column(dat$Observations, "Observations")
+  if (any(dat$Observations <= 0 | dat$Observations != floor(dat$Observations)))
+    fail("Observations must be positive whole numbers.")
+  if (any(is.na(dat$Name) | dat$Name == "")) fail("Each data row needs a Name.")
+  if (any(is.na(dat$ID) | dat$ID == "")) fail("Each data row needs an ID.")
+  if (subgroup == "YES" && any(is.na(dat$Group) | dat$Group == ""))
+    fail("Each data row needs a Group when subgrouping is enabled.")
+  ## Summary descriptive stats ----
+  ### Means ----
+  if (data_type == "m") {
+    pattern <- "^\\s*([+-]?[0-9.,]+(?:[eE][+-]?[0-9]+)?)\\s*\\(\\s*([+0-9.,]+(?:[eE][+-]?[0-9]+)?)\\s*\\)\\s*$"
+    if (any(is.na(dat$Outcomes) | !grepl(pattern, dat$Outcomes, perl = TRUE)))
+      fail("For means, Outcomes must have the form mean(SD), e.g., 17(2).")
+    dat$Mean <- numeric_column(sub(pattern, "\\1", dat$Outcomes, perl = TRUE), "Mean")
+    dat$sd <- numeric_column(sub(pattern, "\\2", dat$Outcomes, perl = TRUE), "SD")
+    if (any(dat$sd <= 0 | dat$Observations < 2))
+      fail("For means, SD must be positive and Observations must be at least 2.")
+    if (output_type == "f" && any(dat$Mean <= 0))
+      fail("The retained log-mean forest model requires positive means.")
+    dat$Outcome.value <- dat$Mean
+    pooled <- stats::weighted.mean(dat$Mean, dat$Observations)
+  } else {
+    ### Proportions and counts ----
+    dat$Outcomes <- numeric_column(dat$Outcomes, "Outcomes")
+    if (any(dat$Outcomes < 0 | dat$Outcomes != floor(dat$Outcomes)))
+      fail("Outcomes must be nonnegative whole event counts.")
+    if (data_type == "p" && any(dat$Outcomes > dat$Observations))
+      fail("For proportions, Outcomes cannot exceed Observations.")
+    if (data_type == "c" && length(unique(dat$Observations)) > 1L)
+      fail("Raw counts need equal exposure in every row. Use proportions for binary events or a separate incidence-rate model for unequal exposure.")
+    dat$Outcome.value <- if (data_type == "p") dat$Outcomes/dat$Observations else dat$Outcomes
+    pooled <- if (data_type == "p") sum(dat$Outcomes)/sum(dat$Observations) else mean(dat$Outcomes)
+  }
+  ### Sort sites and initialize results ----
+  dat <- dat[order(dat$Outcome.value), , drop = FALSE]
+  rownames(dat) <- NULL
+  dat$eligible <- dat$Observations >= threshold_observations
+  dat$candidate <- FALSE
+  model <- NULL
+  curve <- NULL
+  labels <- dat$ID
 
-summary(meta1)
-  (TE = round(meta1$TE.random,2))
-  (TE_text = paste("Rate: ",TE," (",round(meta1$lower.random,2)," - ",round(meta1$upper.random,2),")",sep=""))
-  I2 = round(meta1$I2*100,1)
-  I2.L = round(meta1$lower.I2*100,1)
-  I2.U = round(meta1$upper.I2*100,1)
-	
-  #stop(paste("Success so far! Ready to plot:\nI2 = ", I2, '\nTE: ', TE_text,"\noutput_type: ", output_type , sep=""))
-
- ## Density plots---------------------------------------------------------------------------------------
-
-  if (output_type == "d")
-	  {
-	  # Which size to use?
-	  size <- nrow(data)
-	  #size <- size_population
-	  n <- seq(0, size, by = 1)
-	  #x <- seq(0, 1, by = 0.01) # No work
-	  #stop(paste("x: ",x, sep="")) # Works
-	  if (data_type == "m"){
-		densities<-dnorm(n, mean = proportion_population, sd = std.dev, log = FALSE) # *adjust
-	  }
-	  if (data_type == "p"){
-		densities<-dbinom(n, size = size, prob = proportion_population , log = FALSE) # *adjust
-	  }
-	  if (data_type == "c"){
-		stop(paste("densities: for counts not implemented", sep="")) #
-	  }
-	  #stop(paste("densities: ",densities, sep="")) # Works
-	  adjust = 100/size
-	  adjust.axis = 100
-	  if (data_type == "m"){
-		adjust.axis<-1
-	  }
-	  plot (n*adjust, densities/adjust, type = "n", xlab="", ylab = "Probablity of result",
-			main = paste("Distribution of ",outcome_label," by ", Name_label,sep=""),xlim=c(0,100), ylim=c(0,0.5))
-	  mtext(paste("Results: proportion with ",outcome_label,sep=""), side=1, line = 3)
-	  #####
-	  x <- seq(0, size, by = 1)
-	  densities <-dbinom(x, size = size, prob = proportion_population , log = FALSE) # *adjust
-	  s <- spline(x*adjust, densities, xout=seq(0,100,by=1))
-	  lines(s, col = "black")
-
-	  #benchmark
-	  # '1+' in line below is key 02/24/2019
-	  segments(benchmark_value*adjust.axis,0,benchmark_value*adjust.axis,s$y[1+benchmark_value*adjust.axis], col="green")
-	  axis(1,at=benchmark_value*adjust.axis,labels="B", col.ticks="green", col.axis="green", col="green", font=2, lwd=2, padj=1.2, las = 1)
-	  
-	  #Indicate local rate
-	  axis(1,at=proportion_population*adjust.axis,labels="M", col.ticks="blue", col.axis="blue", col="blue", lwd=2, padj=1.2, las = 1)
-	  #text(proportion_population*size*adjust,0,paste("Mean rate: ",round(100*proportion_population,0),"%",sep=""),col="blue")
-	  
-	  #Ratings that qualify (> threshold_observations observations)
-	  data.threshold <-data[which(data$Observations >= threshold_observations),]
-	  (nrow(data.threshold))
-	  
-	  #Plot point(s) that qualify
-	  # '1+' in line below is key 02/24/2019
-	  points(data.threshold$Outcome.value*adjust.axis,s$y[1+data.threshold$Outcome.value*adjust.axis], col="black", pch=19, cex = 1)
-	  temp.list  <- unique(data.threshold$Outcome.value, incomparables = FALSE)
-
-	  duplicates <- 0
-	  for(i in 1:length(temp.list))
-	  {
-		temp.data <- data.threshold[which(data.threshold$Outcome.value == temp.list[i]),] 
-		temp.value <- nrow(temp.data)
-		if (temp.value > 1)
-		  {# '1+' in line below is key 02/24/2019
-		  duplicates <- 1.5
-		  text(temp.list[i]*adjust.axis,s$y[1+temp.data$Outcome.value*adjust.axis],temp.value, pos=3, col="black", font=1)
-		}
-	  }
-	  
-	  #Plot deviants in green
-	  if (outcome_type != "NA"){
-		deviants <- data.threshold[which(data.threshold$Observations >= threshold_observations & data.threshold$Outcome.value < threshold_value),]
-		if (outcome_type =="g"){deviants <- data.threshold[which(data.threshold$Observations >= threshold_observations & data.threshold$Outcome.value > threshold_value),]}
-		(nrow(deviants))
-		#points(deviants$outcome*100,s$y[deviants$outcome*1000], col="red", pch=19, cex=1 + 0.5*(temp.value - 1))
-		(temp.list  <- unique(deviants$Outcome.value, incomparables = FALSE))
-		#temp.value <- min(deviants$outcome)
-		for(i in 1:length(temp.list))
-		{
-		  temp.data <- deviants[which(deviants$Outcome.value == temp.list[i]),] 
-		  temp.value <- nrow(temp.data)
-		  point.size <- 1 + 0.25*(temp.value - 1)
-		  point.size <- 1
-		  # '1+' in line below is key 02/24/2019
-		  points(temp.data$Outcome.value*adjust.axis,s$y[1+temp.data$Outcome.value*adjust.axis], col="green", pch=19, cex=point.size)
-		  if (temp.value > 1)
-			{# '1+' in line below is key 02/24/2019
-			text(temp.list[i]*adjust.axis,s$y[1+temp.data$Outcome.value*adjust.axis],temp.value, pos=3, col="green", font=2)
-			}
-		  #temp.data <- deviants[which(deviants$outcome != temp.value),] 
-		}
-		
-		(temp.list  <- unique(deviants$Name, incomparables = FALSE))
-		(deviant.Outcomes <- sum(deviants$Outcomes))
-		(deviant.Observations <- sum(deviants$Observations))
-		(deviant.rate <- deviant.Outcomes/deviant.Observations)
-	  }	
-	  
-	  #Details
-	  textout0 <- paste("Summary:",sep="")
-	  textout1 <- paste("Number of ",Name_label," assessed: ",size," (observations: ", size_population,")",sep="")
-	  textout2 <- paste("Heterogeneity (I2): ",I2,"%",sep="")
-	  textout3 <- paste("       ... among ",Name_label," with ", threshold_observations," or more observations: ",round(100*min(data.threshold$Outcome.value),0),"% to ",round(100*max(data.threshold$Outcome.value),0),"%",sep="")
-	  if (outcome_type != "NA"){
-		textout4 <- paste("       ... among positive deviants: ",round(100*min(deviants$Outcome.value),0),"% to ",round(100*max(deviants$Outcome.value),0),"%",sep="")
-		textout5 <- paste("Among local positive deviants:",sep="")
-		textout6 <- paste("  ",round(100*deviant.rate,0),"% (",deviant.Outcomes," of ",deviant.Observations," observations) have ",outcome_label,sep="")
-		if (data_type == "m"){
-		  textout6 <- paste("  ",4.75," is mean rating",sep="")
-		  }
-	  }
-	  textout10 <- paste("Legend:",sep="")
-	  textout11 <- paste("Points indicate ", Name_label, " with  ",threshold_observations," or more observations",sep="")
-	  textout12 <- paste("Numbers indicate number of ",Name_label," with that result (if > 1)",sep="")
-	  textout13 <- paste("M: mean is " ,round(proportion_population*100,0),"%",sep="")
-	  if (data_type == "m"){
-		textout13 <- paste("M: mean is " ,4.0,sep="")
-		}
-	  textout14 <- paste("B: ",benchmark_label,": " ,benchmark_value*100,"%",sep="")
-	  if (data_type == "m"){
-		textout14 <- paste("B: ",benchmark_label,": " ,benchmark_value,sep="")
-	  }
-	  # Now write the texts
-	  # Left-hand side of plot
-	  #if (proportion_population > 0){ #So always use this arrangement
-	  xpos <- par("usr")[1] + 2.0*strwidth("A")
-	  text(xpos,par("usr")[4]-2.0*strheight("A"),textout0,adj=c(0,0), cex=1.0, font = 2)
-	  #text(xpos,par("usr")[4]-3.5*strheight("A"),textout1,adj=c(0,0), cex=0.8)
-	  text(xpos,par("usr")[4]-3.5*strheight("A"),textout2,adj=c(0,0), cex=0.8)
-	  #text(xpos,par("usr")[4]-6.5*strheight("A"),textout3,adj=c(0,0), cex=0.8)
-	  #text(xpos,par("usr")[4]-8.0*strheight("A"),textout4,adj=c(0,0), cex=0.8)
-	  if (outcome_type != "NA"){
-		text(xpos,par("usr")[4]-5*strheight("A"),textout5,col="black", font=1, adj=c(0,0), cex=0.8)
-		text(xpos,par("usr")[4]-6.5*strheight("A"),textout6,col="black", font=1, adj=c(0,0), cex=0.8)
-	  }
-	  # Right-hand side of plot
-	  xpos <- par("usr")[2] - 2.0*strwidth("A")
-	  text(xpos,par("usr")[4]-2.0*strheight("A"),textout10,adj=c(1,0), cex=1.0, font = 2)
-	  text(xpos,par("usr")[4]-3.5*strheight("A"),textout11,adj=c(1,0), cex=0.8)
-	  if (duplicates == 1.5)  {text(xpos,par("usr")[4]-5.0*strheight("A"),textout12,adj=c(1,0), cex=0.8)}
-	  text(xpos,par("usr")[4]-(5.0+duplicates)*strheight("A"),textout13,adj=c(1,0), cex=0.8, col="blue")
-	  if (benchmark_value != 0)  {text(par("usr")[2] - 2.0*strwidth("A"),par("usr")[4]-(6.5+duplicates)*strheight("A"),textout14,adj=c(1,0), font=2, cex=0.8, col="green")}
-	  
-	  #text(par("usr")[2]/3,par("usr")[3]+(par("usr")[4]-par("usr")[3])/2, "This example is three doctors, each with 1000 patients, \nwho have outcomes rates of 10%, 15%, 20%.\nWhat population percentile is the doctor with 10%?")
-	}
-
- ## Forest plots---------------------------------------------------------------------------------------
-  if (output_type == "f"){
-	
-	#stop(paste("Success so far!:\n ", 'Ready for forest plots - displaying deviants ' , sep="")) # Works
-	
-	##* Identify deviants------------------
-	left.deviants <- NULL
-	right.deviants <- NULL
-	for(i in 1:length(meta1$TE)){
-	  if (data_type == "p"){
-		if (meta1$upper[i]<inv.logit(meta1$TE.random)){
-		  left.deviants <- rbind(left.deviants,meta1$TE[i])}
-		if (meta1$lower[i]>inv.logit(meta1$TE.random)){
-		  right.deviants <- rbind(right.deviants,meta1$TE[i])}
-		}  
-	  if (data_type %in% c("m", "c")){
-		#stop(paste("Success so far!:\n ", 'Ready for forest plots - displaying deviants ' , sep="")) # Works
-		if (meta1$upper[i]<(meta1$TE.random)){
-		  left.deviants <- rbind(left.deviants,meta1$TE[i])}
-		if (meta1$lower[i]>(meta1$TE.random)){
-		  right.deviants <- rbind(right.deviants,meta1$TE[i])}
-	  }  
-	}
-	(left.deviants)
-	(right.deviants)
-
-##** Display attribution/names------------------
-for(i in 1:length(meta1$TE)){
-  # Replacing names as needed
-  if (displaynames == 'none'){meta1$studlab[i] <- meta1$data$ID[i]}
-  if (displaynames == 'selected'){
-  if (data_type == "p"){
-	if (outcome_type == 'b' & meta1$upper[i] >= inv.logit(meta1$TE.random)){meta1$studlab[i] <- meta1$data$ID[i]}
-	if (outcome_type == 'g' & meta1$lower[i] <= inv.logit(meta1$TE.random)){meta1$studlab[i] <- meta1$data$ID[i]}
-	    }
-  if (data_type %in% c("m", "c")){
-	if (outcome_type == 'b' & meta1$upper[i] >= meta1$TE.random){meta1$studlab[i] <- meta1$data$ID[i]}
-	if (outcome_type == 'g' & meta1$lower[i] <= meta1$TE.random){meta1$studlab[i] <- meta1$data$ID[i]}
-	    }
+  ## Forest plots ----
+  if (output_type == "f") {
+    ### Meta-analysis ----
+    if (!requireNamespace("meta", quietly = TRUE))
+      fail('Install the meta package first: install.packages("meta").')
+    if (utils::packageVersion("meta") < "7.0.0")
+      fail('Update the meta package first: install.packages("meta").')
+    if (nrow(dat) < 2L) fail("A forest comparison needs at least two sites.")
+    # Explicit namespaces also allow this file to be sourced on its own.
+    args <- list(studlab = dat$Name, common = FALSE, random = TRUE,
+        level = 0.95, level.ma = 0.95,
+        method.tau = if (data_type == "p") "ML" else "REML")
+    if (subgroup == "YES") args$subgroup <- dat$Group
+    #### Proportions model ----
+    if (data_type == "p") {
+      if (all(dat$Outcomes == 0) || all(dat$Outcomes == dat$Observations))
+        fail("All proportions are identical at 0 or 1; the GLMM cannot estimate site differences. Use output_type = 'd' to display them.")
+      model <- do.call(meta::metaprop, c(list(event = dat$Outcomes,
+          n = dat$Observations, sm = "PLOGIT", method = "GLMM",
+          method.random.ci = "HK", title = "Proportions"), args))
+    } else if (data_type == "m") {
+      #### Means model ----
+      model <- do.call(meta::metamean, c(list(n = dat$Observations,
+          mean = dat$Mean, sd = dat$sd, sm = "MLN",
+          method.random.ci = "HK", title = "Means"), args))
+    } else {
+      #### Counts model ----
+      cis <- vapply(dat$Outcomes, function(z) stats::poisson.test(z)$conf.int, numeric(2))
+      se <- (cis[2, ] - cis[1, ])/(2 * stats::qnorm(0.975))
+      model <- do.call(meta::metagen, c(list(TE = dat$Outcomes, seTE = se,
+          sm = "MRAW", method.random.ci = "classic", title = "Counts"), args))
     }
+    ### Identify deviants ----
+    # Compare CIs on the SAME model scale (logit / log / raw).
+    # Preserve the repository's nonoverlapping-CI asterisk rule, restricted
+    # to the favorable direction, and use the same rule for name disclosure.
+    if (!is.finite(model$TE.random) || !is.finite(model$lower.random) ||
+        !is.finite(model$upper.random)) fail("The pooled model did not produce a finite confidence interval.")
+    favorable <- if (outcome_type == "g") model$lower > model$upper.random else
+      if (outcome_type == "b") model$upper < model$lower.random else rep(FALSE, nrow(dat))
+    dat$candidate <- !is.na(favorable) & favorable
+    ### Display attribution/names ----
+    if (displaynames == "all") labels <- dat$Name
+    if (displaynames == "selected") labels[dat$candidate] <- dat$Name[dat$candidate]
+    ### Asterisk adding to deviants ----
+    labels <- paste0(labels, ifelse(dat$candidate, "*", ""))
+    ### Original-scale estimates and axis limits ----
+    inverse <- switch(data_type, p = stats::plogis, m = exp, c = identity)
+    dat$lower <- inverse(model$lower)
+    dat$upper <- inverse(model$upper)
+    dat$estimate <- inverse(model$TE)
+    model$studlab <- labels
+    limits <- if (data_type == "p") c(0, 1) else
+      range(c(dat$lower, dat$upper, inverse(model$lower.random),
+              inverse(model$upper.random), benchmark_value), na.rm = TRUE)
+    if (!is.na(x_min)) limits[1] <- x_min
+    if (!is.na(x_max)) limits[2] <- x_max
+    if (limits[1] >= limits[2]) fail("The resulting x-axis limits are not increasing.")
+    if (any(dat$estimate < limits[1] | dat$estimate > limits[2]))
+      warning("Some sites lie outside the requested x-axis limits.", call. = FALSE)
+    leftcols <- if (data_type == "p") c("studlab", "event", "n") else "studlab"
+    leftlabs <- if (data_type == "p") c(Name_label, "Events", "Observations") else Name_label
+    ### Forest plot ----
+    # Reserve space below the pooled estimate and add a short plot note.
+    meta::forest(model, leftcols = leftcols, leftlabs = leftlabs,
+        rightcols = c("effect", "ci"), rightlabs = c("Estimate", "95% CI"),
+        sortvar = dat$Outcome.value, study.results = displaynames != "groups",
+        sort.subgroup = TRUE, ref = benchmark_value, xlim = limits,
+        backtransf = TRUE, xlab = outcome_label, smlab = topic,
+        print.I2.ci = TRUE, print.tau2 = FALSE, print.Q = FALSE,
+        print.pval.Q = FALSE, addrows.below.overall = 4, details = FALSE,
+        col.square = ifelse(dat$candidate, "#16803A", "#333333"))
+    ### Footer ----
+    grid::upViewport(0)
+    grid::grid.text(paste0("* Candidate: favorable site CI does not overlap pooled CI.",
+        if (!is.na(benchmark_value)) paste0("\n", benchmark_label, ": ", benchmark_value) else ""),
+        x = 0.02, y = 0.025, just = c("left", "bottom"),
+        gp = grid::gpar(fontsize = 9))
+  } else {
+    ## Density plots ----
+    # Empirical distribution: each eligible site has equal weight.
+    # It is NOT a binomial null distribution or a test for exceptional sites.
+    if (displaynames == "groups")
+      fail("Groups-only display is available for forest plots; choose output_type = 'f'.")
+    ### Select eligible sites and identify deviants ----
+    eligible <- dat[dat$eligible, , drop = FALSE]
+    if (outcome_type != "NA" && !is.na(threshold_value)) {
+      dat$candidate <- dat$eligible & if (outcome_type == "g")
+        dat$Outcome.value > threshold_value else dat$Outcome.value < threshold_value
+    }
+    ### Axis limits and plot setup ----
+    scale <- if (data_type == "p") 100 else 1
+    values <- eligible$Outcome.value * scale
+    limits <- if (data_type == "p") c(0, 100) else {
+      r <- range(c(dat$Outcome.value * scale, benchmark_value * scale), na.rm = TRUE)
+      pad <- max(diff(r) * 0.08, abs(mean(r)) * 0.02, 0.5)
+      r + c(-pad, pad)
+    }
+    if (!is.na(x_min)) limits[1] <- x_min * scale
+    if (!is.na(x_max)) limits[2] <- x_max * scale
+    if (limits[1] >= limits[2]) fail("The resulting x-axis limits are not increasing.")
+    oldpar <- graphics::par(no.readonly = TRUE)
+    on.exit(graphics::par(oldpar), add = TRUE)
+    graphics::par(mar = c(6, 4.5, 4, 1) + 0.1)
+    xlab <- paste0(outcome_label, if (data_type == "p") " (%)" else "")
+    ### Empty selection ----
+    if (!length(values)) {
+      graphics::plot(NA_real_, NA_real_, xlim = limits, ylim = c(0, 1),
+          xlab = xlab, ylab = "Density", main = topic)
+      graphics::text(mean(limits), 0.5, "No sites meet the observation threshold.")
+    } else {
+      if (any(values < limits[1] | values > limits[2]))
+        warning("Some sites lie outside the requested x-axis limits.", call. = FALSE)
+      ### Counts distribution ----
+      if (data_type == "c") {
+        counts <- table(values)
+        curve <- data.frame(x = as.numeric(names(counts)), y = as.numeric(counts)/length(values))
+        graphics::plot(curve$x, curve$y, type = "h", lwd = 5, xlim = limits,
+            ylim = c(0, max(curve$y) * 1.22), xlab = xlab,
+            ylab = "Proportion of sites", main = topic)
+        point_y <- function(z) curve$y[match(z, curve$x)]
+      } else {
+        ### Proportions and means density ----
+        bw <- if (length(values) > 1L && length(unique(values)) > 1L)
+          stats::bw.nrd0(values) else max(abs(values[1]) * 0.05, if (data_type == "p") 1 else 0.1)
+        grid <- seq(limits[1], limits[2], length.out = 512)
+        point_y <- function(z) vapply(z, function(xx) {
+          if (data_type == "p") {
+            # Truncated Gaussian kernels keep all density inside 0..100%.
+            mass <- stats::pnorm((100 - values)/bw) - stats::pnorm(-values/bw)
+            mean(stats::dnorm((xx - values)/bw)/(bw * mass))
+          } else mean(stats::dnorm((xx - values)/bw)/bw)
+        }, numeric(1))
+        curve <- data.frame(x = grid, y = point_y(grid))
+        graphics::plot(curve$x, curve$y, type = "l", xlim = limits,
+            ylim = c(0, max(c(curve$y, point_y(values))) * 1.22),
+            xlab = xlab, ylab = "Density", main = topic)
+      }
+      ### Plot deviants in green ----
+      flags <- dat$candidate[dat$eligible]
+      graphics::points(values, point_y(values), pch = 19,
+          col = ifelse(flags, "#16803A", "#333333"))
+      ### Duplicate outcomes ----
+      # Label coincident sites once, so multiplicity is visible.
+      duplicates <- table(values)
+      for (v in as.numeric(names(duplicates)[duplicates > 1L]))
+        graphics::text(v, point_y(v), labels = duplicates[as.character(v)], pos = 3, cex = 0.8)
+      ### Benchmark and local mean ----
+      graphics::abline(v = pooled * scale, col = "#2463B4", lty = 2)
+      if (!is.na(benchmark_value)) graphics::abline(v = benchmark_value * scale, col = "#904E00", lty = 3)
+      ### Legend ----
+      graphics::legend("topright", bty = "n", cex = 0.75,
+          legend = c("Eligible sites", if (any(flags)) "Beyond favorable threshold",
+                     "Overall observed mean", if (!is.na(benchmark_value)) benchmark_label),
+          col = c("#333333", if (any(flags)) "#16803A", "#2463B4",
+                  if (!is.na(benchmark_value)) "#904E00"),
+          pch = c(19, if (any(flags)) 19, NA, if (!is.na(benchmark_value)) NA),
+          lty = c(NA, if (any(flags)) NA, 2, if (!is.na(benchmark_value)) 3))
+    }
+    ### Footer ----
+    graphics::mtext(paste0(nrow(eligible), " of ", nrow(dat), " sites meet n >= ",
+        threshold_observations, "; green points: ", sum(dat$candidate),
+        ". Equal weight per eligible site."), side = 1, line = 4, cex = 0.75)
   }
-
-##** Asterisk adding to deviants------------------
-	for (i in seq_along(meta1$TE)) {
-	  
-	  if (isTRUE(meta1$upper[i] < meta1$lower.random ||
-	             meta1$lower[i] > meta1$upper.random)) {
-	    
-	    meta1$studlab[i] <- paste0(meta1$studlab[i], "*")
-	  }
-	}
-
-##* Forest plot ----------------------------------------------------
-
-#if (data_type == "c"){stop(paste("Success so far!:\n ", 'Ready for forest plots - actual plotting: ' , x_min, ' , ', x_max, sep=""))} # Works
-# 2022-05-04 - made it to here
-
-		if (data_type %in% c("p")){
-			xlim <- c(0,1)
-			leftcols=c("studlab","event","n")
-			leftlabs=c(Name_label,outcome_label,"Observations")
-			}
-		else if (data_type %in% c("c")){
-			xlim <- c(0,x_max)
-			leftcols=c("studlab","TE")
-			leftlabs=c(Name_label,outcome_label)
-			}
-		else{
-			xlim <- c(x_min, x_max)
-			leftcols=c("studlab", "n")
-			leftlabs=c(Name_label,"Observations")
-			}
-		forest(meta1, 
-			 leftcols=leftcols,
-			 leftlabs=leftlabs, 
-			 sortbar = meta1$TE,
-			 study.results = study_results,
-			 bysort = TRUE,
-			 ref = benchmark_value,
-			 xlim = xlim, print.I2.ci = TRUE, print.tau2=FALSE, print.Q=FALSE,print.pval.Q=FALSE,studlab= meta1$studlab)
-		
-		# Title
-		grid.text(topic, 0.5, 0.95, gp=gpar(cex=1.4))
-		
-		#Footer
-		if (!is.na(benchmark_value)){
-			grid.text('Notes:', 0.08, 0.08, hjust=0, gp=gpar(cex=1, font=2))
-			Footer <- NULL
-			Footer <- paste(Footer,"Goal is ", benchmark_label, ": ", benchmark_value, " (solid vertical line)")
-			grid.text(Footer, 0.08, 0.06, hjust=0, gp=gpar(cex=1, font=1))
-			Footer <- NULL
-			Footer <- paste(Footer,"* Indicates deviants whose confidence interval does not overlap the confidence intervalal for the pooled group.")
-			grid.text(Footer, 0.08, 0.04, hjust=0, gp=gpar(cex=1, font=1))
-		}
-  		}
-} 
-#
+  ## Return results ----
+  invisible(list(data = dat, model = model, curve = curve,
+      observed_mean = pooled, labels = labels,
+      candidate_rule = if (output_type == "f")
+        "Favorable site CI does not overlap overall pooled CI (exploratory)." else
+        "Observed outcome crosses user threshold in the favorable direction (descriptive)."))
+}
