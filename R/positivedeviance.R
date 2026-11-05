@@ -160,6 +160,12 @@ positivedeviance <- function(
 
   ## Forest plots ----
   if (output_type == "f") {
+    ### Empirical percentiles ----
+    # Midrank percentile: percentage below a site plus half the percentage
+    # tied with it. Each site has equal weight; higher values rank higher.
+    # Round only for display, and leave pooled/subgroup summary rows blank.
+    dat$percentile <- 100 * (rank(dat$Outcome.value, ties.method = "average") - 0.5)/nrow(dat)
+    dat$Percentile <- sprintf("%.0f", dat$percentile)
     ### Meta-analysis ----
     if (!requireNamespace("meta", quietly = TRUE))
       fail('Install the meta package first: install.packages("meta").')
@@ -167,7 +173,7 @@ positivedeviance <- function(
       fail('Update the meta package first: install.packages("meta").')
     if (nrow(dat) < 2L) fail("A forest comparison needs at least two sites.")
     # Explicit namespaces also allow this file to be sourced on its own.
-    args <- list(studlab = dat$Name, common = FALSE, random = TRUE,
+    args <- list(studlab = dat$Name, data = dat, common = FALSE, random = TRUE,
         level = 0.95, level.ma = 0.95,
         method.tau = if (data_type == "p") "ML" else "REML")
     if (subgroup == "YES") args$subgroup <- dat$Group
@@ -220,13 +226,32 @@ positivedeviance <- function(
       warning("Some sites lie outside the requested x-axis limits.", call. = FALSE)
     leftcols <- if (data_type == "p") c("studlab", "event", "n") else "studlab"
     leftlabs <- if (data_type == "p") c(Name_label, "Events", "Observations") else Name_label
+    estimate_header <- switch(data_type, p = "Rate", m = "Mean", c = "Count")
+    ### Title above column headers ----
+    # Draw the title in its own area, independently of meta package version.
+    # smlab is the graph-column label, so do not use it for the plot title.
+    grid::grid.newpage()
+    title_lines <- paste(strwrap(topic, width = 75), collapse = "\n")
+    if (nzchar(title_lines))
+      grid::grid.text(title_lines, x = 0.5, y = 0.97, just = c("center", "top"),
+          gp = grid::gpar(fontsize = 12, fontface = "bold"))
+    title_height <- if (nzchar(title_lines))
+      grid::convertHeight(grid::grobHeight(grid::textGrob(title_lines,
+          gp = grid::gpar(fontsize = 12, fontface = "bold"))), "npc", valueOnly = TRUE) else 0
+    body_top <- min(0.91, 0.97 - title_height - 0.04)
+    body_bottom <- 0.10
+    grid::pushViewport(grid::viewport(x = 0.5,
+        y = (body_top + body_bottom)/2, width = 0.98,
+        height = body_top - body_bottom, name = "positive.deviance.forest"))
     ### Forest plot ----
     # Reserve space below the pooled estimate and add a short plot note.
     meta::forest(model, leftcols = leftcols, leftlabs = leftlabs,
-        rightcols = c("effect", "ci"), rightlabs = c("Estimate", "95% CI"),
+        rightcols = c("Percentile", "effect", "ci"),
+        rightlabs = c("Percentile", estimate_header, "95% CI"),
         sortvar = dat$Outcome.value, study.results = displaynames != "groups",
         sort.subgroup = TRUE, ref = benchmark_value, xlim = limits,
-        backtransf = TRUE, xlab = outcome_label, smlab = topic,
+        plotwidth = "5cm",
+        backtransf = TRUE, xlab = outcome_label, smlab = "", main = "", new = FALSE,
         print.I2.ci = TRUE, print.tau2 = FALSE, print.Q = FALSE,
         print.pval.Q = FALSE, addrows.below.overall = 4, details = FALSE,
         col.square = ifelse(dat$candidate, "#16803A", "#333333"))
