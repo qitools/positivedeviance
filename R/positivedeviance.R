@@ -1,6 +1,6 @@
 # Overview ----
 # AI-assisted revision using GPT-6.1 Sol with High reasoning in ChatGPT Work via agentic coding directed by rbadgett@kumc.edu
-# Corrected QI Tools positive-deviance display, 2026-11-05 by ChatGPT 
+# Corrected QI Tools positive-deviance display, 2026-11-05.
 # Adapted from qitools/positivedeviance, commit
 # 5e4d3ed59fc7e94450e4292f776b9651490bba2c (GPL).
 # Original authors: Robert Badgett, Scott Chamberlain, Jeroen Ooms.
@@ -21,12 +21,12 @@ positivedeviance <- function(
     benchmark_value = NA_real_, benchmark_label = "Benchmark",
     data_type = "p", output_type = "f", x_min = NA_real_, x_max = NA_real_,
     theme = "white") {
-  
+
   ## Validate arguments ----
   fail <- function(message) stop(message, call. = FALSE)
   number <- function(z, label, optional = FALSE) {
     if (length(z) == 0L || (length(z) == 1L &&
-                            (is.na(z) || trimws(as.character(z)) %in% c("", "NA", "NULL")))) {
+        (is.na(z) || trimws(as.character(z)) %in% c("", "NA", "NULL")))) {
       if (optional) return(NA_real_)
       fail(paste(label, "is required."))
     }
@@ -65,7 +65,7 @@ positivedeviance <- function(
         (!is.na(x_max) && (x_max < 0 || x_max > 1)))
       fail("For proportions, x-axis limits must be between 0 and 1.")
   }
-  
+
   ## Read and prepare input ----
   # Standard CSV parser: quoted names, CRLF, optional trailing empty column.
   # No evaluation of input as R code; do not replace missing outcomes by zero.
@@ -77,10 +77,10 @@ positivedeviance <- function(
     content <- sub("^\ufeff", "", content)
     content <- gsub("\r\n?", "\n", content)
     dat <- tryCatch(utils::read.csv(text = content, header = FALSE,
-                                    colClasses = "character", strip.white = TRUE, fill = TRUE,
-                                    blank.lines.skip = TRUE, comment.char = "", check.names = FALSE,
-                                    na.strings = c("", "NA")), error = function(e)
-                                      fail(paste("Cannot read CSV:", conditionMessage(e))))
+        colClasses = "character", strip.white = TRUE, fill = TRUE,
+        blank.lines.skip = TRUE, comment.char = "", check.names = FALSE,
+        na.strings = c("", "NA")), error = function(e)
+          fail(paste("Cannot read CSV:", conditionMessage(e))))
   }
   dat[] <- lapply(dat, function(z) trimws(as.character(z)))
   if (ncol(dat) %in% c(5L, 6L) && all(is.na(dat[[ncol(dat)]]) | dat[[ncol(dat)]] == ""))
@@ -95,8 +95,8 @@ positivedeviance <- function(
       fail("Four-column input must use the legacy header ID,Clinic,Count,Observations.")
     if (header) dat <- dat[-1, , drop = FALSE]
     dat <- data.frame(Name = paste0("Site ", dat[[1]]), ID = dat[[1]],
-                      Group = dat[[2]], Outcomes = dat[[3]], Observations = dat[[4]],
-                      stringsAsFactors = FALSE)
+        Group = dat[[2]], Outcomes = dat[[3]], Observations = dat[[4]],
+        stringsAsFactors = FALSE)
   }
   if (ncol(dat) != 5L) fail("Provide exactly five columns: Name, ID, Group, Outcomes, Observations.")
   names(dat) <- c("Name", "ID", "Group", "Outcomes", "Observations")
@@ -114,7 +114,7 @@ positivedeviance <- function(
     ans <- suppressWarnings(as.numeric(gsub(",", "", z, fixed = TRUE)))
     bad <- which(!is.finite(ans))
     if (length(bad)) fail(paste0(label, " is missing or invalid in data row(s): ",
-                                 paste(bad, collapse = ", "), "."))
+                                paste(bad, collapse = ", "), "."))
     ans
   }
   dat$Observations <- numeric_column(dat$Observations, "Observations")
@@ -158,7 +158,7 @@ positivedeviance <- function(
   model <- NULL
   curve <- NULL
   labels <- dat$ID
-  
+
   ## Forest plots ----
   if (output_type == "f") {
     ### Empirical percentiles ----
@@ -175,27 +175,27 @@ positivedeviance <- function(
     if (nrow(dat) < 2L) fail("A forest comparison needs at least two sites.")
     # Explicit namespaces also allow this file to be sourced on its own.
     args <- list(studlab = dat$Name, data = dat, common = FALSE, random = TRUE,
-                 level = 0.95, level.ma = 0.95,
-                 method.tau = if (data_type == "p") "ML" else "REML")
+        level = 0.95, level.ma = 0.95,
+        method.tau = if (data_type == "p") "ML" else "REML")
     if (subgroup == "YES") args$subgroup <- dat$Group
     #### Proportions model ----
     if (data_type == "p") {
       if (all(dat$Outcomes == 0) || all(dat$Outcomes == dat$Observations))
         fail("All proportions are identical at 0 or 1; the GLMM cannot estimate site differences. Use output_type = 'd' to display them.")
       model <- do.call(meta::metaprop, c(list(event = dat$Outcomes,
-                                              n = dat$Observations, sm = "PLOGIT", method = "GLMM",
-                                              method.random.ci = "HK", title = "Proportions"), args))
+          n = dat$Observations, sm = "PLOGIT", method = "GLMM",
+          method.random.ci = "HK", title = "Proportions"), args))
     } else if (data_type == "m") {
       #### Means model ----
       model <- do.call(meta::metamean, c(list(n = dat$Observations,
-                                              mean = dat$Mean, sd = dat$sd, sm = "MLN",
-                                              method.random.ci = "HK", title = "Means"), args))
+          mean = dat$Mean, sd = dat$sd, sm = "MLN",
+          method.random.ci = "HK", title = "Means"), args))
     } else {
       #### Counts model ----
       cis <- vapply(dat$Outcomes, function(z) stats::poisson.test(z)$conf.int, numeric(2))
       se <- (cis[2, ] - cis[1, ])/(2 * stats::qnorm(0.975))
       model <- do.call(meta::metagen, c(list(TE = dat$Outcomes, seTE = se,
-                                             sm = "MRAW", method.random.ci = "classic", title = "Counts"), args))
+          sm = "MRAW", method.random.ci = "classic", title = "Counts"), args))
     }
     ### Identify deviants ----
     # Compare CIs on the SAME model scale (logit / log / raw).
@@ -229,39 +229,32 @@ positivedeviance <- function(
     leftlabs <- if (data_type == "p") c(Name_label, "Events", "Observations") else Name_label
     estimate_header <- switch(data_type, p = "Rate", m = "Mean", c = "Count")
     ### Title above column headers ----
-    # Draw the title in its own area, independently of meta package version.
-    # smlab is the graph-column label, so do not use it for the plot title.
     grid::grid.newpage()
+    has_main <- "main" %in% names(formals(utils::getS3method("forest", "meta",
+        envir = asNamespace("meta"))))
     title_lines <- paste(strwrap(topic, width = 75), collapse = "\n")
-    if (nzchar(title_lines))
-      grid::grid.text(title_lines, x = 0.5, y = 0.97, just = c("center", "top"),
-                      gp = grid::gpar(fontsize = 12, fontface = "bold"))
-    title_height <- if (nzchar(title_lines))
-      grid::convertHeight(grid::grobHeight(grid::textGrob(title_lines,
-                                                          gp = grid::gpar(fontsize = 12, fontface = "bold"))), "npc", valueOnly = TRUE) else 0
-    body_top <- min(0.91, 0.97 - title_height - 0.04)
-    body_bottom <- 0.10
-    grid::pushViewport(grid::viewport(x = 0.5,
-                                      y = (body_top + body_bottom)/2, width = 0.98,
-                                      height = body_top - body_bottom, name = "positive.deviance.forest"))
+    summary_label <- if (!has_main && nzchar(topic)) paste0(topic, "\n ") else ""
     ### Forest plot ----
     # Reserve space below the pooled estimate and add a short plot note.
     meta::forest(model, leftcols = leftcols, leftlabs = leftlabs,
-                 rightcols = c("Percentile", "effect", "ci"),
-                 rightlabs = c("Percentile", estimate_header, "95% CI"),
-                 sortvar = dat$Outcome.value, study.results = displaynames != "groups",
-                 sort.subgroup = TRUE, ref = benchmark_value, xlim = limits,
-                 plotwidth = "5cm",
-                 backtransf = TRUE, xlab = outcome_label, smlab = "", main = "", new = FALSE,
-                 print.I2.ci = TRUE, print.tau2 = FALSE, print.Q = FALSE,
-                 print.pval.Q = FALSE, addrows.below.overall = 4, details = FALSE,
-                 col.square = ifelse(dat$candidate, "#16803A", "#333333"))
+        rightcols = c("Percentile", "effect", "ci"),
+        rightlabs = c("Percentile", estimate_header, "95% CI"),
+        sortvar = dat$Outcome.value, study.results = displaynames != "groups",
+        sort.subgroup = TRUE, ref = benchmark_value, xlim = limits,
+        plotwidth = "5cm",
+        backtransf = TRUE, xlab = outcome_label, smlab = summary_label,
+        main = if (has_main) title_lines else "", gap.main = 0,
+        just.main = "center", fs.main = 12, fs.smlab = 12,
+        ff.smlab = "bold", new = FALSE,
+        print.I2.ci = TRUE, print.tau2 = FALSE, print.Q = FALSE,
+        print.pval.Q = FALSE, addrows.below.overall = 4, details = FALSE,
+        col.square = ifelse(dat$candidate, "#16803A", "#333333"))
     ### Footer ----
     grid::upViewport(0)
     grid::grid.text(paste0("* Candidate: favorable site CI does not overlap pooled CI.",
-                           if (!is.na(benchmark_value)) paste0("\n", benchmark_label, ": ", benchmark_value) else ""),
-                    x = 0.02, y = 0.025, just = c("left", "bottom"),
-                    gp = grid::gpar(fontsize = 9))
+        if (!is.na(benchmark_value)) paste0("\n", benchmark_label, ": ", benchmark_value) else ""),
+        x = 0.02, y = 0.025, just = c("left", "bottom"),
+        gp = grid::gpar(fontsize = 9))
   } else {
     ## Density plots ----
     # Empirical distribution: each eligible site has equal weight.
@@ -292,7 +285,7 @@ positivedeviance <- function(
     ### Empty selection ----
     if (!length(values)) {
       graphics::plot(NA_real_, NA_real_, xlim = limits, ylim = c(0, 1),
-                     xlab = xlab, ylab = "Density", main = topic)
+          xlab = xlab, ylab = "Density", main = topic)
       graphics::text(mean(limits), 0.5, "No sites meet the observation threshold.")
     } else {
       if (any(values < limits[1] | values > limits[2]))
@@ -302,8 +295,8 @@ positivedeviance <- function(
         counts <- table(values)
         curve <- data.frame(x = as.numeric(names(counts)), y = as.numeric(counts)/length(values))
         graphics::plot(curve$x, curve$y, type = "h", lwd = 5, xlim = limits,
-                       ylim = c(0, max(curve$y) * 1.22), xlab = xlab,
-                       ylab = "Proportion of sites", main = topic)
+            ylim = c(0, max(curve$y) * 1.22), xlab = xlab,
+            ylab = "Proportion of sites", main = topic)
         point_y <- function(z) curve$y[match(z, curve$x)]
       } else {
         ### Proportions and means density ----
@@ -319,13 +312,13 @@ positivedeviance <- function(
         }, numeric(1))
         curve <- data.frame(x = grid, y = point_y(grid))
         graphics::plot(curve$x, curve$y, type = "l", xlim = limits,
-                       ylim = c(0, max(c(curve$y, point_y(values))) * 1.22),
-                       xlab = xlab, ylab = "Density", main = topic)
+            ylim = c(0, max(c(curve$y, point_y(values))) * 1.22),
+            xlab = xlab, ylab = "Density", main = topic)
       }
       ### Plot deviants in green ----
       flags <- dat$candidate[dat$eligible]
       graphics::points(values, point_y(values), pch = 19,
-                       col = ifelse(flags, "#16803A", "#333333"))
+          col = ifelse(flags, "#16803A", "#333333"))
       ### Duplicate outcomes ----
       # Label coincident sites once, so multiplicity is visible.
       duplicates <- table(values)
@@ -336,22 +329,22 @@ positivedeviance <- function(
       if (!is.na(benchmark_value)) graphics::abline(v = benchmark_value * scale, col = "#904E00", lty = 3)
       ### Legend ----
       graphics::legend("topright", bty = "n", cex = 0.75,
-                       legend = c("Eligible sites", if (any(flags)) "Beyond favorable threshold",
-                                  "Overall observed mean", if (!is.na(benchmark_value)) benchmark_label),
-                       col = c("#333333", if (any(flags)) "#16803A", "#2463B4",
-                               if (!is.na(benchmark_value)) "#904E00"),
-                       pch = c(19, if (any(flags)) 19, NA, if (!is.na(benchmark_value)) NA),
-                       lty = c(NA, if (any(flags)) NA, 2, if (!is.na(benchmark_value)) 3))
+          legend = c("Eligible sites", if (any(flags)) "Beyond favorable threshold",
+                     "Overall observed mean", if (!is.na(benchmark_value)) benchmark_label),
+          col = c("#333333", if (any(flags)) "#16803A", "#2463B4",
+                  if (!is.na(benchmark_value)) "#904E00"),
+          pch = c(19, if (any(flags)) 19, NA, if (!is.na(benchmark_value)) NA),
+          lty = c(NA, if (any(flags)) NA, 2, if (!is.na(benchmark_value)) 3))
     }
     ### Footer ----
     graphics::mtext(paste0(nrow(eligible), " of ", nrow(dat), " sites meet n >= ",
-                           threshold_observations, "; green points: ", sum(dat$candidate),
-                           ". Equal weight per eligible site."), side = 1, line = 4, cex = 0.75)
+        threshold_observations, "; green points: ", sum(dat$candidate),
+        ". Equal weight per eligible site."), side = 1, line = 4, cex = 0.75)
   }
   ## Return results ----
   invisible(list(data = dat, model = model, curve = curve,
-                 observed_mean = pooled, labels = labels,
-                 candidate_rule = if (output_type == "f")
-                   "Favorable site CI does not overlap overall pooled CI (exploratory)." else
-                     "Observed outcome crosses user threshold in the favorable direction (descriptive)."))
+      observed_mean = pooled, labels = labels,
+      candidate_rule = if (output_type == "f")
+        "Favorable site CI does not overlap overall pooled CI (exploratory)." else
+        "Observed outcome crosses user threshold in the favorable direction (descriptive)."))
 }
