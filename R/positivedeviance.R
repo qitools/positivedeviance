@@ -235,26 +235,34 @@ positivedeviance <- function(
     title_lines <- paste(strwrap(topic, width = 75), collapse = "\n")
     summary_label <- if (!has_main && nzchar(topic)) paste0(topic, "\n ") else ""
     ### Forest plot ----
+    # Enlarge the text while leaving room for the columns on compact devices.
+    device_inches <- grDevices::dev.size("in")
+    plot_font <- min(16, max(8, 14 * min(device_inches / c(8.3, 5.35))))
+    plot_width <- if (device_inches[1] < 10) "3.5cm" else "5cm"
+    axis_font <- if (has_main && device_inches[1] >= 10) plot_font else min(plot_font, 12)
     # Reserve space below the pooled estimate and add a short plot note.
     meta::forest(model, leftcols = leftcols, leftlabs = leftlabs,
         rightcols = c("Percentile", "effect", "ci"),
         rightlabs = c("Percentile", estimate_header, "95% CI"),
         sortvar = dat$Outcome.value, study.results = displaynames != "groups",
         sort.subgroup = TRUE, ref = benchmark_value, xlim = limits,
-        plotwidth = "5cm",
+        plotwidth = plot_width, fontsize = plot_font,
         backtransf = TRUE, xlab = outcome_label, smlab = summary_label,
         main = if (has_main) title_lines else "", gap.main = 0,
-        just.main = "center", fs.main = 12, fs.smlab = 12,
+        just.main = "center", fs.main = plot_font + 2, fs.smlab = plot_font + 2,
+        fs.axis = axis_font, fs.xlab = axis_font,
         ff.smlab = "bold", new = FALSE,
         print.I2.ci = TRUE, print.tau2 = FALSE, print.Q = FALSE,
-        print.pval.Q = FALSE, addrows.below.overall = 4, details = FALSE,
+        print.pval.Q = FALSE,
+        addrows.below.overall = if (device_inches[2] < 6.5) 1 else 4,
+        details = FALSE,
         col.square = ifelse(dat$candidate, "#16803A", "#333333"))
     ### Footer ----
     grid::upViewport(0)
     grid::grid.text(paste0("* Candidate: favorable site CI does not overlap pooled CI.",
         if (!is.na(benchmark_value)) paste0("\n", benchmark_label, ": ", benchmark_value) else ""),
         x = 0.02, y = 0.025, just = c("left", "bottom"),
-        gp = grid::gpar(fontsize = 9))
+        gp = grid::gpar(fontsize = 0.75 * plot_font))
   } else {
     ## Density plots ----
     # Empirical distribution: each eligible site has equal weight.
