@@ -404,12 +404,12 @@ Fillmore, 13, 3, 95,200,</textarea>
       <label>Subgroup by group (column 3)? </label> <select id="subgroup" name="subgroup"><option value="NO" selected> No </option> <option value="YES"> YES </option> </select><br/>
 
             <label>Outcome:</label> 
-            <input type="text" id="outcome_label" value="Example bad outcome"/>
+            <input type="text" id="outcome_label" value="Example good outcome"/>
 
             <label>Type</label> 
             <select id="outcome_type">
-              <option value="b" selected>Bad</option>
-              <option value="g">Good</option>
+              <option value="b">Bad</option>
+              <option value="g" selected>Good</option>
             </select> <br />
 
             <label>Benchmark:</label> 
@@ -438,7 +438,7 @@ Fillmore, 13, 3, 95,200,</textarea>
   <label>Threshold (#observations per row required for plotting on histogram):</label> 
             <input type="text" id="threshold_observations" style="width:25px" value="4"/> <br/>
 
-  <label>Threshold for PDs (colors PDs green when outcome type not NA):</label>  
+  <label>Threshold for PDs (colors PDs <strong style="color: green;">green</strong> when outcome type not NA):</label>  
             <input type="text" id="threshold_value" style="width:25px" value="5"/> <br/>
 
             <div style="display:none"><label>Plot logo:</label> 
