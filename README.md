@@ -1,4 +1,5 @@
-Public website [https://public.opencpu.org/ocpu/github/qitools/positivedeviance/www/](https://qitools.ocpu.io/positivedeviance/www/)
+Public website [https://qitools.ocpu.io/positivedeviance/www/](https://qitools.ocpu.io/positivedeviance/www/)
+
 
 ---------------------
 
