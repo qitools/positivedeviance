@@ -1,11 +1,10 @@
-OpenCPU App: positivedeviance
+Public website [https://public.opencpu.org/ocpu/github/qitools/positivedeviance/www/](https://qitools.ocpu.io/positivedeviance/www/)
+
 ---------------------
 
 Simple OpenCPU Application. 
 
-To access online, R is not needed on your computer, browse to https://public.opencpu.org/ocpu/github/qitools/positivedeviance/www/
-
-To install in R on your computer:
+If you want to run this on your computer, first install Rr:
 
     library(devtools)
     install_github("opencpu", "jeroenooms")
