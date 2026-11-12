@@ -6,8 +6,9 @@
 # Original authors: Robert Badgett, Scott Chamberlain, Jeroen Ooms.
 # Requires meta >= 7.0-0 for forest plots; distribution plots use base R only.
 # Input columns (in order): Name, ID, Group, Outcomes, Observations.
-# Outcomes: event count (p/c), or mean(SD) (m). Proportions/thresholds
-# use 0..1, not 0..100. Plot type: f = forest; d = empirical distribution.
+# Outcomes: event count (p/c), or mean(SD) (m). Proportion benchmarks and
+# x-axis limits use 0..1. Distribution thresholds use 0..1 as fractions or
+# values above 1 through 100 as percentages. Plot type: f = forest; d = empirical distribution.
 # Forest models retain the original GLMM proportions, log means, and
 # approximate inverse-variance raw-count models. Counts require equal exposure.
 # Asterisk = site CI does not overlap pooled CI, in the favorable direction.
@@ -58,9 +59,12 @@ positivedeviance <- function(
   if (data_type == "p") {
     if (!is.na(benchmark_value) && (benchmark_value < 0 || benchmark_value > 1))
       fail("For proportions, benchmark_value must be between 0 and 1.")
-    if (output_type == "d" && outcome_type != "NA" &&
-        !is.na(threshold_value) && (threshold_value < 0 || threshold_value > 1))
-      fail("For proportions, threshold_value must be between 0 and 1 (e.g., 0.05 for 5%).")
+    if (output_type == "d" && outcome_type != "NA" && !is.na(threshold_value)) {
+      if (threshold_value < 0 || threshold_value > 100)
+        fail("For proportions, enter a threshold from 0 to 100 (e.g., 0.05 or 5 for 5%).")
+      # The web form defaults to 5. Convert percentage values to fractions.
+      if (threshold_value > 1) threshold_value <- threshold_value / 100
+    }
     if ((!is.na(x_min) && (x_min < 0 || x_min > 1)) ||
         (!is.na(x_max) && (x_max < 0 || x_max > 1)))
       fail("For proportions, x-axis limits must be between 0 and 1.")
