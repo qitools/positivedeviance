@@ -473,13 +473,7 @@ color:#FFFFFF;
       <fieldset>
       <legend style="font-weight:bold">Enter inputs</legend>
       <ul>
-        <li>Simple peer comparisons can be toxic (<a href="https://doi.org/10.1037/mot0000287" target="_blank" rel="noopener">Chun, 2023</a>). Before using this type of plot:
-          <ul>
-            <li>Have consent from participants to share results among themselves, or preferably, anonymize the data (Vilendrer, 2021 PMID <a href="http://pubmed.gov/34479736" target="_blank" rel="noopener">34479736</a>). Consider identifyig the positive deviances, if they consent, as this allows reciprocal learning of subtle or tactic tactics (Ivanovich, 2015 PMID <a href="http://pubmed.gov/26188970" target="_blank" rel="noopener">26188970</a>). Some groups may choose not to attribute data on the first improvement cycle until trust is obtained in the process.</li>
-            <li>Conduct the positive deviance seminar at the time, or soon after sharing data. The rational is that feedback can generate much emotion (Payne, 2016 PMID <a href="http://pubmed.gov/27412170" target="_blank" rel="noopener">27412170</a>) and is more effective if the solution to improvement is provided(Hysong et al, 2009 PMID <a href="http://pubmed.gov/19194332" target="_blank" rel="noopener">19194332</a>). However, these approaches are uncommonly done(Hysong et al, 2021 PMID <a href="http://pubmed.gov/33830786" target="_blank" rel="noopener">33830786</a>). </li>
-          </ul>
-        </li>
-        <li>Replace the data below in this example <a href="https://en.wikipedia.org/wiki/Probability_distribution" target="_blank" rel="noopener">probability distribution</a> with your observations or.</li>
+        <li>Replace the example data below with your data or...</li>
         <li>Upload a csv file formatted as in one of thes files: <a href="example file - proportions.csv" target="_blank" rel="noopener">example file - proportions.csv</a> or <a href="example file - means.csv" target="_blank" rel="noopener">example file - means.csv</a>.
         <input type="file" id="files" name="files" style="width:200px"/>
         1st row is column names? <select id="header" name="header"><option value="TRUE" selected> TRUE </option> <option value="FALSE"> FALSE </option> </select>
@@ -502,38 +496,12 @@ Taylor,    3, 3, 75,150
 Fillmore, 13, 3, 95,200</textarea>	
             <br />
             <label>Topic (for title - optional):</label> 
-            <input type="text" id="topic" value="Presidential sackraces" style="width:300px" /> <br/>
+            <input type="text" id="topic" value="Presidential horseshoes" style="width:300px" /> <br/>
 
             <label>What is being studied? (people,sites,units,etc):</label> 
             <input type="text" id="Name_label" value="President"/> <br/>
 
-      <label>Subgroup by group (column 3)? </label> <select id="subgroup" name="subgroup"><option value="NO" selected> No </option> <option value="YES"> YES </option> </select><br/>
-
-            <label>Outcome:</label> 
-            <input type="text" id="outcome_label" value="Example good outcome"/>
-
-            <label>Type</label> 
-            <select id="outcome_type">
-              <option value="b">Bad</option>
-              <option value="g" selected>Good</option>
-            </select> <br />
-
-            <label>Benchmark:</label> 
-            <input type="text" id="benchmark_label" value="Best published report. Lafayette, 1776, PMID 1"  style="width:300px"  /> Value <input type="text" id="benchmark_value" style="width:25px" value="0.30"/>  <br />
-
-  <label>Data type</label> 
-            <select id="data_type">
-              <option value="p" selected>Proportions</option>
-              <option value="m">Means</option>
-              <option value="c">Counts</option>
-            </select><br />
-  <label>Plot type</label> 
-            <select id="output_type">
-              <option value="d">Distribution</option>
-              <option value="f" selected>Forest plot</option>
-            </select> <span>X-axis limits: <input type="text" id="x_min" value="0" style="width:25px" /> to <input type="text" id="x_max" value="1" style="width:25px" /></span><br />
-
-  <label for="displaynames">Display names:</label> 
+  <label for="displaynames" style="font-style:italic; color:red; font-weight: bold;">Display names?</label> 
             <select id="displaynames">
               <option value="none">No names</option>
               <option value="selected" selected>Names of deviants only</option>
@@ -541,7 +509,48 @@ Fillmore, 13, 3, 95,200</textarea>
               <option value="groups">Groups totals only</option>
             </select><br/>
 
-  <label>Threshold (#observations per row required for plotting on histogram):</label> 
+<div><li>Simple peer comparisons can be toxic (<a href="https://doi.org/10.1037/mot0000287" target="_blank" rel="noopener">Chun, 2023</a>). <a href="peer_comparisons.html" target="_blank" rel="noopener">Details and options</a></div>
+<div style="color:green;font-weight: bold;">Random IDs (recommended)</div>
+<div style="padding-left: 1ch;">
+  Use for the at least the first improvement cycle and for this mockup site.<br>
+  Assign random IDs before uiploading on this mockup
+</div>
+<div style="color:black;font-weight: bold;">Positive deviants' names only</div>
+<div style="padding-left: 1ch;">0k if after the first improvement cycle, anonymous vote of au
+participants gives unanimous approval and each unit/person named</div>
+<div style="color:red;font-weight: bold;">Everyone's names (discouraged)</div>
+<div style="padding-left: 1ch;">Consider if anonymous vote of all participants gives unanimous
+approval and private permission from each person/unit named</div>
+<div>&nbsp;</div>
+<div style="padding-left: 0px">
+	<label>Subgroup by group (column 3)? </label> <select id="subgroup" name="subgroup"><option value="NO" selected> No </option> <option value="YES"> YES </option> </select><br/>
+
+	<label>Outcome:</label> 
+		<input type="text" id="outcome_label" value="Example good outcome"/>
+
+	<label>Type</label> 
+	<select id="outcome_type">
+	  <option value="b">Bad</option>
+	  <option value="g" selected>Good</option>
+	</select> <br />
+
+	<label>Benchmark:</label> 
+		<input type="text" id="benchmark_label" value="Best published report. Lafayette, 1776, PMID 1"  style="width:300px"  /> Value <input type="text" id="benchmark_value" style="width:25px" value="0.30"/>  <br />
+
+  <label>Data type</label> 
+            <select id="data_type">
+              <option value="p" selected>Proportions</option>
+              <option value="m">Means</option>
+              <option value="c">Counts</option>
+            </select><br />
+
+  <label>Plot type</label> 
+            <select id="output_type">
+              <option value="d">Distribution</option>
+              <option value="f" selected>Forest plot</option>
+            </select> <span>X-axis limits: <input type="text" id="x_min" value="0" style="width:25px" /> to <input type="text" id="x_max" value="1" style="width:25px" /></span><br />
+
+  <label>Threshold (#observations per row required for plotting):</label> 
             <input type="text" id="threshold_observations" style="width:25px" value="4"/> <br/>
 
   <label>Threshold for PDs (colors PDs <strong style="color: green;">green</strong> when outcome type not NA):</label>  
@@ -554,7 +563,7 @@ Fillmore, 13, 3, 95,200</textarea>
             </select></div>
 
             <br />
-            <button class="btn btn-small btn-primary" id="plotbutton"><i class="icon-ok icon-white"></i> Update Plot</button>
+            <button class="btn btn-small btn-primary" id="plotbutton"><i class="icon-ok icon-white"></i>Update Plot (below)</button>
             <div id="status" role="status" aria-live="polite"></div>
           </fieldset>
         </form>
