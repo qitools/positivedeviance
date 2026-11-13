@@ -17,7 +17,8 @@
 # Positive deviance function ----
 positivedeviance <- function(
     content, topic = "Positive deviance", Name_label = "Sites", subgroup = "NO",
-    outcome_label = "Outcome", outcome_type = "g", displaynames = "selected",
+    outcome_label = "Outcome", outcome_type = "g",
+    displaynames = if (output_type == "d") "none" else "selected",
     threshold_observations = 0, threshold_value = NA_real_,
     benchmark_value = NA_real_, benchmark_label = "Benchmark",
     data_type = "p", output_type = "f", x_min = NA_real_, x_max = NA_real_,
@@ -306,9 +307,6 @@ positivedeviance <- function(
       if (data_type == "c") {
         counts <- table(values)
         curve <- data.frame(x = as.numeric(names(counts)), y = as.numeric(counts)/length(values))
-        graphics::plot(curve$x, curve$y, type = "h", lwd = 5, xlim = limits,
-            ylim = c(0, max(curve$y) * 1.22), xlab = xlab,
-            ylab = "Proportion of sites", main = topic)
         point_y <- function(z) curve$y[match(z, curve$x)]
       } else {
         ### Proportions and means density ----
@@ -323,13 +321,45 @@ positivedeviance <- function(
           } else mean(stats::dnorm((xx - values)/bw)/bw)
         }, numeric(1))
         curve <- data.frame(x = grid, y = point_y(grid))
-        graphics::plot(curve$x, curve$y, type = "l", xlim = limits,
-            ylim = c(0, max(c(curve$y, point_y(values))) * 1.22),
-            xlab = xlab, ylab = "Density", main = topic)
       }
-      ### Plot deviants in green ----
+      ### Position deviant names ----
       flags <- dat$candidate[dat$eligible]
-      graphics::points(values, point_y(values), pch = 19,
+      point_heights <- point_y(values)
+      named <- displaynames == "selected" & flags & values >= limits[1] & values <= limits[2]
+      name_x <- unique(values[named])
+      legend_text <- c("Eligible sites", if (any(flags)) "Beyond favorable threshold",
+          "Overall observed mean", if (!is.na(benchmark_value)) benchmark_label)
+      legend_cex <- 0.75
+      plot_top <- max(c(curve$y, point_heights)) * 1.22
+      if (length(name_x)) {
+        # Place tied names together above the shared point and its tie count.
+        name_y <- point_heights[match(name_x, values)]
+        name_text <- vapply(name_x, function(value) {
+          paste(eligible$Name[named & values == value], collapse = "\n")
+        }, character(1))
+        plot_size <- graphics::par("pin")
+        name_offset <- pmin(plot_size[2] * 0.12,
+            ifelse(name_x %in% values[duplicated(values)], 0.25, 0.10))
+        legend_height <- min(plot_size[2] * 0.55,
+            (length(legend_text) + 1) * legend_cex * graphics::par("csi") + 0.04)
+        name_space <- min(plot_size[2] * 0.45,
+            plot_size[2] * 0.92 - legend_height - max(name_offset))
+        # Rotating the text swaps its measured width and height.
+        label_height <- graphics::strwidth(name_text, units = "inches", cex = 0.75)
+        label_width <- graphics::strheight(name_text, units = "inches", cex = 0.75)
+        name_cex <- 0.75 * min(1, name_space / max(label_height),
+            plot_size[1] * 0.85 / sum(label_width))
+        label_height <- graphics::strwidth(name_text, units = "inches", cex = name_cex)
+        label_fraction <- (label_height + name_offset + legend_height) / plot_size[2]
+        plot_top <- max(plot_top, name_y / (1 - label_fraction))
+      }
+      ### Distribution plot ----
+      graphics::plot(curve$x, curve$y, type = if (data_type == "c") "h" else "l",
+          lwd = if (data_type == "c") 5 else graphics::par("lwd"), xlim = limits,
+          ylim = c(0, plot_top), xlab = xlab,
+          ylab = if (data_type == "c") "Proportion of sites" else "Density", main = topic)
+      ### Plot deviants in green ----
+      graphics::points(values, point_heights, pch = 19,
           col = ifelse(flags, "#16803A", "#333333"))
       ### Duplicate outcomes ----
       # Label coincident sites once, so multiplicity is visible.
@@ -340,13 +370,30 @@ positivedeviance <- function(
       graphics::abline(v = pooled * scale, col = "#2463B4", lty = 2)
       if (!is.na(benchmark_value)) graphics::abline(v = benchmark_value * scale, col = "#904E00", lty = 3)
       ### Legend ----
-      graphics::legend("topright", bty = "n", cex = 0.75,
-          legend = c("Eligible sites", if (any(flags)) "Beyond favorable threshold",
-                     "Overall observed mean", if (!is.na(benchmark_value)) benchmark_label),
+      graphics::legend("topright", bty = "n", cex = legend_cex, legend = legend_text,
           col = c("#333333", if (any(flags)) "#16803A", "#2463B4",
                   if (!is.na(benchmark_value)) "#904E00"),
           pch = c(19, if (any(flags)) 19, NA, if (!is.na(benchmark_value)) NA),
           lty = c(NA, if (any(flags)) NA, 2, if (!is.na(benchmark_value)) 3))
+      ### Names of deviants ----
+      if (length(name_x)) {
+        # Spread labels for nearby points just enough to give each its own space.
+        plot_edges <- graphics::grconvertX(graphics::par("usr")[1:2], "user", "inches")
+        label_gap <- min(0.03, plot_size[1] * 0.1 / length(name_x))
+        label_width <- graphics::strheight(name_text, units = "inches", cex = name_cex) + label_gap
+        prior_width <- cumsum(label_width) - label_width
+        preferred_left <- graphics::grconvertX(name_x, "user", "inches") - label_width / 2
+        label_left <- pmin(plot_edges[2] - sum(label_width),
+            cummax(pmax(plot_edges[1], preferred_left - prior_width))) + prior_width
+        label_x <- graphics::grconvertX(label_left + label_width / 2, "inches", "user")
+        label_y <- graphics::grconvertY(
+            graphics::grconvertY(name_y, "user", "inches") + name_offset, "inches", "user")
+        shifted <- abs(label_x - name_x) > graphics::xinch(0.03)
+        graphics::segments(name_x[shifted], name_y[shifted], label_x[shifted], label_y[shifted],
+            col = "#16803A", lwd = 0.6)
+        graphics::text(label_x, label_y, labels = name_text, srt = 90,
+            adj = c(0, 0.5), cex = name_cex, col = "#16803A")
+      }
     }
     ### Footer ----
     graphics::mtext(paste0(nrow(eligible), " of ", nrow(dat), " sites meet n >= ",
